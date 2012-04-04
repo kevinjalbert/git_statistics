@@ -1,14 +1,16 @@
+require 'ap'
+
 def collect
 
   branches = collect_branches
 
   pipe = open("|git --no-pager log #{branches.join(' ')} --date=iso --reverse"\
-              " --no-color --numstat --summary --format=\"%H,%an,%ad,%p\"")
+              " --no-color --numstat --summary --format=\"%H,%an,%ae,%ad,%p\"")
 
   buffer = []
   pipe.each do |line|
 
-    if line.split(',').size == 4
+    if line.split(',').size == 5  # Matches the number of ',' in the format
       extract_buffer(buffer) if not buffer.empty?
       buffer = []
     end
@@ -16,6 +18,9 @@ def collect
     buffer << line.strip
 
   end
+
+  # Extract the last commit
+  extract_buffer(buffer)
 end
 
 def collect_branches
@@ -35,28 +40,71 @@ end
 
 def extract_buffer(buffer)
 
-  @commits += 1
-
   commit_info = buffer[0].split(',')
-  puts "sha: #{commit_info[0]}"
-  puts "author: #{commit_info[1]}"
-  puts "time: #{commit_info[2]}"
 
-  if commit_info[3] == nil or commit_info[3].split(' ').size == 1
-    puts "merge: false"
+  commit = (@commits[ commit_info[0] ] ||= Hash.new)
+  commit[:author] = commit_info[1]
+  commit[:author_email] = commit_info[2]
+  commit[:time] = commit_info[3]
+  commit[:insertions] = 0
+  commit[:deletions] = 0
+  commit[:creates] = 0
+  commit[:deletes] = 0
+  commit[:renames] = 0
+  commit[:copies] = 0
+
+  if commit_info[4] == nil or commit_info[4].split(' ').size == 1
+    commit[:merge] = false
   else
-    @merges += 1
-    puts "merge: true"
+    commit[:merge] = true
   end
 
-  puts ""
+  # Only extract diff details if they exist
+  if buffer.size > 1
+
+    buffer[2..-1].each do |line|
+
+      next if extract_changes(commit, line)
+      next if extract_create_delete_file(commit, line)
+      next if extract_rename_copy_file(commit, line)
+
+    end
+  end
+end
+
+def extract_changes(commit, line)
+  changes = line.scan( /(\d+)\s(\d+)\s(.*)/ )[0]
+  if changes != nil and changes.size == 3
+    commit[:insertions] = changes[0].to_i
+    commit[:deletions] = changes[1].to_i
+    return true
+  end
+end
+
+def extract_create_delete_file(commit, line)
+  changes = line.scan(/(create|delete) mode \d+ ([^\\\n]*)/)[0]
+
+  if changes != nil and changes.size == 2
+    commit[:creates] += 1 if changes[0] == "create"
+    commit[:deletes] += 1 if changes[0] == "delete"
+    return true
+  end
+end
+
+def extract_rename_copy_file(commit, line)
+  changes = line.scan(/(rename|copy)([^(]*)/)[0]
+
+  if changes != nil and changes.size == 2
+    commit[:renames] += 1 if changes[0] == "rename"
+    commit[:copies] += 1 if changes[0] == "copy"
+  end
+  return true
 end
 
 
-@commits = 0
-@merges = 0
+@commits = Hash.new
 
 collect
 
-puts "commits: #{@commits}"
-puts "merges: #{@merges}"
+ap @commits
+puts "commits: #{@commits.size}"
