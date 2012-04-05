@@ -1,4 +1,5 @@
 require 'ap'
+require File.dirname(__FILE__) + '/commits.rb'
 
 def collect
 
@@ -101,10 +102,14 @@ def extract_rename_copy_file(commit, line)
   return true
 end
 
-
-@commits = Hash.new
+@commits = Commits.new
 
 collect
 
-ap @commits
-puts "commits: #{@commits.size}"
+email = true
+
+ap "Via Emails"
+ap @commits.authors_statistics(email)
+
+ap "Via Name"
+ap @commits.authors_statistics(!email)
