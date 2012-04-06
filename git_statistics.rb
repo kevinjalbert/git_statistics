@@ -3,12 +3,13 @@ require 'json'
 require 'trollop'
 require File.dirname(__FILE__) + '/commits.rb'
 
-def collect
+def collect(since="")
 
   branches = collect_branches
 
   pipe = open("|git --no-pager log #{branches.join(' ')} --date=iso --reverse"\
-              " --no-color --numstat --summary --format=\"%H,%an,%ae,%ad,%p\"")
+              " --no-color --numstat --summary #{since}"\
+              " --format=\"%H,%an,%ae,%ad,%p\"")
 
   buffer = []
   pipe.each do |line|
@@ -24,7 +25,7 @@ def collect
   end
 
   # Extract the last commit
-  extract_buffer(buffer)
+  extract_buffer(buffer) if not buffer.empty?
 end
 
 def collect_branches
@@ -109,10 +110,11 @@ end
   opt :email, "Use author's email instead of name", :default => false
   opt :save, "Save the commits as commits.json", :default => false
   opt :load, "Load commits.json instead of re-collecting data", :default => false
+  opt :update, "Update commits.json with new data (same as save and load together)", :default => false
 end
 
 # Collect commit data
-if @opts[:load]
+if @opts[:load] || @opts[:update]
   @commits = Commits.new
   @commits.merge!(JSON.parse(File.read("commits.json"), :symbolize_names => true))
 else
@@ -120,11 +122,17 @@ else
   collect
 end
 
-if @opts[:save]
+# Collect incremental recent data
+if @opts[:update]
+  collect("--since=\"`date -r commits.json \"+%F %T\"`\"")
+end
+
+# Save data
+if @opts[:save] || @opts[:update]
   File.open("commits.json", 'w') {|file| file.write(@commits.to_json)}
 end
 
 @commits.calculate_statistics(@opts[:email])
 
 ap "Top Author - Commits"
-ap @commits.author_top_n_type(@opts[:email], "commits", 1)
+ap @commits.author_top_n_type(@opts[:email], :commits, 1)
