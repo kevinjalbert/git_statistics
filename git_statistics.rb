@@ -20,7 +20,6 @@ def collect
     end
 
     buffer << line.strip
-
   end
 
   # Extract the last commit
@@ -106,6 +105,7 @@ def extract_rename_copy_file(commit, line)
 end
 
 @opts = Trollop::options do
+  opt :email, "Use author's email instead of name", :default => false
   opt :save, "Save the commits as commits.json", :default => false
 end
 
@@ -113,13 +113,11 @@ end
 @commits = Commits.new
 collect
 
-email = true
 if @opts[:save]
   File.open("commits.json", 'w') {|file| file.write(@commits.to_json)}
 end
 
-ap "Via Emails"
-ap @commits.authors_statistics(email)
+@commits.calculate_statistics(@opts[:email])
 
-ap "Via Name"
-ap @commits.authors_statistics(!email)
+ap "Top Author - Commits"
+ap @commits.author_top_n_type(@opts[:email], "commits", 1)

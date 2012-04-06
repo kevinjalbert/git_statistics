@@ -1,5 +1,7 @@
 class Commits < Hash
 
+  attr_accessor :data_authors, :data_authors_email
+
   def initalize
     super
   end
@@ -60,5 +62,29 @@ class Commits < Hash
     end
 
     return stats
+  end
+
+  def author_top_n_type(email, type, n=0)
+    n = 0 if n < 0
+
+    if email
+      data = @data_authors_email
+    else
+      data = @data_authors
+    end
+
+      return nil if not data.first[1].has_key?(:"#{type}")
+      return data.sorted_hash {|a,b| b[1][:"#{type}"] <=> a[1][:"#{type}"]}.to_a[0..n-1]
+  end
+
+  def calculate_statistics(email)
+    @data_authors_email = authors_statistics(true) if email
+    @data_authors = authors_statistics(false) if not email
+  end
+end
+
+class Hash
+  def sorted_hash(&block)
+    self.class[sort(&block)]
   end
 end
