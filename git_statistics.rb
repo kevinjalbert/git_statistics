@@ -1,4 +1,6 @@
 require 'ap'
+require 'json'
+require 'trollop'
 require File.dirname(__FILE__) + '/commits.rb'
 
 def collect
@@ -10,6 +12,7 @@ def collect
 
   buffer = []
   pipe.each do |line|
+
 
     if line.split(',').size == 5  # Matches the number of ',' in the format
       extract_buffer(buffer) if not buffer.empty?
@@ -102,11 +105,18 @@ def extract_rename_copy_file(commit, line)
   return true
 end
 
-@commits = Commits.new
+@opts = Trollop::options do
+  opt :save, "Save the commits as commits.json", :default => false
+end
 
+# Collect commit data
+@commits = Commits.new
 collect
 
 email = true
+if @opts[:save]
+  File.open("commits.json", 'w') {|file| file.write(@commits.to_json)}
+end
 
 ap "Via Emails"
 ap @commits.authors_statistics(email)
