@@ -108,6 +108,7 @@ end
 
 @opts = Trollop::options do
   opt :email, "Use author's email instead of name", :default => false
+  opt :merges, "Factor in merges when calculating statistics", :default => false
   opt :save, "Save the commits as commits.json", :default => false
   opt :load, "Load commits.json instead of re-collecting data", :default => false
   opt :update, "Update commits.json with new data (same as save and load together)", :default => false
@@ -132,7 +133,7 @@ if @opts[:save] || @opts[:update]
   File.open("commits.json", 'w') {|file| file.write(@commits.to_json)}
 end
 
-@commits.calculate_statistics(@opts[:email])
+@commits.calculate_statistics(@opts[:email], @opts[:merges])
 
 ap "Top Author - Commits"
 ap @commits.author_top_n_type(@opts[:email], :commits, 1)

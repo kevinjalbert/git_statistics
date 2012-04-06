@@ -26,7 +26,7 @@ class Commits < Hash
     return author_list
   end
 
-  def authors_statistics(email)
+  def authors_statistics(email, merge)
 
     # Use email or not for authors
     if email
@@ -48,17 +48,23 @@ class Commits < Hash
       stats[author][:deletes] = 0
       stats[author][:renames] = 0
       stats[author][:copies] = 0
+      stats[author][:merges] = 0
     end
 
     # Collect the stats for each author
     self.each do |key,value|
-      stats[value[type]][:commits] += 1
-      stats[value[type]][:insertions] += value[:insertions]
-      stats[value[type]][:deletions] += value[:deletions]
-      stats[value[type]][:creates] += value[:creates]
-      stats[value[type]][:deletes] += value[:deletes]
-      stats[value[type]][:renames] += value[:renames]
-      stats[value[type]][:copies] += value[:copies]
+      if not merge and value[:merge]
+        next
+      else
+        stats[value[type]][:merges] += 1 if value[:merge]
+        stats[value[type]][:commits] += 1
+        stats[value[type]][:insertions] += value[:insertions]
+        stats[value[type]][:deletions] += value[:deletions]
+        stats[value[type]][:creates] += value[:creates]
+        stats[value[type]][:deletes] += value[:deletes]
+        stats[value[type]][:renames] += value[:renames]
+        stats[value[type]][:copies] += value[:copies]
+      end
     end
     return stats
   end
@@ -76,9 +82,9 @@ class Commits < Hash
       return data.sorted_hash {|a,b| b[1][type.to_sym] <=> a[1][type]}.to_a[0..n-1]
   end
 
-  def calculate_statistics(email)
-    @data_authors_email = authors_statistics(true) if email
-    @data_authors = authors_statistics(false) if not email
+  def calculate_statistics(email, merge)
+    @data_authors_email = authors_statistics(true, merge) if email
+    @data_authors = authors_statistics(false, merge) if not email
   end
 end
 
