@@ -30,10 +30,10 @@ class Commits < Hash
 
     # Use email or not for authors
     if email
-      type = "author_email"
+      type = :author_email
       author_list = authors_email
     else
-      type = "author"
+      type = :author
       author_list = authors
     end
 
@@ -52,15 +52,14 @@ class Commits < Hash
 
     # Collect the stats for each author
     self.each do |key,value|
-      stats[value[:"#{type}"]][:commits] += 1
-      stats[value[:"#{type}"]][:insertions] += value[:insertions]
-      stats[value[:"#{type}"]][:deletions] += value[:deletions]
-      stats[value[:"#{type}"]][:creates] += value[:creates]
-      stats[value[:"#{type}"]][:deletes] += value[:deletes]
-      stats[value[:"#{type}"]][:renames] += value[:renames]
-      stats[value[:"#{type}"]][:copies] += value[:copies]
+      stats[value[type]][:commits] += 1
+      stats[value[type]][:insertions] += value[:insertions]
+      stats[value[type]][:deletions] += value[:deletions]
+      stats[value[type]][:creates] += value[:creates]
+      stats[value[type]][:deletes] += value[:deletes]
+      stats[value[type]][:renames] += value[:renames]
+      stats[value[type]][:copies] += value[:copies]
     end
-
     return stats
   end
 
@@ -73,8 +72,8 @@ class Commits < Hash
       data = @data_authors
     end
 
-      return nil if not data.first[1].has_key?(:"#{type}")
-      return data.sorted_hash {|a,b| b[1][:"#{type}"] <=> a[1][:"#{type}"]}.to_a[0..n-1]
+      return nil if not data.first[1].has_key?(type)
+      return data.sorted_hash {|a,b| b[1][type.to_sym] <=> a[1][type]}.to_a[0..n-1]
   end
 
   def calculate_statistics(email)

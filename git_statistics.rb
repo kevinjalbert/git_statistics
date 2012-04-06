@@ -107,11 +107,17 @@ end
 @opts = Trollop::options do
   opt :email, "Use author's email instead of name", :default => false
   opt :save, "Save the commits as commits.json", :default => false
+  opt :load, "Load commits.json instead of re-collecting data", :default => false
 end
 
 # Collect commit data
-@commits = Commits.new
-collect
+if @opts[:load]
+  @commits = Commits.new
+  @commits.merge!(JSON.parse(File.read("commits.json"), :symbolize_names => true))
+else
+  @commits = Commits.new
+  collect
+end
 
 if @opts[:save]
   File.open("commits.json", 'w') {|file| file.write(@commits.to_json)}
