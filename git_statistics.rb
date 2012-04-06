@@ -79,9 +79,10 @@ end
 
 def extract_changes(commit, line)
   changes = line.scan( /(\d+)\s(\d+)\s(.*)/ )[0]
+
   if changes != nil and changes.size == 3
-    commit[:insertions] = changes[0].to_i
-    commit[:deletions] = changes[1].to_i
+    commit[:insertions] += changes[0].to_i
+    commit[:deletions] += changes[1].to_i
     return true
   end
 end
