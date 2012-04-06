@@ -13,6 +13,7 @@ def collect
   buffer = []
   pipe.each do |line|
 
+    line = line.force_encoding("ISO-8859-1").encode("UTF-8")
 
     if line.split(',').size == 5  # Matches the number of ',' in the format
       extract_buffer(buffer) if not buffer.empty?
