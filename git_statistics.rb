@@ -3,9 +3,11 @@ require 'json'
 require 'trollop'
 require File.dirname(__FILE__) + '/commits.rb'
 
-def collect(since="")
+def collect(branch, since="")
 
+  # Collect branches to use for git log
   branches = collect_branches
+  branches = ["", ""] if branch
 
   pipe = open("|git --no-pager log #{branches.join(' ')} --date=iso --reverse"\
               " --no-color --numstat --summary #{since}"\
@@ -107,10 +109,10 @@ def extract_rename_copy_file(commit, line)
   return true
 end
 
-def print_summary(sort_type, n=0)
+def print_summary(sort_type, email, n=0)
   n = 0 if n < 0
 
-  data = @commits.author_top_n_type(@opts[:email], sort_type, n)
+  data = @commits.author_top_n_type(email, sort_type, n)
 
   if data == nil
     puts "ERROR: Parameter for --sort is not valid"
@@ -155,6 +157,7 @@ end
   opt :update, "Update commits.json with new data (same as save and load together)", :default => false
   opt :sort, "Sort authors by {commits, insertions, deletions, creates, deletes, renames, copies, merges}", :default => "commits"
   opt :top, "Show the top N authors in results", :default => 0
+  opt :branch, "Use current branch for statistics (otherwise all branches)", :default => false
 end
 
 # Collect commit data
@@ -163,12 +166,12 @@ if @opts[:load] || @opts[:update]
   @commits.merge!(JSON.parse(File.read("commits.json"), :symbolize_names => true))
 else
   @commits = Commits.new
-  collect
+  collect(@opts[:branch])
 end
 
 # Collect incremental recent data
 if @opts[:update]
-  collect("--since=\"`date -r commits.json \"+%F %T\"`\"")
+  collect(@opts[:branch], "--since=\"`date -r commits.json \"+%F %T\"`\"")
 end
 
 # Save data
