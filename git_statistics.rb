@@ -108,7 +108,14 @@ def extract_rename_copy_file(commit, line)
 end
 
 def print_summary(sort_type, n=0)
+  n = 0 if n < 0
+
   data = @commits.author_top_n_type(@opts[:email], sort_type, n)
+
+  if data == nil
+    puts "ERROR: Parameter for --sort is not valid"
+    return
+  end
 
   # Find the longest name/email (used for string formatting)
   total_authors = @commits.author_list.length
@@ -146,6 +153,8 @@ end
   opt :save, "Save the commits as commits.json", :default => false
   opt :load, "Load commits.json instead of re-collecting data", :default => false
   opt :update, "Update commits.json with new data (same as save and load together)", :default => false
+  opt :sort, "Sort authors by {commits, insertions, deletions, creates, deletes, renames, copies, merges}", :default => "commits"
+  opt :top, "Show the top N authors in results", :default => 0
 end
 
 # Collect commit data
@@ -169,4 +178,4 @@ end
 
 @commits.calculate_statistics(@opts[:email], @opts[:merges])
 
-print_summary(:commits, 10)
+print_summary(@opts[:sort].to_sym, @opts[:top])
