@@ -107,6 +107,39 @@ def extract_rename_copy_file(commit, line)
   return true
 end
 
+def print_summary(sort_type, n=0)
+  data = @commits.author_top_n_type(@opts[:email], sort_type, n)
+
+  # Find the longest name/email (used for string formatting)
+  total_authors = @commits.author_list.length
+  author_length = 17
+  data.each do |key,value|
+    author_length = key.length if key.length > author_length
+  end
+
+  # Print header information
+  if n > 0 and n < total_authors
+    puts "Top #{n} authors(#{total_authors}) sorted by #{sort_type.to_s}\n\n"
+  else
+    puts "All authors(#{total_authors}) sorted by #{sort_type.to_s}\n\n"
+  end
+
+  pattern = "%-#{author_length}s|%7s|%10s|%9s|%7s|%7s|%7s|%6s|%6s|"
+  puts pattern % ['Name/email', 'commits', 'insertions', 'deletions', 'creates', 'deletes', 'renames', 'copies', 'merges']
+  puts "-"*68 + "-"*author_length
+
+  data.each do |key,value|
+    puts pattern % [key, value[:commits], value[:insertions], value[:deletions],
+         value[:creates], value[:deletes], value[:renames], value[:copies], value[:merges]]
+  end
+
+  puts "-"*68 + "-"*author_length
+  puts pattern % ["Repository Totals", @commits.totals[:commits],
+       @commits.totals[:insertions], @commits.totals[:deletions], @commits.totals[:creates],
+       @commits.totals[:deletes], @commits.totals[:renames], @commits.totals[:copies], @commits.totals[:merges]]
+
+end
+
 @opts = Trollop::options do
   opt :email, "Use author's email instead of name", :default => false
   opt :merges, "Factor in merges when calculating statistics", :default => false
@@ -136,5 +169,4 @@ end
 
 @commits.calculate_statistics(@opts[:email], @opts[:merges])
 
-ap "Top Author - Commits"
-ap @commits.author_top_n_type(@opts[:email], :commits, 1)
+print_summary(:commits, 10)

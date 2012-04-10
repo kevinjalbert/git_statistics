@@ -1,6 +1,6 @@
 class Commits < Hash
 
-  attr_accessor :data_authors, :data_authors_email
+  attr_accessor :author_list, :data_authors, :data_authors_email, :totals
 
   def initalize
     super
@@ -31,15 +31,13 @@ class Commits < Hash
     # Use email or not for authors
     if email
       type = :author_email
-      author_list = authors_email
     else
       type = :author
-      author_list = authors
     end
 
     # Initialize the stats hash
     stats = Hash.new
-    author_list.each do |author|
+    @author_list.each do |author|
       stats[author] = Hash.new
       stats[author][:commits] = 0
       stats[author][:insertions] = 0
@@ -83,8 +81,34 @@ class Commits < Hash
   end
 
   def calculate_statistics(email, merge)
+
+    # Identify all authors
+    if email
+      @author_list = authors_email
+    else
+      @author_list = authors
+    end
+
+    # Calculate author statistics
     @data_authors_email = authors_statistics(true, merge) if email
     @data_authors = authors_statistics(false, merge) if not email
+
+    # Calculate totals
+    @totals = Hash.new(0)
+    self.each do |key,value|
+      if not merge and value[:merge]
+        next
+      else
+        @totals[:merges] += 1 if value[:merge]
+        @totals[:commits] += 1
+        @totals[:insertions] += value[:insertions]
+        @totals[:deletions] += value[:deletions]
+        @totals[:creates] += value[:creates]
+        @totals[:deletes] += value[:deletes]
+        @totals[:renames] += value[:renames]
+        @totals[:copies] += value[:copies]
+      end
+    end
   end
 end
 
