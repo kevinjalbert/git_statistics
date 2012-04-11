@@ -4,6 +4,7 @@ require File.dirname(__FILE__) + '/initialize.rb'
   opt :email, "Use author's email instead of name", :default => false
   opt :merges, "Factor in merges when calculating statistics", :default => false
   opt :save, "Save the commits as commits.json", :default => false
+  opt :pretty, "Pretty print saved commits (larger file size)", :default => false
   opt :load, "Load commits.json instead of re-collecting data", :default => false
   opt :update, "Update commits.json with new data (same as save and load together)", :default => false
   opt :sort, "Sort authors by {commits, insertions, deletions, creates, deletes, renames, copies, merges}", :default => "commits"
@@ -27,7 +28,7 @@ end
 
 # Save data
 if @opts[:save] || @opts[:update]
-  collector.commits.save("commits.json")
+  collector.commits.save("commits.json", @opts[:pretty])
 end
 
 collector.commits.calculate_statistics(@opts[:email], @opts[:merges])

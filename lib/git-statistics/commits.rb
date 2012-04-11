@@ -28,10 +28,12 @@ class Commits < Hash
 
   def authors_statistics(email, merge)
 
-    # Use email or not for authors
+    # Identify authors and author type
     if email
+      @author_list = authors_email
       type = :author_email
     else
+      @author_list = authors
       type = :author
     end
 
@@ -76,18 +78,11 @@ class Commits < Hash
       data = @data_authors
     end
 
-    return nil if not data.first[1].has_key?(type)
+    return nil if data == nil || !data.first[1].has_key?(type)
     return data.sorted_hash {|a,b| b[1][type.to_sym] <=> a[1][type]}.to_a[0..n-1]
   end
 
   def calculate_statistics(email, merge)
-
-    # Identify all authors
-    if email
-      @author_list = authors_email
-    else
-      @author_list = authors
-    end
 
     # Calculate author statistics
     @data_authors_email = authors_statistics(true, merge) if email
@@ -115,8 +110,12 @@ class Commits < Hash
     self.merge!(JSON.parse(File.read(file), :symbolize_names => true))
   end
 
-  def save(file)
-    File.open(file, 'w') {|file| file.write(self.to_json)}
+  def save(file, pretty)
+    if pretty
+      File.open(file, 'w') {|file| file.write(JSON.pretty_generate(self))}
+    else
+      File.open(file, 'w') {|file| file.write(self.to_json)}
+    end
   end
 end
 
