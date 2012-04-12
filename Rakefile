@@ -1,5 +1,8 @@
+#!/usr/bin/env rake
+
 require 'rake/clean'
 require 'rspec/core/rake_task'
+require "bundler/gem_tasks"
 
 CLOBBER.include('coverage')
 
