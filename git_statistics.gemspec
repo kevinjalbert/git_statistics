@@ -2,7 +2,7 @@
 require File.expand_path('../lib/git_statistics/version', __FILE__)
 
 Gem::Specification.new do |gem|
-  gem.homepage      = 'https://github.com/kevinjalbert/git-statistics'
+  gem.homepage      = 'https://github.com/kevinjalbert/git_statistics'
   gem.authors       = ["Kevin Jalbert"]
   gem.email         = ["kevin.j.jalbert@gmail.com"]
   gem.name          = 'git_statistics'
