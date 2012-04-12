@@ -1,7 +1,9 @@
 # Instructions
 
 1. Clone the repository
-2. Run `ruby git-statistics`
+2. Build gem `gem build git_statistics.gemspec`
+3. Install gem `gem install ./git_statistics-<version>.gem`
+4. Run `git_statistics` in any directory that is a git repository (use -h for options)
 
 # Statistics
 
