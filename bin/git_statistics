@@ -2,4 +2,4 @@
 
 require 'git_statistics'
 
-GitStatistics.new(ARGV).execute
+GitStatistics::GitStatistics.new(ARGV).execute
