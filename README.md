@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/kevinjalbert/git_statistics.png?branch=master)](http://travis-ci.org/kevinjalbert/git_statistics)
+
 # Instructions
 
 1. Clone the repository
