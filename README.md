@@ -1,4 +1,5 @@
 [![Build Status](https://secure.travis-ci.org/kevinjalbert/git_statistics.png?branch=master)](http://travis-ci.org/kevinjalbert/git_statistics)
+[![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/kevinjalbert/git_statistics)
 
 # Instructions
 
