@@ -26,7 +26,7 @@ This gem will analyze every commit within a git repository using `git log` and [
 * Total file renames
 * Total file copies
 
-This gem also uses [github/linguist](https://github.com/github/linguist) to determine the langugae of each individual file within commits. This augments the reported statistics by breaking down the author's statistics by languages.
+This gem also uses [github/linguist](https://github.com/github/linguist) to determine the language of each individual file within commits. This augments the reported statistics by breaking down the author's statistics by languages.
 
 This gem also has the ability to save the acquired data into a JSON file (in either a compressed or pretty format). If a saved file is present for the repository you can use the gem to load the data from the file, thus saving time for re-displaying the statistics using a different set of display flags (what statistic to sort on, number of authors to show, consider merges, etc...). In the event that a repository updates with new commits the gem allows you to update the saved file with the new commits.
 
