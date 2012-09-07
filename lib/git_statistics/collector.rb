@@ -24,8 +24,11 @@ module GitStatistics
     end
 
     def collect(branch, since="")
+      # Create pipe for git log to acquire branches
+      pipe = open("|git --no-pager branch --no-color")
+
       # Collect branches to use for git log
-      branches = collect_branches
+      branches = collect_branches(pipe)
       branches = ["", ""] if branch
 
       # Create pipe for the git log to acquire commits
@@ -52,10 +55,7 @@ module GitStatistics
       extract_commit(buffer) if not buffer.empty?
     end
 
-    def collect_branches
-      # Create pipe for git log to acquire branches
-      pipe = open("|git --no-pager branch --no-color")
-
+    def collect_branches(pipe)
       # Acquire all availble branches from repository
       branches = []
       pipe.each do |line|
