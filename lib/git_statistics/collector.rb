@@ -240,17 +240,8 @@ module GitStatistics
       data[:files] << file_hash
     end
 
-    def clean_string(file_name)
-      #if file_name.include?("foo")
-      #blob = @repo.tree("1ec5c2674fd792e8f9ddbff5afcacc3e1f7c506d") / "actionpack" / "test" / "fixtures" / "public" / "foo"
-      #ap "=-=-=-=-=-=-="
-      #ap file_name
-      #ap "--------------------"
-      #ap blob.contents[2].name
-      #ap "=-=-=-=-=-=-="
-      #end
-      # Clean up a string and force utf-8 encoding
-      return file_name.strip.gsub('"', '').gsub("\\\\", "\\").force_encoding("utf-8")
+    def clean_string(string)
+      return string.strip.force_encoding("utf-8")
     end
 
     def extract_change_file(line)
