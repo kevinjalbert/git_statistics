@@ -10,3 +10,13 @@ group :test do
   gem "rspec"
   gem "rake"
 end
+
+group :development do
+  gem "guard"
+  gem "guard-rspec"
+end
+
+group :darwin do
+  gem "rb-fsevent"
+  gem "terminal-notifier-guard"
+end
