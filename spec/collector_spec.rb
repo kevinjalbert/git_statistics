@@ -134,4 +134,46 @@ describe Collector do
       it {files[:new_file].should == "lib/dir/file.rb"}
     end
   end
+
+  describe "#identify_changed_files" do
+    collector = Collector.new(false)
+
+    context "with all types (create,delete,rename,copy) of files" do
+
+      # Create buffer which is an array of cleaned lines
+      buffer = []
+      fixture("raw_commit_buffer.txt").readlines.each do |line|
+        buffer << collector.clean_string(line)
+      end
+
+      files = collector.identify_changed_files(buffer)
+      it {files.size.should == 5}
+
+      it {files[0][:additions].should == 45}
+      it {files[0][:deletions].should == 1}
+      it {files[0][:file].should == "dir/README"}
+
+      it {files[1][:additions].should == 6}
+      it {files[1][:deletions].should == 5}
+      it {files[1][:old_file].should == "dir/lib/old_dir/copy_file.rb"}
+      it {files[1][:file].should == "dir/lib/new_dir/copy_file.rb"}
+      it {files[1][:status].should == "copy"}
+
+      it {files[2][:additions].should == 0}
+      it {files[2][:deletions].should == 0}
+      it {files[2][:old_file].should == "dir/lib/rename/old_file.rb"}
+      it {files[2][:file].should == "dir/lib/rename/new_file.rb"}
+      it {files[2][:status].should == "rename"}
+
+      it {files[3][:additions].should == 0}
+      it {files[3][:deletions].should == 127}
+      it {files[3][:file].should == "dir/lib/delete_file.rb"}
+      it {files[3][:status].should == "delete"}
+
+      it {files[4][:additions].should == 60}
+      it {files[4][:deletions].should == 0}
+      it {files[4][:file].should == "dir/lib/create_file.rb"}
+      it {files[4][:status].should == "create"}
+    end
+  end
 end
