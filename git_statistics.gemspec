@@ -17,4 +17,6 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = '>= 1.9.1'
   gem.add_dependency('json')
   gem.add_dependency('trollop')
+  gem.add_dependency('grit')
+  gem.add_dependency('github-linguist')
 end

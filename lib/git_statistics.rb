@@ -10,14 +10,15 @@ module GitStatistics
         opt :pretty, "Pretty print saved commits (larger file size)", :default => false
         opt :load, "Load commits.json instead of re-collecting data", :default => false
         opt :update, "Update commits.json with new data (same as save and load together)", :default => false
-        opt :sort, "Sort authors by {commits, insertions, deletions, creates, deletes, renames, copies, merges}", :default => "commits"
+        opt :sort, "Sort authors by {commits, additions, deletions, create, delete, rename, copy, merges}", :default => "commits"
         opt :top, "Show the top N authors in results", :default => 0
         opt :branch, "Use current branch for statistics (otherwise all branches)", :default => false
+        opt :verbose, "Verbose output (shows progress)", :default => false
       end
     end
 
     def execute
-      collector = Collector.new
+      collector = Collector.new(@opts[:verbose])
 
       # Collect commit data
       if @opts[:load] || @opts[:update]
