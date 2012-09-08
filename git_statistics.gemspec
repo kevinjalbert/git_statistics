@@ -19,4 +19,5 @@ Gem::Specification.new do |gem|
   gem.add_dependency('trollop')
   gem.add_dependency('grit')
   gem.add_dependency('github-linguist')
+  gem.add_dependency('os')
 end

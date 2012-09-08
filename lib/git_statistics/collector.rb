@@ -23,7 +23,7 @@ module GitStatistics
       end
     end
 
-    def collect(branch, since="")
+    def collect(branch, time_since="", time_until="")
       # Create pipe for git log to acquire branches
       pipe = open("|git --no-pager branch --no-color")
 
@@ -34,7 +34,8 @@ module GitStatistics
       # Create pipe for the git log to acquire commits
       pipe = open("|git --no-pager log #{branches.join(' ')} --date=iso --reverse"\
                   " --no-color --find-copies-harder --numstat --encoding=utf-8 "\
-                  "--summary #{since} --format=\"%H,%an,%ae,%ad,%p\"")
+                  "--summary #{time_since} #{time_until} "\
+                  "--format=\"%H,%an,%ae,%ad,%p\"")
 
       # Use a buffer approach to queue up lines from the log for each commit
       buffer = []

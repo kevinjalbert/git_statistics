@@ -24,6 +24,7 @@ GEM
     listen (0.5.0)
     mime-types (1.19)
     multi_json (1.3.6)
+    os (0.9.6)
     posix-spawn (0.3.6)
     pygments.rb (0.2.13)
       rubypython (~> 0.5.3)
@@ -57,6 +58,7 @@ DEPENDENCIES
   guard
   guard-rspec
   json
+  os
   rake
   rb-fsevent
   rspec

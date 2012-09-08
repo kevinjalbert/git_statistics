@@ -4,6 +4,7 @@ gem "json"
 gem "trollop"
 gem "grit"
 gem "github-linguist"
+gem "os"
 
 group :test do
   gem "simplecov"
