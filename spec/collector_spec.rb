@@ -2,9 +2,10 @@ require File.dirname(__FILE__) + '/spec_helper'
 include GitStatistics
 
 describe Collector do
-  describe "#collect_branches" do
-    collector = Collector.new(false)
 
+  collector = Collector.new(false)
+
+  describe "#collect_branches" do
     context "with many branches" do
       branches = collector.collect_branches(fixture("git_many_branches.txt"))
       it {branches.size.should == 2}
@@ -20,8 +21,6 @@ describe Collector do
   end
 
   describe "#clean_string" do
-    collector = Collector.new(false)
-
     context "with trailling spaces" do
       unclean = "  master   "
       clean = collector.clean_string(unclean)
@@ -30,8 +29,6 @@ describe Collector do
   end
 
   describe "#extract_change_file" do
-    collector = Collector.new(false)
-
     context "with a simple changed file" do
       line =  "37	30	lib/file.rb"
       file = collector.extract_change_file(line)
@@ -60,8 +57,6 @@ describe Collector do
   end
 
   describe "#extract_create_delete_file" do
-    collector = Collector.new(false)
-
     context "with a create changed file" do
       line = "create mode 100644 lib/dir/file.rb"
       file = collector.extract_create_delete_file(line)
@@ -78,8 +73,6 @@ describe Collector do
   end
 
   describe "#extract_rename_copy_file" do
-    collector = Collector.new(false)
-
     context "with a rename changed file" do
       line = "rename lib/{old_dir => new_dir}/file.rb (100%)"
       file = collector.extract_rename_copy_file(line)
@@ -100,8 +93,6 @@ describe Collector do
   end
 
   describe "#split_old_new_file" do
-    collector = Collector.new(false)
-
     context "with a change in middle" do
       old = "lib/{old_dir"
       new = "new_dir}/file.rb"
@@ -135,14 +126,54 @@ describe Collector do
     end
   end
 
+  describe "#acquire_commit_data" do
+    context "no parent, first commit" do
+      collector.commits.clear
+      input = fixture("commit_buffer_information_first.txt").read
+      commit_data = collector.acquire_commit_data(input)
+      it {commit_data[:sha].should == "111111aa111a11111a11aa11aaaa11a111111a11"}
+      it {commit_data[:data][:author].should == "Test Author"}
+      it {commit_data[:data][:author_email].should == "author@test.com"}
+      it {commit_data[:data][:time].should == "2011-01-11 11:11:11 +0000"}
+      it {commit_data[:data][:merge].should be_false}
+    end
+
+    context "without merge, one parent" do
+      collector.commits.clear
+      input = fixture("commit_buffer_information.txt").read
+      commit_data = collector.acquire_commit_data(input)
+      it {commit_data[:sha].should == "111111aa111a11111a11aa11aaaa11a111111a11"}
+      it {commit_data[:data][:author].should == "Test Author"}
+      it {commit_data[:data][:author_email].should == "author@test.com"}
+      it {commit_data[:data][:time].should == "2011-01-11 11:11:11 +0000"}
+      it {commit_data[:data][:merge].should be_false}
+    end
+
+    context "with merge, two parents" do
+      collector.commits.clear
+      input = fixture("commit_buffer_information_with_merge.txt").read
+      commit_data = collector.acquire_commit_data(input)
+      it {commit_data[:sha].should == "111111aa111a11111a11aa11aaaa11a111111a11"}
+      it {commit_data[:data][:author].should == "Test Author"}
+      it {commit_data[:data][:author_email].should == "author@test.com"}
+      it {commit_data[:data][:time].should == "2011-01-11 11:11:11 +0000"}
+      it {commit_data[:data][:merge].should be_true}
+    end
+
+  end
+
   describe "#identify_changed_files" do
-    collector = Collector.new(false)
+    context "with no changes" do
+      buffer = []
+      files = collector.identify_changed_files(buffer)
+      it {files.size.should == 0}
+      it {files[0].should == nil}
+    end
 
     context "with all types (create,delete,rename,copy) of files" do
-
       # Create buffer which is an array of cleaned lines
       buffer = []
-      fixture("raw_commit_buffer.txt").readlines.each do |line|
+      fixture("commit_buffer_changes.txt").readlines.each do |line|
         buffer << collector.clean_string(line)
       end
 
@@ -176,4 +207,5 @@ describe Collector do
       it {files[4][:status].should == "create"}
     end
   end
+
 end

@@ -68,13 +68,12 @@ module GitStatistics
       return branches
     end
 
-    def extract_commit(buffer)
-      # Acquire general commit information
-      commit_info = buffer[0].split(',')
-      sha = commit_info[0]
+    def acquire_commit_data(line)
+      # Split up formated line
+      commit_info = line.split(',')
 
       # Initialize commit data
-      data = (@commits[sha] ||= Hash.new(0))
+      data = (@commits[commit_info[0]] ||= Hash.new(0))
       data[:author] = commit_info[1]
       data[:author_email] = commit_info[2]
       data[:time] = commit_info[3]
@@ -87,18 +86,25 @@ module GitStatistics
         data[:merge] = true
       end
 
-      puts "Extracting #{sha}" if @verbose
+      return {:sha => commit_info[0], :data => data}
+    end
+
+    def extract_commit(buffer)
+      # Acquire general commit information
+      commit_data = acquire_commit_data(buffer[0])
+
+      puts "Extracting #{commit_data[:sha]}" if @verbose
 
       # Identify all changed files for this commit
-      files = identify_changed_files(buffer)
+      files = identify_changed_files(buffer[2..-1])
 
       # Acquire blob for each changed file and process it
       files.each do |file|
-        blob = get_blob(sha, file)
+        blob = get_blob(commit_data[:sha], file)
 
         # Only process blobs, otherwise log problematic file/blob
         if blob.instance_of?(Grit::Blob)
-          process_blob(data, blob, file)
+          process_blob(commit_data[:data], blob, file)
         else
           puts "Problem processing file #{file[:file]}"
         end
@@ -124,53 +130,49 @@ module GitStatistics
     end
 
     def identify_changed_files(buffer)
-      # If the buffer is larger than 2 lines then we have per-file details to process
+      # For each modification extract the details
       changed_files = []
-      if buffer.size > 2
+      buffer.each do |line|
 
-        # For each modification extract the details
-        buffer[2..-1].each do |line|
+        # Extract changed file information if it exists
+        data = extract_change_file(line)
+        if data != nil
+          changed_files << data
+          next  # This line is processed, skip to next
+        end
 
-          # Extract changed file information if it exists
-          data = extract_change_file(line)
-          if data != nil
-            changed_files << data
-            next  # This line is processed, skip to next
-          end
-
-          # Extract details of create/delete files if it exists
-          data = extract_create_delete_file(line)
-          if data != nil
-            augmented = false
-            # Augment changed file with create/delete information if possible
-            changed_files.each do |file|
-              if file[:file] == data[:file]
-                file[:status] = data[:status]
-                augmented = true
-                break
-              end
+        # Extract details of create/delete files if it exists
+        data = extract_create_delete_file(line)
+        if data != nil
+          augmented = false
+          # Augment changed file with create/delete information if possible
+          changed_files.each do |file|
+            if file[:file] == data[:file]
+              file[:status] = data[:status]
+              augmented = true
+              break
             end
-            changed_files << data if !augmented
-            next  # This line is processed, skip to next
           end
+          changed_files << data if !augmented
+          next  # This line is processed, skip to next
+        end
 
-          # Extract details of rename/copy files if it exists
-          data = extract_rename_copy_file(line)
-          if data != nil
-            augmented = false
-            # Augment changed file with rename/copy information if possible
-            changed_files.each do |file|
-              if file[:file] == data[:new_file]
-                file[:status] = data[:status]
-                file[:old_file] = data[:old_file]
-                file[:similar] = data[:similar]
-                augmented = true
-                break
-              end
+        # Extract details of rename/copy files if it exists
+        data = extract_rename_copy_file(line)
+        if data != nil
+          augmented = false
+          # Augment changed file with rename/copy information if possible
+          changed_files.each do |file|
+            if file[:file] == data[:new_file]
+              file[:status] = data[:status]
+              file[:old_file] = data[:old_file]
+              file[:similar] = data[:similar]
+              augmented = true
+              break
             end
-            changed_files << data if !augmented
-            next  # This line is processed, skip to next
           end
+          changed_files << data if !augmented
+          next  # This line is processed, skip to next
         end
       end
       return changed_files
