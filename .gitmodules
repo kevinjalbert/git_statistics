@@ -1,0 +1,3 @@
+[submodule "Spoon-Knife"]
+	path = Spoon-Knife
+	url = git://github.com/octocat/Spoon-Knife.git
