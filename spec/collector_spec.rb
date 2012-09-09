@@ -20,14 +20,6 @@ describe Collector do
     end
   end
 
-  describe "#clean_string" do
-    context "with trailling spaces" do
-      unclean = "  master   "
-      clean = collector.clean_string(unclean)
-      it {clean.should == "master"}
-    end
-  end
-
   describe "#extract_change_file" do
     context "with a simple changed file" do
       line =  "37	30	lib/file.rb"
@@ -92,40 +84,6 @@ describe Collector do
     end
   end
 
-  describe "#split_old_new_file" do
-    context "with a change in middle" do
-      old = "lib/{old_dir"
-      new = "new_dir}/file.rb"
-      files = collector.split_old_new_file(old, new)
-      it {files[:old_file].should == "lib/old_dir/file.rb"}
-      it {files[:new_file].should == "lib/new_dir/file.rb"}
-    end
-
-    context "with a change at beginning" do
-      old = "{src/dir/lib"
-      new = "lib/dir}/file.rb"
-      files = collector.split_old_new_file(old, new)
-      it {files[:old_file].should == "src/dir/lib/file.rb"}
-      it {files[:new_file].should == "lib/dir/file.rb"}
-    end
-
-    context "with a change at ending" do
-      old = "lib/dir/{old_file.rb"
-      new = "new_file.rb}"
-      files = collector.split_old_new_file(old, new)
-      it {files[:old_file].should == "lib/dir/old_file.rb"}
-      it {files[:new_file].should == "lib/dir/new_file.rb"}
-    end
-
-    context "with a simple complete change" do
-      old = "file.rb"
-      new = "lib/dir/file.rb}"
-      files = collector.split_old_new_file(old, new)
-      it {files[:old_file].should == "file.rb"}
-      it {files[:new_file].should == "lib/dir/file.rb"}
-    end
-  end
-
   describe "#acquire_commit_data" do
     context "no parent, first commit" do
       collector.commits.clear
@@ -159,7 +117,6 @@ describe Collector do
       it {commit_data[:data][:time].should == "2011-01-11 11:11:11 +0000"}
       it {commit_data[:data][:merge].should be_true}
     end
-
   end
 
   describe "#identify_changed_files" do
@@ -174,7 +131,7 @@ describe Collector do
       # Create buffer which is an array of cleaned lines
       buffer = []
       fixture("commit_buffer_changes.txt").readlines.each do |line|
-        buffer << collector.clean_string(line)
+        buffer << Utilities.clean_string(line)
       end
 
       files = collector.identify_changed_files(buffer)

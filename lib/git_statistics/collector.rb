@@ -6,16 +6,7 @@ module GitStatistics
     def initialize(verbose)
       @commits = Commits.new
       @verbose = verbose
-
-      # Connect to git repository if it exists
-      directory = Pathname.new(Dir.pwd)
-      while @repo == nil && !directory.root? do
-        begin
-          @repo = Grit::Repo.new(directory)
-        rescue
-          directory = directory.parent
-        end
-      end
+      @repo = Utilities.get_repository
 
       # Abort if no git repository is found
       if @repo == nil
@@ -41,7 +32,7 @@ module GitStatistics
       buffer = []
       pipe.each do |line|
 
-        line = clean_string(line)
+        line = Utilities.clean_string(line)
 
         # Extract the buffer (commit) when we match ','x5 in the log format (delimeter)
         if line.split(',').size == 5
@@ -63,7 +54,7 @@ module GitStatistics
 
         # Remove the '*' leading the current branch
         line = line[1..-1] if line[0] == '*'
-        branches << clean_string(line)
+        branches << Utilities.clean_string(line)
       end
 
       return branches
@@ -117,7 +108,7 @@ module GitStatistics
       file = file[:file].split(File::Separator)
 
       # Acquire blob of the file for this specific commit
-      blob = find_blob_in_tree(sha, @repo.tree(sha), file)
+      blob = Utilities.find_blob_in_tree(@repo.tree(sha), file)
 
       # If we cannot find blob in current commit (deleted file), check previous commit
       if blob == nil || blob.instance_of?(Grit::Tree)
@@ -125,7 +116,7 @@ module GitStatistics
         return nil if prev_commit == nil
 
         prev_tree = @repo.tree(prev_commit.id)
-        blob = find_blob_in_tree(prev_commit.id, prev_tree, file)
+        blob = Utilities.find_blob_in_tree(prev_tree, file)
       end
       return blob
     end
@@ -179,38 +170,6 @@ module GitStatistics
       return changed_files
     end
 
-    def find_blob_in_tree(sha, tree, file)
-      # Check If cannot find tree in commit or if we found a submodule as the changed file
-      if tree == nil
-        return nil
-      elsif tree.instance_of?(Grit::Submodule)
-        return tree
-      end
-
-      # If the blob is within the current directory (tree)
-      if file.size == 1
-        blob = tree / file.first
-
-        # Check if blob is nil (could not find changed file in tree)
-        if blob == nil
-
-          # Try looking for submodules as they cannot be found using tree / file notation
-          tree.contents.each do |content|
-            if file.first == content.name
-              return nil
-            end
-          end
-
-          # Exit through recusion with the base case of a nil tree/blob
-          return find_blob_in_tree(sha, blob, file)
-        end
-        return blob
-      else
-        # Explore deeper in the tree to find the blob of the changed file
-        return find_blob_in_tree(sha, tree / file.first, file[1..-1])
-      end
-    end
-
     def process_blob(data, blob, file)
       # Initialize a hash to hold information regarding the file
       file_hash = Hash.new(0)
@@ -243,20 +202,16 @@ module GitStatistics
       data[:files] << file_hash
     end
 
-    def clean_string(string)
-      return string.strip.force_encoding("utf-8")
-    end
-
     def extract_change_file(line)
       # Use regex to detect a rename/copy changed file | 1  2  /path/{test => new}/file.txt
       changes = line.scan(/^([-|\d]+)\s+([-|\d]+)\s+(.+)\s+=>\s+(.+)/)[0]
       if changes != nil and changes.size == 4
         # Split up the file into the old and new file
-        split_file = split_old_new_file(changes[2], changes[3])
+        split_file = Utilities.split_old_new_file(changes[2], changes[3])
         return {:additions => changes[0].to_i,
                 :deletions => changes[1].to_i,
-                :file => clean_string(split_file[:new_file]),
-                :old_file => clean_string(split_file[:old_file])}
+                :file => Utilities.clean_string(split_file[:new_file]),
+                :old_file => Utilities.clean_string(split_file[:old_file])}
       end
 
       # Use regex to detect a changed file | 1  2  /path/test/file.txt
@@ -264,7 +219,7 @@ module GitStatistics
       if changes != nil and changes.size == 3
         return {:additions => changes[0].to_i,
                 :deletions => changes[1].to_i,
-                :file => clean_string(changes[2])}
+                :file => Utilities.clean_string(changes[2])}
       end
       return nil
     end
@@ -273,8 +228,8 @@ module GitStatistics
       # Use regex to detect a create/delete file | create mode 100644 /path/test/file.txt
       changes = line.scan(/^(create|delete) mode \d+ ([^\\\n]*)/)[0]
       if changes != nil and changes.size == 2
-        return {:status => clean_string(changes[0]),
-                :file => clean_string(changes[1])}
+        return {:status => Utilities.clean_string(changes[0]),
+                :file => Utilities.clean_string(changes[1])}
       end
       return nil
     end
@@ -284,35 +239,13 @@ module GitStatistics
       changes = line.scan(/^(rename|copy)\s+(.+)\s+=>\s+(.+)\s+\((\d+)/)[0]
       if changes != nil and changes.size == 4
         # Split up the file into the old and new file
-        split_file = split_old_new_file(changes[1], changes[2])
-        return {:status => clean_string(changes[0]),
-                :old_file => clean_string(split_file[:old_file]),
-                :new_file => clean_string(split_file[:new_file]),
+        split_file = Utilities.split_old_new_file(changes[1], changes[2])
+        return {:status => Utilities.clean_string(changes[0]),
+                :old_file => Utilities.clean_string(split_file[:old_file]),
+                :new_file => Utilities.clean_string(split_file[:new_file]),
                 :similar => changes[3].to_i}
       end
       return nil
-    end
-
-    def split_old_new_file(old, new)
-      # Split the old and new chunks up (separted by the =>)
-      split_old = old.split('{')
-      split_new = new.split('}')
-
-      # Handle recombine the file splits into their whole paths)
-      if split_old.size == 1 && split_new.size == 1
-        old_file = split_old[0]
-        new_file = split_new[0]
-      elsif split_new.size == 1
-        old_file = split_old[0] + split_old[1]
-        new_file = split_old[0] + split_new[0]
-      else
-        old_file = split_old[0] + split_old[1] + split_new[1]
-        new_file = split_old[0] + split_new[0] + split_new[1]
-      end
-
-      # Return files, yet remove the '//' if present from combining splits
-      return {:old_file => old_file.gsub('//', '/'),
-              :new_file => new_file.gsub('//', '/')}
     end
 
     def print_summary(sort_type, email, n=0)
