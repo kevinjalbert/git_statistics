@@ -1,6 +1,6 @@
 module GitStatistics
   module Utilities
-    def self.get_repository(path=File.dirname(__FILE__))
+    def self.get_repository(path=Dir.pwd)
       # Connect to git repository if it exists
       directory = Pathname.new(path)
       repo = nil
