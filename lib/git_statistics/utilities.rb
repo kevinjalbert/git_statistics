@@ -15,7 +15,7 @@ module GitStatistics
     end
 
     def self.clean_string(string)
-      return string.strip.force_encoding("utf-8")
+      return string.strip.force_encoding("iso-8859-1").encode("utf-8")
     end
 
     def self.split_old_new_file(old, new)

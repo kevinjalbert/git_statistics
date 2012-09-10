@@ -40,7 +40,7 @@ module GitStatistics
           buffer = []
         end
 
-        buffer << line.strip
+        buffer << line
       end
 
       # Extract the last commit
@@ -48,7 +48,7 @@ module GitStatistics
     end
 
     def collect_branches(pipe)
-      # Acquire all availble branches from repository
+      # Acquire all available branches from repository
       branches = []
       pipe.each do |line|
 
@@ -71,7 +71,7 @@ module GitStatistics
       data[:time] = commit_info[3]
       data[:files] = []
 
-      # Flag commit as merge if nessecary (determined if two parents)
+      # Flag commit as merge if necessary (determined if two parents)
       if commit_info[4] == nil or commit_info[4].split(' ').size == 1
         data[:merge] = false
       else
@@ -90,20 +90,26 @@ module GitStatistics
       # Identify all changed files for this commit
       files = identify_changed_files(buffer[2..-1])
 
+      # No files were changed in this commit, abort commit
+      if files == nil
+        puts "No files were changed"
+        return
+      end
+
       # Acquire blob for each changed file and process it
       files.each do |file|
         blob = get_blob(commit_data[:sha], file)
 
-        # Only process blobs, otherwise log problematic file/blob
+        # Only process blobs, or log the submodules and problematic files
         if blob.instance_of?(Grit::Blob)
           process_blob(commit_data[:data], blob, file)
         elsif blob.instance_of?(Grit::Submodule)
-          # Ignore submodules themselves
           puts "Ignoring submodule #{blob.name}"
         else
           puts "Problem processing file #{file[:file]}"
         end
       end
+      return commit_data[:data]
     end
 
     def get_blob(sha, file)
@@ -125,6 +131,8 @@ module GitStatistics
     end
 
     def identify_changed_files(buffer)
+      return buffer if buffer == nil
+
       # For each modification extract the details
       changed_files = []
       buffer.each do |line|
