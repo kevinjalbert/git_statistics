@@ -199,6 +199,8 @@ module GitStatistics
         file_hash[:language] = blob.language.name
       end
       data[:files] << file_hash
+
+      return data
     end
 
     def extract_change_file(line)

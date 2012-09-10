@@ -165,4 +165,113 @@ describe Collector do
     end
   end
 
+  describe "#get_blob" do
+    sha = "695b487432e8a1ede765b4e3efda088ab87a77f8"  # Commit within repository
+
+    context "with valid blob" do
+      file = {:file => "Gemfile.lock"}
+      blob = collector.get_blob(sha, file)
+
+      it {blob.instance_of?(Grit::Blob).should be_true}
+      it {blob.name.should == file[:file].split(File::Separator).last}
+    end
+
+    context "with invalid blob" do
+      file = {:file => "dir/nothing.rb"}
+      blob = collector.get_blob(sha, file)
+
+      it {blob.should == nil}
+    end
+
+    context "with deleted file" do
+      file = {:file => "spec/collector_spec.rb"}
+      blob = collector.get_blob(sha, file)
+
+      it {blob.instance_of?(Grit::Blob).should be_true}
+      it {blob.name.should == file[:file].split(File::Separator).last}
+    end
+  end
+
+  describe "#process_blob" do
+    sha = "695b487432e8a1ede765b4e3efda088ab87a77f8"  # Commit within repository
+
+    context "with status (delete) blob" do
+      file = {:file => "spec/collector_spec.rb",
+              :additions => 0,
+              :deletions => 6,
+              :status => "delete"}
+
+      blob = collector.get_blob(sha, file)
+      data = Hash.new(0)
+      data[:files] = []
+      data = collector.process_blob(data, blob, file)
+      data_file = data[:files].first
+
+      it {data[:additions].should == file[:additions]}
+      it {data[:deletions].should == file[:deletions]}
+
+      it {data_file[:name].should == file[:file]}
+      it {data_file[:additions].should == file[:additions]}
+      it {data_file[:deletions].should == file[:deletions]}
+      it {data_file[:status].should == file[:status]}
+      it {data_file[:binary].should == false}
+      it {data_file[:image].should == false}
+      it {data_file[:vendored].should == false}
+      it {data_file[:generated].should == false}
+      it {data_file[:language].should == "Ruby"}
+    end
+
+    context "with invalid language blob" do
+      file = {:file => "Gemfile.lock",
+              :additions => 33,
+              :deletions => 11,
+              :status => nil}
+
+      blob = collector.get_blob(sha, file)
+      data = Hash.new(0)
+      data[:files] = []
+      data = collector.process_blob(data, blob, file)
+      data_file = data[:files].first
+
+      it {data[:additions].should == file[:additions]}
+      it {data[:deletions].should == file[:deletions]}
+
+      it {data_file[:name].should == file[:file]}
+      it {data_file[:additions].should == file[:additions]}
+      it {data_file[:deletions].should == file[:deletions]}
+      it {data_file[:status].should == nil}
+      it {data_file[:binary].should == false}
+      it {data_file[:image].should == false}
+      it {data_file[:vendored].should == false}
+      it {data_file[:generated].should == true}
+      it {data_file[:language].should == "Unknown"}
+    end
+
+    context "with valid language blob" do
+      file = {:file => "README.md",
+              :additions => 7,
+              :deletions => 3,
+              :status => nil}
+
+      blob = collector.get_blob(sha, file)
+      data = Hash.new(0)
+      data[:files] = []
+      data = collector.process_blob(data, blob, file)
+      data_file = data[:files].first
+
+      it {data[:additions].should == file[:additions]}
+      it {data[:deletions].should == file[:deletions]}
+
+      it {data_file[:name].should == file[:file]}
+      it {data_file[:additions].should == file[:additions]}
+      it {data_file[:deletions].should == file[:deletions]}
+      it {data_file[:status].should == nil}
+      it {data_file[:binary].should == false}
+      it {data_file[:image].should == false}
+      it {data_file[:vendored].should == false}
+      it {data_file[:generated].should == false}
+      it {data_file[:language].should == "Markdown"}
+    end
+  end
+
 end
