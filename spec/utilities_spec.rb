@@ -62,4 +62,43 @@ describe Utilities do
     end
   end
 
+  describe "find_blob_in_tree" do
+    repo = Utilities.get_repository(Dir.pwd)
+    sha = "7d6c29f0ad5860d3238debbaaf696e361bf8c541"  # Commit within repository
+    tree = repo.tree(sha)
+
+    context "blob on root tree" do
+      file = "Gemfile"
+      blob = Utilities.find_blob_in_tree(tree, file.split(File::Separator))
+      it {blob.instance_of?(Grit::Blob).should be_true}
+      it {blob.name.should == file}
+    end
+
+    context "blob down tree" do
+      file = "lib/git_statistics/collector.rb"
+      blob = Utilities.find_blob_in_tree(tree, file.split(File::Separator))
+      it {blob.instance_of?(Grit::Blob).should be_true}
+      it {blob.name.should == file.split(File::Separator).last}
+    end
+
+    context "file is nil" do
+      blob = Utilities.find_blob_in_tree(tree, nil)
+      it {blob.should == nil}
+    end
+
+    context "file is empty" do
+      blob = Utilities.find_blob_in_tree(tree, [""])
+      it {blob.should == nil}
+    end
+
+    context "file is submodule" do
+      sha = "1940ef1c613a04f855d3867b874a4267d3e2c011"
+      tree = repo.tree(sha)
+      file = "Spoon-Knife"
+      blob = Utilities.find_blob_in_tree(tree, file.split(File::Separator))
+      it {blob.instance_of?(Grit::Submodule).should be_true}
+      it {blob.name.should == file}
+    end
+  end
+
 end

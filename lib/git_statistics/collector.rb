@@ -97,6 +97,9 @@ module GitStatistics
         # Only process blobs, otherwise log problematic file/blob
         if blob.instance_of?(Grit::Blob)
           process_blob(commit_data[:data], blob, file)
+        elsif blob.instance_of?(Grit::Submodule)
+          # Ignore submodules themselves
+          puts "Ignoring submodule #{blob.name}"
         else
           puts "Problem processing file #{file[:file]}"
         end
@@ -183,21 +186,17 @@ module GitStatistics
       data[:additions] += file[:additions]
       data[:deletions] += file[:deletions]
 
-      # Handle submodule if present, otherwise acquire specifics on blob
-      if blob.instance_of?(Grit::Submodule)
-        file_hash[:language] = "Submodule"
-      else
-        file_hash[:binary] = blob.binary?
-        file_hash[:image] = blob.image?
-        file_hash[:vendored] = blob.vendored?
-        file_hash[:generated] = blob.generated?
+      # Acquire specifics on blob
+      file_hash[:binary] = blob.binary?
+      file_hash[:image] = blob.image?
+      file_hash[:vendored] = blob.vendored?
+      file_hash[:generated] = blob.generated?
 
-        # Identify the language of the blob if possible
-        if blob.language == nil
-          file_hash[:language] = "Unknown"
-        else
-          file_hash[:language] = blob.language.name
-        end
+      # Identify the language of the blob if possible
+      if blob.language == nil
+        file_hash[:language] = "Unknown"
+      else
+        file_hash[:language] = blob.language.name
       end
       data[:files] << file_hash
     end

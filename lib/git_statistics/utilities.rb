@@ -60,7 +60,7 @@ module GitStatistics
           # Try looking for submodules as they cannot be found using tree / file notation
           tree.contents.each do |content|
             if file.first == content.name
-              return nil
+              return tree
             end
           end
 
