@@ -30,6 +30,9 @@ module GitStatistics
       elsif split_new.size == 1
         old_file = split_old[0] + split_old[1]
         new_file = split_old[0] + split_new[0]
+      elsif split_old.size == 1
+        old_file = split_old[0] + split_new[1]
+        new_file = split_old[0] + split_new[0] + split_new[1]
       else
         old_file = split_old[0] + split_old[1] + split_new[1]
         new_file = split_old[0] + split_new[0] + split_new[1]

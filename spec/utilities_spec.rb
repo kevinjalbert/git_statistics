@@ -45,6 +45,14 @@ describe Utilities do
       it {files[:new_file].should == "lib/dir/file.rb"}
     end
 
+    context "with a change at beginning, alternative" do
+      old = "src/{"
+      new = "dir}/file.rb"
+      files = Utilities.split_old_new_file(old, new)
+      it {files[:old_file].should == "src/file.rb"}
+      it {files[:new_file].should == "src/dir/file.rb"}
+    end
+
     context "with a change at ending" do
       old = "lib/dir/{old_file.rb"
       new = "new_file.rb}"
