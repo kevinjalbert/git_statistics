@@ -20,6 +20,34 @@ describe Utilities do
     end
   end
 
+  describe "#unique_data_in_hash" do
+    type = "word".to_sym
+
+    context "with valid type" do
+      data = {:entry_a => {type => "test"},
+              :entry_b => {type => "a"},
+              :entry_c => {type => "a"},
+              :entry_d => {type => "is"},
+              :entry_e => {type => "test"}}
+
+      list = Utilities.unique_data_in_hash(data, type)
+
+      it {list.size.should == 3}
+      it {list.include?("is").should be_true}
+      it {list.include?("a").should be_true}
+      it {list.include?("test").should be_true}
+    end
+
+    context "with invalid type" do
+      data = {:entry_a => {:wrong => "test"},
+              :entry_e => {:wrong => "is"}}
+
+      list = Utilities.unique_data_in_hash(data, type)
+
+      it {list.should == [nil]}
+    end
+  end
+
   describe "#clean_string" do
     context "with trailling spaces" do
       unclean = "  master   "

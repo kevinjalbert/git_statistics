@@ -14,6 +14,16 @@ module GitStatistics
       end
     end
 
+    def self.unique_data_in_hash(data, type)
+      list = []
+      data.each do |key,value|
+        if not list.include?(value[type])
+          list << value[type]
+        end
+      end
+      return list
+    end
+
     def self.clean_string(string)
       return string.strip.force_encoding("iso-8859-1").encode("utf-8")
     end

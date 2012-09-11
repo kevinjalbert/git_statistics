@@ -12,22 +12,6 @@ module GitStatistics
       @totals[:languages] = {}
     end
 
-    def identify_authors
-      self.each do |key,value|
-        if not @author_list.include?(value[:author])
-          @author_list << value[:author]
-        end
-      end
-    end
-
-    def identify_authors_email
-      self.each do |key,value|
-        if not @author_list.include?(value[:author_email])
-          @author_list << value[:author_email]
-        end
-      end
-    end
-
     def author_top_n_type(type, n=0)
       n = 0 if n < 0
       return nil if @stats == nil || !@stats.first[1].has_key?(type)
@@ -38,12 +22,11 @@ module GitStatistics
 
       # Identify authors and author type
       if email
-        identify_authors_email
         type = :author_email
       else
-        identify_authors
         type = :author
       end
+      @author_list = Utilities.unique_data_in_hash(self, type)
 
       # Initialize the stats hash
       @author_list.each do |author|
