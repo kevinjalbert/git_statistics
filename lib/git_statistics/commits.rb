@@ -105,6 +105,7 @@ module GitStatistics
       data[:delete] += commit[:delete] if commit[:delete] != nil
       data[:rename] += commit[:rename] if commit[:rename] != nil
       data[:copy] += commit[:copy] if commit[:copy] != nil
+      return data
     end
 
     def load(file)
