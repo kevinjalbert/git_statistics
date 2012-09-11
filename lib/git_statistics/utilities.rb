@@ -76,6 +76,15 @@ module GitStatistics
         return find_blob_in_tree(tree / file.first, file[1..-1])
       end
     end
+
+    def self.get_modified_time(file)
+      if OS.mac?
+        Time.at(`stat -f %m commits.json`.to_i)
+      elsif OS.linux?
+        Time.at(`stat -c %Y commits.json`.to_i)
+      else
+        raise "Update on the Windows operating system is not supported"
+      end
+    end
   end
 end
-

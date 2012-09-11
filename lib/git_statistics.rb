@@ -29,7 +29,7 @@ module GitStatistics
 
       # Collect incremental recent data
       if @opts[:update]
-        time = get_modified_time("commit.json")
+        time = Utilities.get_modified_time("commit.json")
         collector.collect(@opts[:branch], "--since=\"#{time}\"")
       end
 
@@ -40,17 +40,9 @@ module GitStatistics
 
       collector.commits.calculate_statistics(@opts[:email], @opts[:merges])
 
-      collector.print_summary(@opts[:sort].to_sym, @opts[:email], @opts[:top])
-    end
-
-    def get_modified_time(file)
-      if OS.mac?
-        Time.at(`stat -f %m commits.json`.to_i)
-      elsif OS.linux?
-        Time.at(`stat -c %Y commits.json`.to_i)
-      else
-        raise "Update on the Windows operating system is not supported"
-      end
+      # Print results
+      results = Results.new(collector.commits)
+      results.print_summary(@opts[:sort], @opts[:email], @opts[:top])
     end
   end
 end
