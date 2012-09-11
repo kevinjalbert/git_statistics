@@ -165,6 +165,95 @@ describe Collector do
     end
   end
 
+  describe "#extract_commit" do
+    context "with valid buffer" do
+      collector.commits.clear
+      buffer = []
+      fixture("commit_buffer_whole.txt").readlines.each do |line|
+        buffer << Utilities.clean_string(line)
+      end
+      data = collector.extract_commit(buffer)
+
+      p data
+      it {data[:author].should == "Kevin Jalbert"}
+      it {data[:author_email].should == "kevin.j.jalbert@gmail.com"}
+      it {data[:time].should == "2012-04-12 14:13:56 -0400"}
+
+      it {data[:merge].should == false}
+      it {data[:additions].should == 30}
+      it {data[:deletions].should == 2}
+      it {data[:create].should == 1}
+
+      it {data[:files][0][:name].should == "Gemfile"}
+      it {data[:files][0][:additions].should == 0}
+      it {data[:files][0][:deletions].should == 1}
+      it {data[:files][0][:status].should == nil}
+      it {data[:files][0][:binary].should == false}
+      it {data[:files][0][:image].should == false}
+      it {data[:files][0][:vendored].should == false}
+      it {data[:files][0][:generated].should == false}
+      it {data[:files][0][:language].should == "Ruby"}
+
+      it {data[:files][1][:name].should == "Gemfile.lock"}
+      it {data[:files][1][:additions].should == 30}
+      it {data[:files][1][:deletions].should == 0}
+      it {data[:files][1][:status].should == "create"}
+      it {data[:files][1][:binary].should == false}
+      it {data[:files][1][:image].should == false}
+      it {data[:files][1][:vendored].should == false}
+      it {data[:files][1][:generated].should == true}
+      it {data[:files][1][:language].should == "Unknown"}
+
+      it {data[:files][2][:name].should == "lib/git_statistics/initialize.rb"}
+      it {data[:files][2][:additions].should == 0}
+      it {data[:files][2][:deletions].should == 1}
+      it {data[:files][2][:status].should == nil}
+      it {data[:files][2][:binary].should == false}
+      it {data[:files][2][:image].should == false}
+      it {data[:files][2][:vendored].should == false}
+      it {data[:files][2][:generated].should == false}
+      it {data[:files][2][:language].should == "Ruby"}
+    end
+
+    context "with buffer that has no file changes" do
+      collector.commits.clear
+      buffer = []
+      fixture("commit_buffer_information.txt").readlines.each do |line|
+        buffer << Utilities.clean_string(line)
+      end
+      data = collector.extract_commit(buffer)
+
+      it {data.should == nil}
+    end
+
+    context "with invalid buffer" do
+      collector.commits.clear
+      buffer = "invalid input"
+      data = collector.extract_commit(buffer)
+
+      it {data.should == nil}
+    end
+  end
+
+  describe "#fall_back_collect_commit" do
+    context "with valid sha" do
+      buffer = collector.fall_back_collect_commit("260bc61e2c42930d91f3503c5849b0a2351275cf")
+
+      # Create buffer which is an array of cleaned lines
+      expected = []
+      fixture("commit_buffer_whole.txt").readlines.each do |line|
+        expected << Utilities.clean_string(line)
+      end
+
+     it {buffer.should == expected}
+    end
+
+    context "with invalid sha" do
+      buffer = collector.fall_back_collect_commit("111111aa111a11111a11aa11aaaa11a111111a11")
+      it {buffer.should == nil}
+    end
+  end
+
   describe "#get_blob" do
     sha = "695b487432e8a1ede765b4e3efda088ab87a77f8"  # Commit within repository
 

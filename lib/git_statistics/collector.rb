@@ -36,6 +36,10 @@ module GitStatistics
 
         # Extract the buffer (commit) when we match ','x5 in the log format (delimeter)
         if line.split(',').size == 5
+
+          # Sometimes 'git log' doesn't populate the buffer, try fallback option if so
+          buffer = fall_back_collect_commit(line.split(',').first) if buffer.size == 1
+
           extract_commit(buffer) if not buffer.empty?
           buffer = []
         end
@@ -45,6 +49,28 @@ module GitStatistics
 
       # Extract the last commit
       extract_commit(buffer) if not buffer.empty?
+    end
+
+    def fall_back_collect_commit(sha)
+
+      # Create pipe for the git log to acquire commits
+      pipe = open("|git --no-pager show #{sha} --date=iso --reverse"\
+                  " --no-color --find-copies-harder --numstat --encoding=utf-8 "\
+                  "--summary --format=\"%H,%an,%ae,%ad,%p\"")
+
+      buffer = []
+      pipe.each do |line|
+        buffer << Utilities.clean_string(line)
+      end
+
+      # Check that the buffer has valid information (i.e., sha was valid)
+      if buffer.empty?
+        return nil
+      elsif buffer.first.split(',').first == sha
+        return buffer
+      else
+        return nil
+      end
     end
 
     def collect_branches(pipe)
@@ -86,6 +112,12 @@ module GitStatistics
       commit_data = acquire_commit_data(buffer[0])
 
       puts "Extracting #{commit_data[:sha]}" if @verbose
+
+      # Abort if the commit sha extracted form the buffer is invalid
+      if commit_data[:sha].scan(/[\d|a-f]{40}/)[0] == nil
+        puts "Invalid buffer containing commit information"
+        return
+      end
 
       # Identify all changed files for this commit
       files = identify_changed_files(buffer[2..-1])

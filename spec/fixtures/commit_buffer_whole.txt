@@ -1,0 +1,6 @@
+260bc61e2c42930d91f3503c5849b0a2351275cf,Kevin Jalbert,kevin.j.jalbert@gmail.com,2012-04-12 14:13:56 -0400,caf6716
+
+0	1	Gemfile
+30	0	Gemfile.lock
+0	1	lib/git_statistics/initialize.rb
+ create mode 100644 Gemfile.lock
