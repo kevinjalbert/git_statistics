@@ -4,6 +4,47 @@ include GitStatistics
 describe Commits do
   collector = Collector.new(false)
 
+  describe "#add_language_stats" do
+    file = {:additions => 10,
+            :deletions => 5}
+
+    context "with file language" do
+     commits = Commits.new
+     data = Hash.new(0)
+     data[:languages] = {}
+
+     file[:language] = "Ruby"
+
+     data = commits.add_language_stats(data, file)
+
+     it {data[:languages][:Ruby][:additions].should == 10}
+     it {data[:languages][:Ruby][:deletions].should == 5}
+    end
+
+    context "with multiple files" do
+     commits = Commits.new
+     data = Hash.new(0)
+     data[:languages] = {}
+
+     # First file is "Ruby"
+     file[:language] = "Ruby"
+     data = commits.add_language_stats(data, file)
+
+     # Second file is "Java"
+     file[:language] = "Java"
+     data = commits.add_language_stats(data, file)
+
+     # Third file is "Ruby"
+     file[:language] = "Ruby"
+     data = commits.add_language_stats(data, file)
+
+     it {data[:languages][:Ruby][:additions].should == 20}
+     it {data[:languages][:Ruby][:deletions].should == 10}
+     it {data[:languages][:Java][:additions].should == 10}
+     it {data[:languages][:Java][:deletions].should == 5}
+    end
+  end
+
   describe "#add_commit_stats" do
     commit = {:additions => 10,
               :deletions => 5,

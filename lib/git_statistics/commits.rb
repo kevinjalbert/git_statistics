@@ -90,9 +90,7 @@ module GitStatistics
       end
       data[:languages][file[:language].to_sym][:additions] += file[:additions]
       data[:languages][file[:language].to_sym][:deletions] += file[:deletions]
-      if file[:status] != nil || file[:status] == "submodule"
-        data[:languages][file[:language].to_sym][file[:status].to_sym] += 1
-      end
+      return data
     end
 
     def add_commit_stats(data, commit)
