@@ -7,26 +7,6 @@ module GitStatistics
       @commits = commits
     end
 
-    def find_longest_author(data)
-      # Find the longest author name/email (for string formatting)
-      total_authors = @commits.author_list.length
-      author_length = 17
-      data.each do |key,value|
-        author_length = key.length if key.length > author_length
-      end
-      return author_length
-    end
-
-    def find_longest_language(data)
-      # Find the longest language name (for string formatting)
-      total_language = @commits.language_list.length
-      language_length = 9
-      @commits.language_list.each do |key,value|
-        language_length = key.length if key.length > language_length
-      end
-      return language_length
-    end
-
     def prepare_result_summary(sort, email, top_n)
       # Default to a 0 if given a negative number to display
       top_n = 0 if top_n < 0
@@ -39,11 +19,11 @@ module GitStatistics
 
       # Create config
       config = {:data => data,
-                       :author_length => find_longest_author(data),
-                       :language_length => find_longest_language(data),
-                       :sort => sort,
-                       :email => email,
-                       :top_n => top_n}
+                :author_length => Utilities.find_longest_length(data, 17),
+                :language_length => Utilities.find_longest_length(@commits.language_list, 8),
+                :sort => sort,
+                :email => email,
+                :top_n => top_n}
 
       # Acquire formatting pattern for output
       pattern = "%-#{config[:author_length]}s | %-#{config[:language_length]}s | %7s | %9s | %9s | %7s | %7s | %7s | %6s | %6s |"

@@ -16,7 +16,7 @@ module GitStatistics
       top_n = 0 if top_n < 0
       return nil if @stats.size == 0
       return nil if !@stats.first[1].has_key?(type)
-      return @stats.sorted_hash {|a,b| b[1][type.to_sym] <=> a[1][type]}.to_a[0..top_n-1]
+      return Hash[*@stats.sorted_hash {|a,b| b[1][type.to_sym] <=> a[1][type]}.flatten[0..top_n-1]]
     end
 
     def calculate_statistics(email, merge)

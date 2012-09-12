@@ -14,6 +14,14 @@ module GitStatistics
       end
     end
 
+    def self.find_longest_length(list, max=nil)
+      return list if list == nil
+      list.each do |key,value|
+        max = key.length if max == nil || key.length > max
+      end
+      return max
+    end
+
     def self.unique_data_in_hash(data, type)
       list = []
       data.each do |key,value|

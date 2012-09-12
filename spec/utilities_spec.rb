@@ -20,6 +20,35 @@ describe Utilities do
     end
   end
 
+  describe "#find_longest_length" do
+    context "with empty list" do
+      results = Utilities.find_longest_length([])
+      it {results.should == nil}
+    end
+
+    context "with nil list" do
+      results = Utilities.find_longest_length(nil)
+      it {results.should == nil}
+    end
+
+    context "with preset minimum length" do
+      results = Utilities.find_longest_length([], 10)
+      it {results.should == 10}
+    end
+
+    context "with valid list" do
+      list = ["abc", "a", "ab"]
+      results = Utilities.find_longest_length(list)
+      it {results.should == 3}
+    end
+
+    context "with valid hash" do
+      list = {"a" => "word_a", "ab" => "word_b", "abc" => "word_c"}
+      results = Utilities.find_longest_length(list)
+      it {results.should == 3}
+    end
+  end
+
   describe "#unique_data_in_hash" do
     type = "word".to_sym
 
