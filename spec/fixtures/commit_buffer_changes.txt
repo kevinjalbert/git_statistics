@@ -1,0 +1,9 @@
+45	1	dir/README
+6	5	dir/lib/{old_dir => new_dir}/copy_file.rb
+0	0	dir/lib/rename/{old_file.rb => new_file.rb}
+0	127	dir/lib/delete_file.rb
+60	0	dir/lib/create_file.rb
+ copy dir/lib/{old_dir => new_dir}/copy_file.rb (65%)
+ rename dir/lib/rename/{old_file.rb => new_file.rb} (100%)
+ delete mode 100644 dir/lib/delete_file.rb
+ create mode 100644 dir/lib/create_file.rb
