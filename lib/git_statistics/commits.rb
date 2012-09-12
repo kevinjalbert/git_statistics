@@ -12,13 +12,20 @@ module GitStatistics
       @totals[:languages] = {}
     end
 
-    def author_top_n_type(type, n=0)
-      n = 0 if n < 0
-      return nil if @stats == nil || !@stats.first[1].has_key?(type)
-      return @stats.sorted_hash {|a,b| b[1][type.to_sym] <=> a[1][type]}.to_a[0..n-1]
+    def author_top_n_type(type, top_n=0)
+      top_n = 0 if top_n < 0
+      return nil if @stats.size == 0
+      return nil if !@stats.first[1].has_key?(type)
+      return @stats.sorted_hash {|a,b| b[1][type.to_sym] <=> a[1][type]}.to_a[0..top_n-1]
     end
 
     def calculate_statistics(email, merge)
+
+      # Check that there are statistics to calculate
+      if self.size == 0
+        puts "Cannot calculate statistics as there is no data"
+        return
+      end
 
       # Identify authors and author type
       if email
@@ -36,7 +43,7 @@ module GitStatistics
 
       # Collect the stats from each commit
       self.each do |key,value|
-        if not merge and value[:merge]
+        if !merge && value[:merge]
           next
         else
 
@@ -71,8 +78,14 @@ module GitStatistics
       if data[:languages][file[:language].to_sym] == nil
         data[:languages][file[:language].to_sym] = Hash.new(0)
       end
+
       data[:languages][file[:language].to_sym][:additions] += file[:additions]
       data[:languages][file[:language].to_sym][:deletions] += file[:deletions]
+
+      if file[:status] != nil
+        data[:languages][file[:language].to_sym][file[:status].to_sym] += 1
+      end
+
       return data
     end
 
