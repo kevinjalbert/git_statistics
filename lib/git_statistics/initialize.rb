@@ -2,6 +2,7 @@ require 'json'
 require 'trollop'
 require 'grit'
 require 'linguist'
+require 'os'
 require 'pathname'
 
 # Custom Blob for Grit to enable Linguist
