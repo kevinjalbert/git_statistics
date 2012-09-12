@@ -114,6 +114,30 @@ describe Results do
       it {config[:author_length].should == 17}
       it {config[:language_length].should == 8}
     end
-
   end
+
+  describe "#print_summary" do
+    context "with valid data" do
+      config = results.prepare_result_summary(sort, email)
+      language_data = results.print_summary(sort, email)
+      it {language_data.should == fixture("summary_output.txt").read}
+    end
+  end
+
+  describe "#print_language_data" do
+    context "with valid data" do
+      config = results.prepare_result_summary(sort, email)
+      language_data = results.print_language_data(config[:pattern], config[:data]["Kevin Jalbert"])
+      it {language_data.should == fixture("language_data_output.txt").read}
+    end
+  end
+
+  describe "#print_header" do
+    context "with valid data" do
+      config = results.prepare_result_summary(sort, email)
+      header = results.print_header(config)
+      it {header.should == fixture("header_output.txt").read}
+    end
+  end
+
 end

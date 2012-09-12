@@ -42,7 +42,7 @@ module GitStatistics
 
       # Print results
       results = Results.new(collector.commits)
-      results.print_summary(@opts[:sort], @opts[:email], @opts[:top])
+      puts results.print_summary(@opts[:sort], @opts[:email], @opts[:top])
     end
   end
 end

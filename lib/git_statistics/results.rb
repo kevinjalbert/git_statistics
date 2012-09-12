@@ -36,48 +36,60 @@ module GitStatistics
       config = prepare_result_summary(sort, email, top_n)
 
       # Print query/header information
-      print_header(config)
+      output = print_header(config)
 
       # Print per author information
       config[:data].each do |key,value|
-        puts config[:pattern] % [key, "", value[:commits], value[:additions],
+        output += config[:pattern] % [key, "", value[:commits], value[:additions],
                         value[:deletions], value[:create], value[:delete],
                         value[:rename], value[:copy], value[:merges]]
-        print_language_data(config[:pattern], value)
+        output += "\n"
+        output += print_language_data(config[:pattern], value)
       end
 
       # Reprint query/header for repository information
-      print_header(config)
+      output += "\n"
+      output += print_header(config)
       data = @commits.totals
-      puts config[:pattern] % ["Repository Totals", "", data[:commits],
+      output += config[:pattern] % ["Repository Totals", "", data[:commits],
                       data[:additions], data[:deletions], data[:create],
                       data[:delete], data[:rename], data[:copy], data[:merges]]
-      print_language_data(config[:pattern], data)
+      output += "\n"
+      output += print_language_data(config[:pattern], data)
+      return output
     end
 
     def print_language_data(pattern, data)
+      output = ""
       # Print information of each language for the data
       data[:languages].each do |key,value|
-        puts pattern % ["", key, "", value[:additions], value[:deletions],
+        output += pattern % ["", key, "", value[:additions], value[:deletions],
                         value[:create], value[:delete], value[:rename],
                         value[:copy], value[:merges]]
+        output += "\n"
       end
+      return output
     end
 
     def print_header(config)
       total_authors = @commits.author_list.length
 
+      output = ""
       # Print summary information of displayed results
       if config[:top_n] > 0 and config[:top_n] < total_authors
-        puts "\nTop #{config[:top_n]} authors(#{total_authors}) sorted by #{config[:sort]}\n"
+        output += "Top #{config[:top_n]} authors(#{total_authors}) sorted by #{config[:sort]}\n"
       else
-        puts "\nAll authors(#{total_authors}) sorted by #{config[:sort]}\n"
+        output += "All authors(#{total_authors}) sorted by #{config[:sort]}\n"
       end
 
       # Print column headers
-      puts "-"*87 + "-"*config[:author_length] + "-"*config[:language_length]
-      puts config[:pattern] % ['Name/Email', 'Language', 'Commits', 'Additions', 'Deletions', 'Creates', 'Deletes', 'Renames', 'Copies', 'Merges']
-      puts "-"*87 + "-"*config[:author_length] + "-"*config[:language_length]
+      output += "-"*87 + "-"*config[:author_length] + "-"*config[:language_length]
+      output += "\n"
+      output += config[:pattern] % ['Name/Email', 'Language', 'Commits', 'Additions', 'Deletions', 'Creates', 'Deletes', 'Renames', 'Copies', 'Merges']
+      output += "\n"
+      output +=  "-"*87 + "-"*config[:author_length] + "-"*config[:language_length]
+      output += "\n"
+      return output
     end
   end
 end
