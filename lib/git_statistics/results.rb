@@ -7,7 +7,7 @@ module GitStatistics
       @commits = commits
     end
 
-    def prepare_result_summary(sort, email, top_n)
+    def prepare_result_summary(sort, email, top_n=0)
       # Default to a 0 if given a negative number to display
       top_n = 0 if top_n < 0
 

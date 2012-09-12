@@ -174,7 +174,6 @@ describe Collector do
       end
       data = collector.extract_commit(buffer)
 
-      p data
       it {data[:author].should == "Kevin Jalbert"}
       it {data[:author_email].should == "kevin.j.jalbert@gmail.com"}
       it {data[:time].should == "2012-04-12 14:13:56 -0400"}
