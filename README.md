@@ -30,7 +30,12 @@ This gem also uses [github/linguist](https://github.com/github/linguist) to dete
 
 This gem also has the ability to save the acquired data into a JSON file (in either a compressed or pretty format). If a saved file is present for the repository you can use the gem to load the data from the file, thus saving time for re-displaying the statistics using a different set of display flags (what statistic to sort on, number of authors to show, consider merges, etc...). In the event that a repository updates with new commits the gem allows you to update the saved file with the new commits.
 
-## Contributing
+# Example Output
+The following is the output produced by *git_statistics* when used on the [pengwynn/octokit](https://github.com/pengwynn/octokit) (at commit [95a9de3](https://github.com/pengwynn/octokit/commit/95a9de325bee4ca03c9c1d61de2d643666c90037)) git repository. In this output we show the top three authors in rankings based on number of commits (merge commits are excluded from these results).
+
+![screenshot](http://cloud.github.com/downloads/kevinjalbert/git_statistics/pengwynn_octokit_output.png)
+
+# Contributing
 
 1. Fork it
 2. Create your feature branch (`git checkout -b my-new-feature`)
