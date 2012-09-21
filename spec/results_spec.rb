@@ -6,10 +6,11 @@ describe Results do
   merge = false
   sort = "commits"
 
-  commits = Commits.new
-  commits.load(fixture("multiple_authors.json"))
+  # Setup commits with calculated stats for results
+  collector = Collector.new(false, 100, true)
+  commits = Commits.new(collector.repo_path, true)
+  setup_commits(commits, "multiple_authors.json", collector.repo_path + "0.json", false)
   commits.calculate_statistics(email, merge)
-
   results = Results.new(commits)
 
   describe "#prepare_result_summary" do

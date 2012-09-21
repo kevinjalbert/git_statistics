@@ -3,7 +3,7 @@ include GitStatistics
 
 describe Collector do
 
-  collector = Collector.new(false)
+  collector = Collector.new(false, 100, true)
 
   describe "#collect_branches" do
     context "with many branches" do
@@ -244,7 +244,7 @@ describe Collector do
         expected << Utilities.clean_string(line)
       end
 
-     it {buffer.should == expected}
+      it {buffer.should == expected}
     end
 
     context "with invalid sha" do
