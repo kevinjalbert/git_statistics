@@ -1,10 +1,9 @@
 module GitStatistics
   class Collector
 
-    attr_accessor :commits, :verbose
+    attr_accessor :repo, :repo_path, :commits, :verbose, :limit
 
-    def initialize(verbose)
-      @commits = Commits.new
+    def initialize(verbose, limit, save)
       @verbose = verbose
       @repo = Utilities.get_repository
 
@@ -12,6 +11,10 @@ module GitStatistics
       if @repo == nil
         raise ("No git Repository Found")
       end
+
+      @repo_path = File.expand_path("..", @repo.path) + File::Separator + ".git_statistics" + File::Separator
+      @limit = limit
+      @commits = Commits.new(@repo_path, save)
     end
 
     def collect(branch, time_since="", time_until="")
@@ -42,6 +45,12 @@ module GitStatistics
 
           extract_commit(buffer) if not buffer.empty?
           buffer = []
+
+          # Save commits to file if size exceeds limit or forced
+          if @commits.size > @limit
+            @commits.flush_commits
+            @repo = Utilities.get_repository
+          end
         end
 
         buffer << line
@@ -49,10 +58,10 @@ module GitStatistics
 
       # Extract the last commit
       extract_commit(buffer) if not buffer.empty?
+      @commits.flush_commits(true)
     end
 
     def fall_back_collect_commit(sha)
-
       # Create pipe for the git log to acquire commits
       pipe = open("|git --no-pager show #{sha} --date=iso --reverse"\
                   " --no-color --find-copies-harder --numstat --encoding=utf-8 "\

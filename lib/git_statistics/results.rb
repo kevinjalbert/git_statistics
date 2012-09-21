@@ -19,8 +19,8 @@ module GitStatistics
 
       # Create config
       config = {:data => data,
-                :author_length => Utilities.find_longest_length(data, 17),
-                :language_length => Utilities.find_longest_length(@commits.language_list, 8),
+                :author_length => Utilities.find_longest_length(data.keys, 17),
+                :language_length => Utilities.find_longest_length(@commits.totals[:languages].keys, 8),
                 :sort => sort,
                 :email => email,
                 :top_n => top_n}
@@ -72,7 +72,7 @@ module GitStatistics
     end
 
     def print_header(config)
-      total_authors = @commits.author_list.length
+      total_authors = @commits.stats.size
 
       output = ""
       # Print summary information of displayed results

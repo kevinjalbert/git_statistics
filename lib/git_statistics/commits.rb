@@ -1,15 +1,37 @@
 module GitStatistics
   class Commits < Hash
 
-    attr_accessor :stats, :author_list, :language_list, :totals
+    attr_accessor :stats, :author_list, :language_list, :totals, :path, :fresh
 
-    def initialize
-      super
-      @stats = Hash.new(0)
-      @author_list = []
-      @language_list = []
+    def initialize(path, fresh)
+      super()
+      @path = path
+      @fresh = fresh
+      clean
+    end
+
+    def clean
+      # Ensure the path exists
+      FileUtils.mkdir_p(@path)
+
+      # Remove all files within path if saving
+      if @fresh
+        Dir.entries(@path).each do |file|
+          next if file == "." || file == ".."
+          File.delete(path + File::Separator + file)
+        end
+      end
+
+      # Initilize/resets stats and totals
+      @stats = Hash.new
       @totals = Hash.new(0)
       @totals[:languages] = {}
+    end
+
+    def flush_commits(force=false)
+      file_count = Dir.entries(path).size - 2
+      save(path + File::Separator + file_count.to_s + ".json", false)
+      self.clear
     end
 
     def author_top_n_type(type, top_n=0)
@@ -20,34 +42,42 @@ module GitStatistics
     end
 
     def calculate_statistics(email, merge)
-
-      # Check that there are statistics to calculate
-      if self.size == 0
-        puts "Cannot calculate statistics as there is no data"
-        return
-      end
-
       # Identify authors and author type
       if email
         type = :author_email
       else
         type = :author
       end
-      @author_list = Utilities.unique_data_in_hash(self, type)
 
-      # Initialize the stats hash
-      @author_list.each do |author|
-        @stats[author] = Hash.new(0)
-        @stats[author][:languages] = {}
+      # For all the commit files created
+      Dir.entries(path).each do |file|
+        next if file == "." || file == ".."
+
+        # Load commit file and extract the commits
+        load(path + File::Separator + file)
+        process_commits(type, merge)
+        self.clear
       end
+    end
 
+    def process_commits(type, merge)
       # Collect the stats from each commit
       self.each do |key,value|
         if !merge && value[:merge]
           next
         else
 
-          author = (@stats[value[type]] ||= Hash.new(0))
+          # Acquire author (make if not seen before)
+          author = @stats[value[type]]
+
+          if author == nil
+            @stats[value[type]] = Hash.new(0)
+            author = @stats[value[type]]
+            author[:languages] = {}
+          end
+
+          # If there are no changed files move to next commit
+          next if value[:files].size == 0
 
           # Collect language stats
           value[:files].each do |file|
@@ -57,11 +87,6 @@ module GitStatistics
 
             # Add to repository's languages
             add_language_stats(@totals, file)
-
-            # Add language to language list if not encountered before
-            if not @language_list.include?(file[:language])
-              @language_list << file[:language]
-            end
           end
 
           # Add commit stats to author
@@ -69,6 +94,10 @@ module GitStatistics
 
           # Add commit stats to repository
           add_commit_stats(@totals, value)
+
+          # Save new changes back to stats
+          @stats[value[type]] = author
+          author = nil
         end
       end
     end
@@ -107,6 +136,10 @@ module GitStatistics
     end
 
     def save(file, pretty)
+      # Ensure the path to the file exists
+      FileUtils.mkdir_p(File.dirname(file))
+
+      # Save file in a simple or pretty format
       if pretty
         File.open(file, 'w') {|file| file.write(JSON.pretty_generate(self))}
       else
