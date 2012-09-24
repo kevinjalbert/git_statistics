@@ -1,7 +1,7 @@
 module GitStatistics
   class Collector
 
-    attr_accessor :repo, :repo_path, :commits, :verbose, :limit
+    attr_accessor :repo, :repo_path, :commits, :verbose
 
     def initialize(verbose, limit, save)
       @verbose = verbose
@@ -13,8 +13,7 @@ module GitStatistics
       end
 
       @repo_path = File.expand_path("..", @repo.path) + File::Separator + ".git_statistics" + File::Separator
-      @limit = limit
-      @commits = Commits.new(@repo_path, save)
+      @commits = Commits.new(@repo_path, save, limit)
     end
 
     def collect(branch, time_since="", time_until="")
@@ -47,10 +46,8 @@ module GitStatistics
           buffer = []
 
           # Save commits to file if size exceeds limit or forced
-          if @commits.size > @limit
-            @commits.flush_commits
-            @repo = Utilities.get_repository
-          end
+          @commits.flush_commits
+          @repo = Utilities.get_repository
         end
 
         buffer << line

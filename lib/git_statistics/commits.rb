@@ -1,12 +1,13 @@
 module GitStatistics
   class Commits < Hash
 
-    attr_accessor :stats, :author_list, :language_list, :totals, :path, :fresh
+    attr_accessor :stats, :totals, :path, :fresh, :limit
 
-    def initialize(path, fresh)
+    def initialize(path, fresh, limit)
       super()
       @path = path
       @fresh = fresh
+      @limit = limit
       clean
     end
 
@@ -29,9 +30,11 @@ module GitStatistics
     end
 
     def flush_commits(force=false)
-      file_count = Dir.entries(path).size - 2
-      save(path + File::Separator + file_count.to_s + ".json", false)
-      self.clear
+      if self.size >= limit || force
+        file_count = Dir.entries(path).size - 2
+        save(path + File::Separator + file_count.to_s + ".json", false)
+        self.clear
+      end
     end
 
     def author_top_n_type(type, top_n=0)
