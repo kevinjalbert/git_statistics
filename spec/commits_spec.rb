@@ -14,11 +14,11 @@ describe Commits do
   let(:pretty) {false}
   let(:email) {false}
   let(:merge) {false}
-  let(:sort_type) {:commits}
+  let(:sort) {:commits}
   let(:stats) do
     setup_commits(commits, fixture_file, save_file, pretty)
     commits.calculate_statistics(email, merge)
-    commits.author_top_n_type(sort_type)
+    commits.author_top_n_type(sort)
   end
 
   describe "#flush_commits" do
@@ -62,7 +62,7 @@ describe Commits do
   end
 
   describe "#author_top_n_type" do
-    let(:sort_type) {:deletions}
+    let(:sort) {:deletions}
 
     context "with valid data" do
       context "on first author" do
@@ -96,7 +96,7 @@ describe Commits do
     end
 
     context "with invalid type" do
-      let(:sort_type) {:wrong}
+      let(:sort) {:wrong}
       it {stats.should == nil}
     end
 

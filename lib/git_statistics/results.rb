@@ -11,7 +11,7 @@ module GitStatistics
       # Default to a 0 if given a negative number to display
       top_n = 0 if top_n < 0
 
-      # Acquire data based on sorty type and top # to show
+      # Acquire data based on sort type and top # to show
       data = @commits.author_top_n_type(sort.to_sym, top_n)
       if data == nil
         raise "Parameter for --sort is not valid"

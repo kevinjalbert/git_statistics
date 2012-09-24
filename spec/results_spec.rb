@@ -2,83 +2,111 @@ require File.dirname(__FILE__) + '/spec_helper'
 include GitStatistics
 
 describe Results do
-  email = false
-  merge = false
-  sort = "commits"
+  let(:verbose) {false}
+  let(:limit) {100}
+  let(:fresh) {true}
+  let(:collector) {Collector.new(verbose, limit, fresh)}
 
-  # Setup commits with calculated stats for results
-  collector = Collector.new(false, 100, true)
-  commits = Commits.new(collector.repo_path, true)
-  setup_commits(commits, "multiple_authors.json", collector.repo_path + "0.json", false)
-  commits.calculate_statistics(email, merge)
-  results = Results.new(commits)
+  let(:commits) {collector.commits}
+
+  let(:fixture_file) {"multiple_authors.json"}
+  let(:save_file) {collector.repo_path + "0.json"}
+  let(:pretty) {false}
+  let(:email) {false}
+  let(:merge) {false}
+  let(:sort) {:commits}
+  let(:top_n) {0}
+
+  let(:results) {
+    setup_commits(commits, fixture_file, save_file, pretty)
+    commits.calculate_statistics(email, merge)
+    commits.author_top_n_type(sort)
+    results = Results.new(commits)
+  }
+
+  let(:config) {
+    results.prepare_result_summary(sort, email, top_n)
+  }
 
   describe "#prepare_result_summary" do
-
     context "with email and sorting" do
-      config = results.prepare_result_summary(sort, email)
-      data = config[:data]
+      context "on first author" do
+        let(:data) {config[:data]}
+        author = "Kevin Jalbert"
+        subject {data[author]}
 
-      author_1 = "Kevin Jalbert"
-      author_2 = "John Smith"
+        it {data.has_key?(author).should be_true}
 
-      it {data.has_key?(author_1).should be_true}
-      it {data.has_key?(author_2).should be_true}
+        it {subject[:commits].should == 1}
+        it {subject[:additions].should == 73}
+        it {subject[:deletions].should == 0}
+        it {subject[:create].should == 2}
 
-      it {data[author_1][:commits].should == 1}
-      it {data[author_1][:additions].should == 73}
-      it {data[author_1][:deletions].should == 0}
-      it {data[author_1][:create].should == 2}
+        it {subject[:languages][:Ruby][:additions].should == 62}
+        it {subject[:languages][:Ruby][:deletions].should == 0}
+        it {subject[:languages][:Ruby][:create].should == 1}
+        it {subject[:languages][:Markdown][:additions].should == 11}
+        it {subject[:languages][:Markdown][:deletions].should == 0}
+        it {subject[:languages][:Markdown][:create].should == 1}
+      end
 
-      it {data[author_1][:languages][:Ruby][:additions].should == 62}
-      it {data[author_1][:languages][:Ruby][:deletions].should == 0}
-      it {data[author_1][:languages][:Ruby][:create].should == 1}
-      it {data[author_1][:languages][:Markdown][:additions].should == 11}
-      it {data[author_1][:languages][:Markdown][:deletions].should == 0}
-      it {data[author_1][:languages][:Markdown][:create].should == 1}
+      context "on second author" do
+        let(:data) {config[:data]}
+        author = "John Smith"
+        subject {data[author]}
 
-      it {data[author_2][:commits].should == 1}
-      it {data[author_2][:additions].should == 64}
-      it {data[author_2][:deletions].should == 16}
+        it {data.has_key?(author).should be_true}
+        it {subject[:commits].should == 1}
+        it {subject[:additions].should == 64}
+        it {subject[:deletions].should == 16}
 
-      it {data[author_2][:languages][:Ruby][:additions].should == 64}
-      it {data[author_2][:languages][:Ruby][:deletions].should == 16}
+        it {subject[:languages][:Ruby][:additions].should == 64}
+        it {subject[:languages][:Ruby][:deletions].should == 16}
+      end
 
       it {config[:sort].should == sort}
       it {config[:email].should == email}
-      it {config[:top_n].should == 0}
+      it {config[:top_n].should == top_n}
       it {config[:author_length].should == 17}
       it {config[:language_length].should == 8}
     end
 
     context "with negative top_n" do
-      config = results.prepare_result_summary(sort, email, -1)
-      data = config[:data]
+      let(:top_n) {-1}
 
-      author_1 = "Kevin Jalbert"
-      author_2 = "John Smith"
+      context "on first author" do
+        let(:data) {config[:data]}
+        author = "Kevin Jalbert"
+        subject {data[author]}
 
-      it {data.has_key?(author_1).should be_true}
-      it {data.has_key?(author_2).should be_true}
+        it {data.has_key?(author).should be_true}
 
-      it {data[author_1][:commits].should == 1}
-      it {data[author_1][:additions].should == 73}
-      it {data[author_1][:deletions].should == 0}
-      it {data[author_1][:create].should == 2}
+        it {subject[:commits].should == 1}
+        it {subject[:additions].should == 73}
+        it {subject[:deletions].should == 0}
+        it {subject[:create].should == 2}
 
-      it {data[author_1][:languages][:Ruby][:additions].should == 62}
-      it {data[author_1][:languages][:Ruby][:deletions].should == 0}
-      it {data[author_1][:languages][:Ruby][:create].should == 1}
-      it {data[author_1][:languages][:Markdown][:additions].should == 11}
-      it {data[author_1][:languages][:Markdown][:deletions].should == 0}
-      it {data[author_1][:languages][:Markdown][:create].should == 1}
+        it {subject[:languages][:Ruby][:additions].should == 62}
+        it {subject[:languages][:Ruby][:deletions].should == 0}
+        it {subject[:languages][:Ruby][:create].should == 1}
+        it {subject[:languages][:Markdown][:additions].should == 11}
+        it {subject[:languages][:Markdown][:deletions].should == 0}
+        it {subject[:languages][:Markdown][:create].should == 1}
+      end
 
-      it {data[author_2][:commits].should == 1}
-      it {data[author_2][:additions].should == 64}
-      it {data[author_2][:deletions].should == 16}
+      context "on second author" do
+        let(:data) {config[:data]}
+        author = "John Smith"
+        subject {data[author]}
 
-      it {data[author_2][:languages][:Ruby][:additions].should == 64}
-      it {data[author_2][:languages][:Ruby][:deletions].should == 16}
+        it {data.has_key?(author).should be_true}
+        it {subject[:commits].should == 1}
+        it {subject[:additions].should == 64}
+        it {subject[:deletions].should == 16}
+
+        it {subject[:languages][:Ruby][:additions].should == 64}
+        it {subject[:languages][:Ruby][:deletions].should == 16}
+      end
 
       it {config[:sort].should == sort}
       it {config[:email].should == email}
@@ -88,30 +116,28 @@ describe Results do
     end
 
     context "with top_n that filters to one author" do
-      config = results.prepare_result_summary(sort, email, 1)
-      data = config[:data]
+      let(:top_n) {1}
+      let(:data) {config[:data]}
+      author = "Kevin Jalbert"
+      subject {data[author]}
 
-      author_1 = "Kevin Jalbert"
-      author_2 = "John Smith"
+      it {data.has_key?(author).should be_true}
 
-      it {data.has_key?(author_1).should be_true}
-      it {data.has_key?(author_2).should be_false}
+      it {subject[:commits].should == 1}
+      it {subject[:additions].should == 73}
+      it {subject[:deletions].should == 0}
+      it {subject[:create].should == 2}
 
-      it {data[author_1][:commits].should == 1}
-      it {data[author_1][:additions].should == 73}
-      it {data[author_1][:deletions].should == 0}
-      it {data[author_1][:create].should == 2}
-
-      it {data[author_1][:languages][:Ruby][:additions].should == 62}
-      it {data[author_1][:languages][:Ruby][:deletions].should == 0}
-      it {data[author_1][:languages][:Ruby][:create].should == 1}
-      it {data[author_1][:languages][:Markdown][:additions].should == 11}
-      it {data[author_1][:languages][:Markdown][:deletions].should == 0}
-      it {data[author_1][:languages][:Markdown][:create].should == 1}
+      it {subject[:languages][:Ruby][:additions].should == 62}
+      it {subject[:languages][:Ruby][:deletions].should == 0}
+      it {subject[:languages][:Ruby][:create].should == 1}
+      it {subject[:languages][:Markdown][:additions].should == 11}
+      it {subject[:languages][:Markdown][:deletions].should == 0}
+      it {subject[:languages][:Markdown][:create].should == 1}
 
       it {config[:sort].should == sort}
       it {config[:email].should == email}
-      it {config[:top_n].should == 1}
+      it {config[:top_n].should == top_n}
       it {config[:author_length].should == 17}
       it {config[:language_length].should == 8}
     end
@@ -119,24 +145,21 @@ describe Results do
 
   describe "#print_summary" do
     context "with valid data" do
-      config = results.prepare_result_summary(sort, email)
-      language_data = results.print_summary(sort, email)
+      let(:language_data) {results.print_summary(sort, email)}
       it {language_data.should == fixture("summary_output.txt").read}
     end
   end
 
   describe "#print_language_data" do
     context "with valid data" do
-      config = results.prepare_result_summary(sort, email)
-      language_data = results.print_language_data(config[:pattern], config[:data]["Kevin Jalbert"])
+      let(:language_data) {results.print_language_data(config[:pattern], config[:data]["Kevin Jalbert"])}
       it {language_data.should == fixture("language_data_output.txt").read}
     end
   end
 
   describe "#print_header" do
     context "with valid data" do
-      config = results.prepare_result_summary(sort, email)
-      header = results.print_header(config)
+      let(:header) {results.print_header(config)}
       it {header.should == fixture("header_output.txt").read}
     end
   end
