@@ -2,36 +2,40 @@ require File.dirname(__FILE__) + '/spec_helper'
 include GitStatistics
 
 describe Collector do
-
-  collector = Collector.new(false, 100, true)
+  let(:verbose) {false}
+  let(:limit) {100}
+  let(:fresh) {true}
+  let(:collector) {Collector.new(verbose, limit, fresh)}
 
   describe "#collect_branches" do
+    let(:branches) {collector.collect_branches(fixture(fixture_file))}
+
     context "with many branches" do
-      branches = collector.collect_branches(fixture("git_many_branches.txt"))
+    let(:fixture_file) {"git_many_branches.txt"}
       it {branches.size.should == 2}
       it {branches[0].should == "issue_2"}
       it {branches[1].should == "master"}
     end
 
     context "with zero branches" do
-      branches = collector.collect_branches(fixture("git_zero_branches.txt"))
+      let(:fixture_file) {"git_zero_branches.txt"}
       it {branches.size.should == 1}
       it {branches[0].should == "master"}
     end
   end
 
   describe "#extract_change_file" do
+    let(:file) {collector.extract_change_file(line)}
+
     context "with a simple changed file" do
-      line =  "37	30	lib/file.rb"
-      file = collector.extract_change_file(line)
+      let(:line) {"37	30	lib/file.rb"}
       it {file[:additions].should == 37}
       it {file[:deletions].should == 30}
       it {file[:file].should == "lib/file.rb"}
     end
 
     context "with a simple rename/copy changed file" do
-      line = "11	3	old_file.rb => lib/file.rb"
-      file = collector.extract_change_file(line)
+      let(:line) {"11	3	old_file.rb => lib/file.rb"}
       it {file[:additions].should == 11}
       it {file[:deletions].should == 3}
       it {file[:file].should == "lib/file.rb"}
@@ -39,8 +43,7 @@ describe Collector do
     end
 
     context "with a complex rename/copy changed file" do
-      line = "-	-	lib/{old_dir => new_dir}/file.rb"
-      file = collector.extract_change_file(line)
+      let(:line) {"-	-	lib/{old_dir => new_dir}/file.rb"}
       it {file[:additions].should == 0}
       it {file[:deletions].should == 0}
       it {file[:file].should == "lib/new_dir/file.rb"}
@@ -49,25 +52,26 @@ describe Collector do
   end
 
   describe "#extract_create_delete_file" do
+    let(:file) {collector.extract_create_delete_file(line)}
+
     context "with a create changed file" do
-      line = "create mode 100644 lib/dir/file.rb"
-      file = collector.extract_create_delete_file(line)
+      let(:line) {"create mode 100644 lib/dir/file.rb"}
       it {file[:status].should == "create"}
       it {file[:file].should == "lib/dir/file.rb"}
     end
 
     context "with a delete changed file" do
-      line = "delete mode 100644 lib/file.rb"
-      file = collector.extract_create_delete_file(line)
+      let(:line) {"delete mode 100644 lib/file.rb"}
       it {file[:status].should == "delete"}
       it {file[:file].should == "lib/file.rb"}
     end
   end
 
   describe "#extract_rename_copy_file" do
+    let(:file) {collector.extract_rename_copy_file(line)}
+
     context "with a rename changed file" do
-      line = "rename lib/{old_dir => new_dir}/file.rb (100%)"
-      file = collector.extract_rename_copy_file(line)
+      let(:line) {"rename lib/{old_dir => new_dir}/file.rb (100%)"}
       it {file[:status].should == "rename"}
       it {file[:old_file].should == "lib/old_dir/file.rb"}
       it {file[:new_file].should == "lib/new_dir/file.rb"}
@@ -75,8 +79,7 @@ describe Collector do
     end
 
     context "with a copy changed file" do
-      line = "copy lib/dir/{old_file.rb => new_file.rb} (75%)"
-      file = collector.extract_rename_copy_file(line)
+      let(:line) {"copy lib/dir/{old_file.rb => new_file.rb} (75%)"}
       it {file[:status].should == "copy"}
       it {file[:old_file].should == "lib/dir/old_file.rb"}
       it {file[:new_file].should == "lib/dir/new_file.rb"}
@@ -85,56 +88,56 @@ describe Collector do
   end
 
   describe "#acquire_commit_data" do
+    let(:input) {fixture(fixture_file).read}
+    let(:data) {collector.acquire_commit_data(input)}
+
     context "no parent, first commit" do
-      collector.commits.clear
-      input = fixture("commit_buffer_information_first.txt").read
-      commit_data = collector.acquire_commit_data(input)
-      it {commit_data[:sha].should == "111111aa111a11111a11aa11aaaa11a111111a11"}
-      it {commit_data[:data][:author].should == "Test Author"}
-      it {commit_data[:data][:author_email].should == "author@test.com"}
-      it {commit_data[:data][:time].should == "2011-01-11 11:11:11 +0000"}
-      it {commit_data[:data][:merge].should be_false}
+      let(:fixture_file) {"commit_buffer_information_first.txt"}
+      it {data[:sha].should == "111111aa111a11111a11aa11aaaa11a111111a11"}
+      it {data[:data][:author].should == "Test Author"}
+      it {data[:data][:author_email].should == "author@test.com"}
+      it {data[:data][:time].should == "2011-01-11 11:11:11 +0000"}
+      it {data[:data][:merge].should be_false}
     end
 
     context "without merge, one parent" do
-      collector.commits.clear
-      input = fixture("commit_buffer_information.txt").read
-      commit_data = collector.acquire_commit_data(input)
-      it {commit_data[:sha].should == "111111aa111a11111a11aa11aaaa11a111111a11"}
-      it {commit_data[:data][:author].should == "Test Author"}
-      it {commit_data[:data][:author_email].should == "author@test.com"}
-      it {commit_data[:data][:time].should == "2011-01-11 11:11:11 +0000"}
-      it {commit_data[:data][:merge].should be_false}
+      let(:fixture_file) {"commit_buffer_information.txt"}
+      it {data[:sha].should == "111111aa111a11111a11aa11aaaa11a111111a11"}
+      it {data[:data][:author].should == "Test Author"}
+      it {data[:data][:author_email].should == "author@test.com"}
+      it {data[:data][:time].should == "2011-01-11 11:11:11 +0000"}
+      it {data[:data][:merge].should be_false}
     end
 
     context "with merge, two parents" do
-      collector.commits.clear
-      input = fixture("commit_buffer_information_with_merge.txt").read
-      commit_data = collector.acquire_commit_data(input)
-      it {commit_data[:sha].should == "111111aa111a11111a11aa11aaaa11a111111a11"}
-      it {commit_data[:data][:author].should == "Test Author"}
-      it {commit_data[:data][:author_email].should == "author@test.com"}
-      it {commit_data[:data][:time].should == "2011-01-11 11:11:11 +0000"}
-      it {commit_data[:data][:merge].should be_true}
+      let(:fixture_file) {"commit_buffer_information_with_merge.txt"}
+      it {data[:sha].should == "111111aa111a11111a11aa11aaaa11a111111a11"}
+      it {data[:data][:author].should == "Test Author"}
+      it {data[:data][:author_email].should == "author@test.com"}
+      it {data[:data][:time].should == "2011-01-11 11:11:11 +0000"}
+      it {data[:data][:merge].should be_true}
     end
   end
 
   describe "#identify_changed_files" do
+    let(:files) {collector.identify_changed_files(buffer)}
+
     context "with no changes" do
-      buffer = []
-      files = collector.identify_changed_files(buffer)
+      let(:buffer) {[]}
       it {files.size.should == 0}
       it {files[0].should == nil}
     end
 
     context "with all types (create,delete,rename,copy) of files" do
       # Create buffer which is an array of cleaned lines
-      buffer = []
-      fixture("commit_buffer_changes.txt").readlines.each do |line|
-        buffer << Utilities.clean_string(line)
-      end
+      let(:buffer) {
+        buffer = []
+        fixture("commit_buffer_changes.txt").readlines.each do |line|
+          buffer << Utilities.clean_string(line)
+        end
+        buffer
+      }
 
-      files = collector.identify_changed_files(buffer)
       it {files.size.should == 5}
 
       it {files[0][:additions].should == 45}
@@ -166,13 +169,18 @@ describe Collector do
   end
 
   describe "#extract_commit" do
-    context "with valid buffer" do
-      collector.commits.clear
+    # Create buffer which is an array of cleaned lines
+    let(:buffer) {
       buffer = []
-      fixture("commit_buffer_whole.txt").readlines.each do |line|
+      fixture(fixture_file).readlines.each do |line|
         buffer << Utilities.clean_string(line)
       end
-      data = collector.extract_commit(buffer)
+      buffer
+    }
+    let(:data) {collector.extract_commit(buffer)}
+
+    context "with valid buffer" do
+      let(:fixture_file) {"commit_buffer_whole.txt"}
 
       it {data[:author].should == "Kevin Jalbert"}
       it {data[:author_email].should == "kevin.j.jalbert@gmail.com"}
@@ -215,85 +223,75 @@ describe Collector do
     end
 
     context "with buffer that has no file changes" do
-      collector.commits.clear
-      buffer = []
-      fixture("commit_buffer_information.txt").readlines.each do |line|
-        buffer << Utilities.clean_string(line)
-      end
-      data = collector.extract_commit(buffer)
-
+      let(:fixture_file) {"commit_buffer_information.txt"}
       it {data.should == nil}
     end
 
     context "with invalid buffer" do
-      collector.commits.clear
-      buffer = "invalid input"
-      data = collector.extract_commit(buffer)
-
+      let(:buffer) {"invalid input"}
       it {data.should == nil}
     end
   end
 
   describe "#fall_back_collect_commit" do
+    let(:buffer) {collector.fall_back_collect_commit(sha)}
     context "with valid sha" do
-      buffer = collector.fall_back_collect_commit("260bc61e2c42930d91f3503c5849b0a2351275cf")
-
       # Create buffer which is an array of cleaned lines
-      expected = []
-      fixture("commit_buffer_whole.txt").readlines.each do |line|
-        expected << Utilities.clean_string(line)
-      end
+      let(:expected) {
+        expected = []
+        fixture("commit_buffer_whole.txt").readlines.each do |line|
+          expected << Utilities.clean_string(line)
+        end
+        expected
+      }
+      let(:sha) {"260bc61e2c42930d91f3503c5849b0a2351275cf"}
 
       it {buffer.should == expected}
     end
 
     context "with invalid sha" do
-      buffer = collector.fall_back_collect_commit("111111aa111a11111a11aa11aaaa11a111111a11")
+      let(:sha) {"111111aa111a11111a11aa11aaaa11a111111a11"}
       it {buffer.should == nil}
     end
   end
 
   describe "#get_blob" do
-    sha = "695b487432e8a1ede765b4e3efda088ab87a77f8"  # Commit within repository
+    let(:sha) {"695b487432e8a1ede765b4e3efda088ab87a77f8"}  # Commit within repository
+    let(:blob) {collector.get_blob(sha, file)}
 
     context "with valid blob" do
-      file = {:file => "Gemfile.lock"}
-      blob = collector.get_blob(sha, file)
-
+      let(:file) {{:file => "Gemfile.lock"}}
       it {blob.instance_of?(Grit::Blob).should be_true}
       it {blob.name.should == file[:file].split(File::Separator).last}
     end
 
     context "with invalid blob" do
-      file = {:file => "dir/nothing.rb"}
-      blob = collector.get_blob(sha, file)
-
+      let(:file) {{:file => "dir/nothing.rb"}}
       it {blob.should == nil}
     end
 
     context "with deleted file" do
-      file = {:file => "spec/collector_spec.rb"}
-      blob = collector.get_blob(sha, file)
-
+      let(:file) {{:file => "spec/collector_spec.rb"}}
       it {blob.instance_of?(Grit::Blob).should be_true}
       it {blob.name.should == file[:file].split(File::Separator).last}
     end
   end
 
   describe "#process_blob" do
-    sha = "695b487432e8a1ede765b4e3efda088ab87a77f8"  # Commit within repository
-
-    context "with status (delete) blob" do
-      file = {:file => "spec/collector_spec.rb",
-              :additions => 0,
-              :deletions => 6,
-              :status => "delete"}
-
-      blob = collector.get_blob(sha, file)
+    let(:sha) {"695b487432e8a1ede765b4e3efda088ab87a77f8"}  # Commit within repository
+    let(:blob) {collector.get_blob(sha, file)}
+    let(:data) {
       data = Hash.new(0)
       data[:files] = []
-      data = collector.process_blob(data, blob, file)
-      data_file = data[:files].first
+      collector.process_blob(data, blob, file)
+    }
+    let(:data_file) {data_file = data[:files].first}
+
+    context "with status (delete) blob" do
+      let(:file) {{:file => "spec/collector_spec.rb",
+                   :additions => 0,
+                   :deletions => 6,
+                   :status => "delete"}}
 
       it {data[:additions].should == file[:additions]}
       it {data[:deletions].should == file[:deletions]}
@@ -310,16 +308,10 @@ describe Collector do
     end
 
     context "with invalid language blob" do
-      file = {:file => "Gemfile.lock",
-              :additions => 33,
-              :deletions => 11,
-              :status => nil}
-
-      blob = collector.get_blob(sha, file)
-      data = Hash.new(0)
-      data[:files] = []
-      data = collector.process_blob(data, blob, file)
-      data_file = data[:files].first
+      let(:file) {{:file => "Gemfile.lock",
+                   :additions => 33,
+                   :deletions => 11,
+                   :status => nil}}
 
       it {data[:additions].should == file[:additions]}
       it {data[:deletions].should == file[:deletions]}
@@ -336,16 +328,10 @@ describe Collector do
     end
 
     context "with valid language blob" do
-      file = {:file => "README.md",
-              :additions => 7,
-              :deletions => 3,
-              :status => nil}
-
-      blob = collector.get_blob(sha, file)
-      data = Hash.new(0)
-      data[:files] = []
-      data = collector.process_blob(data, blob, file)
-      data_file = data[:files].first
+      let(:file) {{:file => "README.md",
+                   :additions => 7,
+                   :deletions => 3,
+                   :status => nil}}
 
       it {data[:additions].should == file[:additions]}
       it {data[:deletions].should == file[:deletions]}
