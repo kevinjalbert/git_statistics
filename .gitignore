@@ -16,3 +16,9 @@ tmp
 .yardoc
 _yardoc
 doc/
+
+# Mac artifacts
+.DS_Store
+
+# Application artifacts
+.git_statistics/

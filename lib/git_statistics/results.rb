@@ -11,7 +11,7 @@ module GitStatistics
       # Default to a 0 if given a negative number to display
       top_n = 0 if top_n < 0
 
-      # Acquire data based on sorty type and top # to show
+      # Acquire data based on sort type and top # to show
       data = @commits.author_top_n_type(sort.to_sym, top_n)
       if data == nil
         raise "Parameter for --sort is not valid"
@@ -19,8 +19,8 @@ module GitStatistics
 
       # Create config
       config = {:data => data,
-                :author_length => Utilities.find_longest_length(data, 17),
-                :language_length => Utilities.find_longest_length(@commits.language_list, 8),
+                :author_length => Utilities.find_longest_length(data.keys, 17),
+                :language_length => Utilities.find_longest_length(@commits.totals[:languages].keys, 8),
                 :sort => sort,
                 :email => email,
                 :top_n => top_n}
@@ -72,7 +72,7 @@ module GitStatistics
     end
 
     def print_header(config)
-      total_authors = @commits.author_list.length
+      total_authors = @commits.stats.size
 
       output = ""
       # Print summary information of displayed results
