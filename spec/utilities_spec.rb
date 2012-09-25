@@ -128,7 +128,7 @@ describe Utilities do
     end
   end
 
-  describe "find_blob_in_tree" do
+  describe "#find_blob_in_tree" do
     let(:sha) {"7d6c29f0ad5860d3238debbaaf696e361bf8c541"}  # Commit within repository
     let(:tree) {Utilities.get_repository(Dir.pwd).tree(sha)}
     let(:file) {nil}
@@ -161,6 +161,50 @@ describe Utilities do
       let(:file) {"Spoon-Knife"}
       it {blob.instance_of?(Grit::Submodule).should be_true}
       it {blob.name.should == file}
+    end
+  end
+
+  describe "#get_number_of_files" do
+    let(:files) {Utilities.get_number_of_files(directory, pattern)}
+    let(:pattern) {/\d+\.json/}
+    let(:directory) {Dir.pwd + File::Separator + "tmp_dir_for_spec" + File::Separator}
+
+    before(:each) do
+      FileUtils.mkdir_p(directory)
+    end
+
+    after(:each) do
+      FileUtils.rmdir(directory)
+    end
+
+    context "with valid files" do
+      it do
+        FileUtils.touch(directory + "0.json")
+        FileUtils.touch(directory + "1.json")
+        FileUtils.touch(directory + "2.json")
+        files.should == 3
+        FileUtils.rm(directory + "0.json")
+        FileUtils.rm(directory + "1.json")
+        FileUtils.rm(directory + "2.json")
+      end
+    end
+
+    context "with invalid files" do
+      it do
+        FileUtils.touch(directory + "0.json")
+        FileUtils.touch(directory + "incorrect.json")
+        FileUtils.touch(directory + "1.json")
+        files.should == 2
+        FileUtils.rm(directory + "0.json")
+        FileUtils.rm(directory + "incorrect.json")
+        FileUtils.rm(directory + "1.json")
+      end
+    end
+
+    context "with no files" do
+      it do
+        files.should == 0
+      end
     end
   end
 

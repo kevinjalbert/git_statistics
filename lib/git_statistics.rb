@@ -6,7 +6,6 @@ module GitStatistics
       @opts = Trollop::options do
         opt :email, "Use author's email instead of name", :default => false
         opt :merges, "Factor in merges when calculating statistics", :default => false
-        opt :save, "Save the commits in git_repo/.git_statistics", :default => false
         opt :pretty, "Save the commits in git_repo/.git_statistics in pretty print (larger file size)", :default => false
         opt :update, "Update saved commits with new data", :default => false
         opt :sort, "Sort authors by {commits, additions, deletions, create, delete, rename, copy, merges}", :default => "commits"
@@ -18,18 +17,25 @@ module GitStatistics
     end
 
     def execute
-      # Create a collector that will reuse or start fresh
-      if (@opts[:pretty] || @opts[:save]) && !@opts[:update]
-        collector = Collector.new(@opts[:verbose], @opts[:limit], true)
-      else
-        collector = Collector.new(@opts[:verbose], @opts[:limit], false)
+      # Collect data (incremental or fresh) based on presence of old data
+      if @opts[:update]
+        # Ensure commit directory is present
+        collector = Collector.new(@opts[:verbose], @opts[:limit], false, @opts[:pretty])
+        commits_directory = collector.repo_path + ".git_statistics" + File::Separator
+        FileUtils.mkdir_p(commits_directory)
+        file_count = Utilities.get_number_of_files(commits_directory, /\d+\.json/) - 1
+
+        # Only use --since if there is data present
+        if file_count >= 0
+          time = Utilities.get_modified_time(commits_directory + "#{file_count}.json")
+          collector.collect(@opts[:branch], "--since=\"#{time}\"")
+          collected = true
+        end
       end
 
-      # Collect data (incremental or fresh)
-      if @opts[:update]
-        time = Utilities.get_modified_time("commit.json")
-        collector.collect(@opts[:branch], "--since=\"#{time}\"")
-      else
+      # If no data was collected as there was no present data then start fresh
+      if !collected
+        collector = Collector.new(@opts[:verbose], @opts[:limit], true, @opts[:pretty])
         collector.collect(@opts[:branch])
       end
 

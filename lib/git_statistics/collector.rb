@@ -1,9 +1,9 @@
 module GitStatistics
   class Collector
 
-    attr_accessor :repo, :repo_path, :commits, :verbose
+    attr_accessor :repo, :repo_path, :commits_path, :commits, :verbose
 
-    def initialize(verbose, limit, save)
+    def initialize(verbose, limit, fresh, pretty)
       @verbose = verbose
       @repo = Utilities.get_repository
 
@@ -12,8 +12,9 @@ module GitStatistics
         raise ("No git Repository Found")
       end
 
-      @repo_path = File.expand_path("..", @repo.path) + File::Separator + ".git_statistics" + File::Separator
-      @commits = Commits.new(@repo_path, save, limit)
+      @repo_path = File.expand_path("..", @repo.path) + File::Separator
+      @commits_path = @repo_path + ".git_statistics" + File::Separator
+      @commits = Commits.new(@commits_path, fresh, limit, pretty)
     end
 
     def collect(branch, time_since="", time_until="")

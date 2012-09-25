@@ -5,13 +5,13 @@ describe Commits do
   let(:verbose) {false}
   let(:limit) {100}
   let(:fresh) {true}
-  let(:collector) {Collector.new(verbose, limit, fresh)}
+  let(:pretty) {false}
+  let(:collector) {Collector.new(verbose, limit, fresh, pretty)}
 
   let(:commits) {collector.commits}
 
   let(:fixture_file) {"multiple_authors.json"}
-  let(:save_file) {collector.repo_path + "0.json"}
-  let(:pretty) {false}
+  let(:save_file) {collector.commits_path + "0.json"}
   let(:email) {false}
   let(:merge) {false}
   let(:sort) {:commits}

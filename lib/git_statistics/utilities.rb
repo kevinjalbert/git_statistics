@@ -97,12 +97,23 @@ module GitStatistics
 
     def self.get_modified_time(file)
       if OS.mac?
-        Time.at(`stat -f %m commits.json`.to_i)
+        Time.at(`stat -f %m #{file}`.to_i)
       elsif OS.linux?
-        Time.at(`stat -c %Y commits.json`.to_i)
+        Time.at(`stat -c %Y #{file}`.to_i)
       else
         raise "Update on the Windows operating system is not supported"
       end
+    end
+
+    def self.get_number_of_files(directory, pattern)
+      count = 0
+      files = Dir.entries(directory)
+
+      files.each do |file|
+        count += 1 if file =~ pattern
+      end
+
+      return count
     end
   end
 end

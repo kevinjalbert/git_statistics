@@ -1,13 +1,14 @@
 module GitStatistics
   class Commits < Hash
 
-    attr_accessor :stats, :totals, :path, :fresh, :limit
+    attr_accessor :stats, :totals, :path, :fresh, :limit, :pretty
 
-    def initialize(path, fresh, limit)
+    def initialize(path, fresh, limit, pretty)
       super()
       @path = path
       @fresh = fresh
       @limit = limit
+      @pretty = pretty
       clean
     end
 
@@ -31,8 +32,8 @@ module GitStatistics
 
     def flush_commits(force=false)
       if self.size >= limit || force
-        file_count = Dir.entries(path).size - 2
-        save(path + File::Separator + file_count.to_s + ".json", false)
+        file_count = Utilities.get_number_of_files(path, /\d+\.json/)
+        save(path + File::Separator + file_count.to_s + ".json", @pretty)
         self.clear
       end
     end
@@ -54,12 +55,12 @@ module GitStatistics
 
       # For all the commit files created
       Dir.entries(path).each do |file|
-        next if file == "." || file == ".."
-
         # Load commit file and extract the commits
-        load(path + File::Separator + file)
-        process_commits(type, merge)
-        self.clear
+        if file =~ /\d+\.json/
+          load(path + File::Separator + file)
+          process_commits(type, merge)
+          self.clear
+        end
       end
     end
 
@@ -139,6 +140,9 @@ module GitStatistics
     end
 
     def save(file, pretty)
+      # Don't save if there is no information (i.e., using updates)
+      return if self.size == 0
+
       # Ensure the path to the file exists
       FileUtils.mkdir_p(File.dirname(file))
 

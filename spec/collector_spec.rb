@@ -5,7 +5,8 @@ describe Collector do
   let(:verbose) {false}
   let(:limit) {100}
   let(:fresh) {true}
-  let(:collector) {Collector.new(verbose, limit, fresh)}
+  let(:pretty) {false}
+  let(:collector) {Collector.new(verbose, limit, fresh, pretty)}
 
   describe "#collect_branches" do
     let(:branches) {collector.collect_branches(fixture(fixture_file))}
