@@ -8,6 +8,83 @@ describe Collector do
   let(:pretty) {false}
   let(:collector) {Collector.new(verbose, limit, fresh, pretty)}
 
+  # Create buffer which is an array of cleaned lines
+  let(:buffer) {
+    buffer = []
+    fixture(fixture_file).readlines.each do |line|
+      buffer << Utilities.clean_string(line)
+    end
+    buffer
+  }
+
+  describe "#collect" do
+    let(:branch) {""}
+    let(:email) {false}
+    let(:merge) {true}
+    let(:time_since) {"--since \"Tue Sep 25 14:15:44 2012 -0400\""}
+    let(:time_until) {"--until \"Tue Sep 25 14:45:05 2012 -0400\""}
+    let(:author) {"Kevin Jalbert"}
+
+    let(:setup) {
+      collector.collect(branch, time_since, time_until)
+      collector.commits.calculate_statistics(email, merge)
+      @subject = collector.commits.stats[author]
+    }
+
+    context "with no merge commits" do
+      let(:merge) {false}
+      let(:time_since) {"--since \"Tue Sep 10 14:15:44 2012 -0400\""}
+      let(:time_until) {"--until \"Tue Sep 11 14:45:05 2012 -0400\""}
+
+      before(:all) {setup}
+
+      it{@subject[:additions].should == 276}
+      it{@subject[:deletions].should == 99}
+      it{@subject[:commits].should == 4}
+      it{@subject[:merges].should == 0}
+
+      it{@subject[:languages][:Ruby][:additions].should == 270}
+      it{@subject[:languages][:Ruby][:deletions].should == 99}
+      it{@subject[:languages][:Ruby][:create].should == 2}
+      it{@subject[:languages][:Unknown][:additions].should == 6}
+      it{@subject[:languages][:Unknown][:deletions].should == 0}
+      it{@subject[:languages][:Unknown][:create].should == 1}
+    end
+
+    context "with merge commits and merge option" do
+      before(:all) {setup}
+
+      it{@subject[:additions].should == 667}
+      it{@subject[:deletions].should == 483}
+      it{@subject[:commits].should == 3}
+      it{@subject[:merges].should == 1}
+
+      it{@subject[:languages][:Markdown][:additions].should == 1}
+      it{@subject[:languages][:Markdown][:deletions].should == 0}
+      it{@subject[:languages][:Ruby][:additions].should == 654}
+      it{@subject[:languages][:Ruby][:deletions].should == 483}
+      it{@subject[:languages][:Unknown][:additions].should == 12}
+      it{@subject[:languages][:Unknown][:deletions].should == 0}
+    end
+
+    context "with merge commits and no merge option" do
+      let(:merge) {false}
+      before(:all) {setup}
+
+      it{@subject[:additions].should == 8}
+      it{@subject[:deletions].should == 1}
+      it{@subject[:commits].should == 2}
+      it{@subject[:merges].should == 0}
+
+      it{@subject[:languages][:Markdown][:additions].should == 1}
+      it{@subject[:languages][:Markdown][:deletions].should == 0}
+      it{@subject[:languages][:Ruby][:additions].should == 1}
+      it{@subject[:languages][:Ruby][:deletions].should == 1}
+      it{@subject[:languages][:Unknown][:additions].should == 6}
+      it{@subject[:languages][:Unknown][:deletions].should == 0}
+    end
+  end
+
   describe "#collect_branches" do
     let(:branches) {collector.collect_branches(fixture(fixture_file))}
 
@@ -122,6 +199,7 @@ describe Collector do
 
   describe "#identify_changed_files" do
     let(:files) {collector.identify_changed_files(buffer)}
+    let(:fixture_file) {"commit_buffer_changes.txt"}
 
     context "with no changes" do
       let(:buffer) {[]}
@@ -130,15 +208,6 @@ describe Collector do
     end
 
     context "with all types (create,delete,rename,copy) of files" do
-      # Create buffer which is an array of cleaned lines
-      let(:buffer) {
-        buffer = []
-        fixture("commit_buffer_changes.txt").readlines.each do |line|
-          buffer << Utilities.clean_string(line)
-        end
-        buffer
-      }
-
       it {files.size.should == 5}
 
       it {files[0][:additions].should == 45}
@@ -170,14 +239,6 @@ describe Collector do
   end
 
   describe "#extract_commit" do
-    # Create buffer which is an array of cleaned lines
-    let(:buffer) {
-      buffer = []
-      fixture(fixture_file).readlines.each do |line|
-        buffer << Utilities.clean_string(line)
-      end
-      buffer
-    }
     let(:data) {collector.extract_commit(buffer)}
 
     context "with valid buffer" do
@@ -235,24 +296,16 @@ describe Collector do
   end
 
   describe "#fall_back_collect_commit" do
-    let(:buffer) {collector.fall_back_collect_commit(sha)}
+    let(:results) {collector.fall_back_collect_commit(sha)}
     context "with valid sha" do
-      # Create buffer which is an array of cleaned lines
-      let(:expected) {
-        expected = []
-        fixture("commit_buffer_whole.txt").readlines.each do |line|
-          expected << Utilities.clean_string(line)
-        end
-        expected
-      }
+      let(:fixture_file) {"commit_buffer_whole.txt"}
       let(:sha) {"260bc61e2c42930d91f3503c5849b0a2351275cf"}
-
-      it {buffer.should == expected}
+      it {results.should == buffer}
     end
 
     context "with invalid sha" do
       let(:sha) {"111111aa111a11111a11aa11aaaa11a111111a11"}
-      it {buffer.should == nil}
+      it {results.should == nil}
     end
   end
 

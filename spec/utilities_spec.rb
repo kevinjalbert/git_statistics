@@ -24,10 +24,10 @@ describe Utilities do
 
   describe "#find_longest_length" do
     let(:max) {nil}
+    let(:list) {[]}
     let(:results) {Utilities.find_longest_length(list, max)}
 
     context "with empty list" do
-      let(:list) {[]}
       it {results.should == nil}
     end
 
@@ -37,7 +37,6 @@ describe Utilities do
     end
 
     context "with preset minimum length" do
-      let(:list) {[]}
       let(:max) {10}
       it {results.should == 10}
     end
@@ -202,9 +201,7 @@ describe Utilities do
     end
 
     context "with no files" do
-      it do
-        files.should == 0
-      end
+      it {files.should == 0}
     end
   end
 
