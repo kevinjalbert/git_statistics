@@ -8,6 +8,15 @@ describe Collector do
   let(:pretty) {false}
   let(:collector) {Collector.new(verbose, limit, fresh, pretty)}
 
+  # Create buffer which is an array of cleaned lines
+  let(:buffer) {
+    buffer = []
+    fixture(fixture_file).readlines.each do |line|
+      buffer << Utilities.clean_string(line)
+    end
+    buffer
+  }
+
   describe "#collect" do
     let(:branch) {""}
     let(:email) {false}
@@ -190,6 +199,7 @@ describe Collector do
 
   describe "#identify_changed_files" do
     let(:files) {collector.identify_changed_files(buffer)}
+    let(:fixture_file) {"commit_buffer_changes.txt"}
 
     context "with no changes" do
       let(:buffer) {[]}
@@ -198,15 +208,6 @@ describe Collector do
     end
 
     context "with all types (create,delete,rename,copy) of files" do
-      # Create buffer which is an array of cleaned lines
-      let(:buffer) {
-        buffer = []
-        fixture("commit_buffer_changes.txt").readlines.each do |line|
-          buffer << Utilities.clean_string(line)
-        end
-        buffer
-      }
-
       it {files.size.should == 5}
 
       it {files[0][:additions].should == 45}
@@ -238,14 +239,6 @@ describe Collector do
   end
 
   describe "#extract_commit" do
-    # Create buffer which is an array of cleaned lines
-    let(:buffer) {
-      buffer = []
-      fixture(fixture_file).readlines.each do |line|
-        buffer << Utilities.clean_string(line)
-      end
-      buffer
-    }
     let(:data) {collector.extract_commit(buffer)}
 
     context "with valid buffer" do
@@ -303,24 +296,16 @@ describe Collector do
   end
 
   describe "#fall_back_collect_commit" do
-    let(:buffer) {collector.fall_back_collect_commit(sha)}
+    let(:results) {collector.fall_back_collect_commit(sha)}
     context "with valid sha" do
-      # Create buffer which is an array of cleaned lines
-      let(:expected) {
-        expected = []
-        fixture("commit_buffer_whole.txt").readlines.each do |line|
-          expected << Utilities.clean_string(line)
-        end
-        expected
-      }
+      let(:fixture_file) {"commit_buffer_whole.txt"}
       let(:sha) {"260bc61e2c42930d91f3503c5849b0a2351275cf"}
-
-      it {buffer.should == expected}
+      it {results.should == buffer}
     end
 
     context "with invalid sha" do
       let(:sha) {"111111aa111a11111a11aa11aaaa11a111111a11"}
-      it {buffer.should == nil}
+      it {results.should == nil}
     end
   end
 
