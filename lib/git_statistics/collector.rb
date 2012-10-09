@@ -40,8 +40,8 @@ module GitStatistics
         # Extract the buffer (commit) when we match ','x5 in the log format (delimeter)
         if line.split(',').size == 5
 
-          # Sometimes 'git log' doesn't populate the buffer, try fallback option if so
-          buffer = fall_back_collect_commit(line.split(',').first) if buffer.size == 1
+          # Sometimes 'git log' doesn't populate the buffer (i.e., merges), try fallback option if so
+          buffer = fall_back_collect_commit(buffer[0].split(',').first) if buffer.size == 1
 
           extract_commit(buffer) if not buffer.empty?
           buffer = []

@@ -61,6 +61,79 @@ describe Commits do
     end
   end
 
+  describe "#process_commits" do
+    let(:commits) {collector.commits.load(fixture(fixture_file))}
+    let(:type) {:author}
+
+    context "with merge" do
+      let(:merge) {true}
+      subject {
+        commits.process_commits(type, merge)
+        commits.stats[author_name]
+      }
+
+      context "on first author" do
+        let(:author_name) {"Kevin Jalbert"}
+        it {subject[:additions].should == 153}
+        it {subject[:deletions].should == 5}
+        it {subject[:commits].should == 2}
+        it {subject[:create].should == 3}
+        it {subject[:merges].should == 1}
+
+        it {subject[:languages][:Markdown][:additions].should == 18}
+        it {subject[:languages][:Markdown][:deletions].should == 1}
+        it {subject[:languages][:Markdown][:create].should == 1}
+        it {subject[:languages][:Ruby][:additions].should == 135}
+        it {subject[:languages][:Ruby][:deletions].should == 4}
+        it {subject[:languages][:Ruby][:create].should == 2}
+      end
+
+      context "on second author" do
+        let(:author_name) {"John Smith"}
+        it {subject[:additions].should == 64}
+        it {subject[:deletions].should == 16}
+        it {subject[:commits].should == 1}
+
+        it {subject[:languages][:Ruby][:additions].should == 64}
+        it {subject[:languages][:Ruby][:deletions].should == 16}
+        it {subject[:languages][:Ruby][:create].should == 0}
+      end
+    end
+
+    context "without merge" do
+      let(:merge) {false}
+      subject {
+        commits.process_commits(type, merge)
+        commits.stats[author_name]
+      }
+
+      context "on first author" do
+        let(:author_name) {"Kevin Jalbert"}
+        it {subject[:additions].should == 73}
+        it {subject[:deletions].should == 0}
+        it {subject[:commits].should == 1}
+        it {subject[:create].should == 2}
+
+        it {subject[:languages][:Markdown][:additions].should == 11}
+        it {subject[:languages][:Markdown][:deletions].should == 0}
+        it {subject[:languages][:Markdown][:create].should == 1}
+        it {subject[:languages][:Ruby][:additions].should == 62}
+        it {subject[:languages][:Ruby][:deletions].should == 0}
+        it {subject[:languages][:Ruby][:create].should == 1}
+      end
+
+      context "on second author" do
+        let(:author_name) {"John Smith"}
+        it {subject[:additions].should == 64}
+        it {subject[:deletions].should == 16}
+        it {subject[:commits].should == 1}
+
+        it {subject[:languages][:Ruby][:additions].should == 64}
+        it {subject[:languages][:Ruby][:deletions].should == 16}
+      end
+    end
+  end
+
   describe "#author_top_n_type" do
     let(:sort) {:deletions}
 
