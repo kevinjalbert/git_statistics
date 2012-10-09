@@ -8,6 +8,74 @@ describe Collector do
   let(:pretty) {false}
   let(:collector) {Collector.new(verbose, limit, fresh, pretty)}
 
+  describe "#collect" do
+    let(:branch) {""}
+    let(:email) {false}
+    let(:merge) {true}
+    let(:time_since) {"--since \"Tue Sep 25 14:15:44 2012 -0400\""}
+    let(:time_until) {"--until \"Tue Sep 25 14:45:05 2012 -0400\""}
+    let(:author) {"Kevin Jalbert"}
+
+    let(:setup) {
+      collector.collect(branch, time_since, time_until)
+      collector.commits.calculate_statistics(email, merge)
+      @subject = collector.commits.stats[author]
+    }
+
+    context "with no merge commits" do
+      let(:merge) {false}
+      let(:time_since) {"--since \"Tue Sep 10 14:15:44 2012 -0400\""}
+      let(:time_until) {"--until \"Tue Sep 11 14:45:05 2012 -0400\""}
+
+      before(:all) {setup}
+
+      it{@subject[:additions].should == 276}
+      it{@subject[:deletions].should == 99}
+      it{@subject[:commits].should == 4}
+      it{@subject[:merges].should == 0}
+
+      it{@subject[:languages][:Ruby][:additions].should == 270}
+      it{@subject[:languages][:Ruby][:deletions].should == 99}
+      it{@subject[:languages][:Ruby][:create].should == 2}
+      it{@subject[:languages][:Unknown][:additions].should == 6}
+      it{@subject[:languages][:Unknown][:deletions].should == 0}
+      it{@subject[:languages][:Unknown][:create].should == 1}
+    end
+
+    context "with merge commits and merge option" do
+      before(:all) {setup}
+
+      it{@subject[:additions].should == 667}
+      it{@subject[:deletions].should == 483}
+      it{@subject[:commits].should == 3}
+      it{@subject[:merges].should == 1}
+
+      it{@subject[:languages][:Markdown][:additions].should == 1}
+      it{@subject[:languages][:Markdown][:deletions].should == 0}
+      it{@subject[:languages][:Ruby][:additions].should == 654}
+      it{@subject[:languages][:Ruby][:deletions].should == 483}
+      it{@subject[:languages][:Unknown][:additions].should == 12}
+      it{@subject[:languages][:Unknown][:deletions].should == 0}
+    end
+
+    context "with merge commits and no merge option" do
+      let(:merge) {false}
+      before(:all) {setup}
+
+      it{@subject[:additions].should == 8}
+      it{@subject[:deletions].should == 1}
+      it{@subject[:commits].should == 2}
+      it{@subject[:merges].should == 0}
+
+      it{@subject[:languages][:Markdown][:additions].should == 1}
+      it{@subject[:languages][:Markdown][:deletions].should == 0}
+      it{@subject[:languages][:Ruby][:additions].should == 1}
+      it{@subject[:languages][:Ruby][:deletions].should == 1}
+      it{@subject[:languages][:Unknown][:additions].should == 6}
+      it{@subject[:languages][:Unknown][:deletions].should == 0}
+    end
+  end
+
   describe "#collect_branches" do
     let(:branches) {collector.collect_branches(fixture(fixture_file))}
 
