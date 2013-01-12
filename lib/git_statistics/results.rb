@@ -19,8 +19,8 @@ module GitStatistics
 
       # Create config
       config = {:data => data,
-                :author_length => Utilities.find_longest_length(data.keys, 17),
-                :language_length => Utilities.find_longest_length(@commits.totals[:languages].keys, 8),
+                :author_length => Utilities.find_longest_value_in_list(data.keys, 17),
+                :language_length => Utilities.find_longest_value_in_list(@commits.totals[:languages].keys, 8),
                 :sort => sort,
                 :email => email,
                 :top_n => top_n}

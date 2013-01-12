@@ -14,12 +14,12 @@ module GitStatistics
       end
     end
 
-    def self.find_longest_length(list, max=nil)
-      return list if list == nil
+    def self.find_longest_value_in_list(list, max = nil)
+      return nil if list.nil?
       list.each do |key,value|
-        max = key.length if max == nil || key.length > max
+        max = key.length if max.nil? || key.length > max
       end
-      return max
+      max
     end
 
     def self.clean_string(string)
