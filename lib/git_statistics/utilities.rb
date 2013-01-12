@@ -95,15 +95,13 @@ module GitStatistics
       Time.at(%x{cmd}.to_i)
     end
 
-    def self.get_number_of_files(directory, pattern)
-      count = 0
-      files = Dir.entries(directory)
-
-      files.each do |file|
-        count += 1 if file =~ pattern
-      end
-
-      return count
+    def self.number_of_matching_files(directory, pattern)
+      Dir.entries(directory)
+          .select! { |file| file =~ pattern }
+          .size
+    rescue SystemCallError
+      ::Kernel.warn "No such directory #{File.expand_path(directory)}"
+      0
     end
   end
 end

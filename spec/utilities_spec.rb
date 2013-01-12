@@ -151,13 +151,19 @@ describe Utilities do
     end
   end
 
-  describe "#get_number_of_files" do
-    let(:files) {Utilities.get_number_of_files(directory, pattern)}
+  describe "#number_of_matching_files" do
+    let(:files) {Utilities.number_of_matching_files(directory, pattern)}
     let(:pattern) {/\d+\.json/}
     let(:directory) {Dir.pwd + File::Separator + "tmp_dir_for_spec" + File::Separator}
 
     before(:each) do
       FileUtils.mkdir_p(directory)
+    end
+
+    context "with missing directory" do
+      subject { files }
+      before { FileUtils.rmdir(directory) }
+      it { should == 0 }
     end
 
     after(:each) do

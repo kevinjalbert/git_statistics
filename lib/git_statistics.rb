@@ -23,7 +23,7 @@ module GitStatistics
         collector = Collector.new(@opts[:verbose], @opts[:limit], false, @opts[:pretty])
         commits_directory = collector.repo_path + ".git_statistics" + File::Separator
         FileUtils.mkdir_p(commits_directory)
-        file_count = Utilities.get_number_of_files(commits_directory, /\d+\.json/) - 1
+        file_count = Utilities.number_of_matching_files(commits_directory, /\d+\.json/) - 1
 
         # Only use --since if there is data present
         if file_count >= 0

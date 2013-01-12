@@ -32,7 +32,7 @@ module GitStatistics
 
     def flush_commits(force=false)
       if self.size >= limit || force
-        file_count = Utilities.get_number_of_files(path, /\d+\.json/)
+        file_count = Utilities.number_of_matching_files(path, /\d+\.json/)
         save(path + File::Separator + file_count.to_s + ".json", @pretty)
         self.clear
       end
