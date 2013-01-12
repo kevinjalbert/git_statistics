@@ -61,6 +61,21 @@ describe Utilities do
     end
   end
 
+  describe "#get_modified_time" do
+    let(:file) { 'file' }
+    after { Utilities.get_modified_time(file) }
+    before { OS.stub(:mac?) { false } }
+    before { OS.stub(:linux?) { false } }
+    context "on a Mac" do
+      before { OS.stub(:mac?) { true } }
+      it { Utilities.should_receive(:time_at).with(%[stat -f %m file]) { 10 } }
+    end
+    context "on a Linux" do
+      before { OS.stub(:linux?) { true } }
+      it { Utilities.should_receive(:time_at).with(%[stat -c %Y file]) { 10 } }
+    end
+  end
+
   describe "#split_old_new_file" do
     let(:files) {Utilities.split_old_new_file(old, new)}
     context "with a change in middle" do

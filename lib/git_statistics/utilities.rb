@@ -85,12 +85,16 @@ module GitStatistics
 
     def self.get_modified_time(file)
       if OS.mac?
-        Time.at(`stat -f %m #{file}`.to_i)
+        time_at("stat -f %m #{file}")
       elsif OS.linux?
-        Time.at(`stat -c %Y #{file}`.to_i)
+        time_at("stat -c %Y #{file}")
       else
         raise "Update on the Windows operating system is not supported"
       end
+    end
+
+    def self.time_at(cmd)
+      Time.at(%x{cmd}.to_i)
     end
 
     def self.get_number_of_files(directory, pattern)
