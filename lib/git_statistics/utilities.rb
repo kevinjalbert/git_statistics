@@ -97,7 +97,7 @@ module GitStatistics
 
     def self.number_of_matching_files(directory, pattern)
       Dir.entries(directory)
-          .select! { |file| file =~ pattern }
+          .select { |file| file =~ pattern }
           .size
     rescue SystemCallError
       ::Kernel.warn "No such directory #{File.expand_path(directory)}"
