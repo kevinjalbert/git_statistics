@@ -22,10 +22,10 @@ describe Utilities do
     end
   end
 
-  describe "#find_longest_value_in_list" do
+  describe "#max_length_in_list" do
     let(:max) {nil}
     let(:list) {[]}
-    let(:results) {Utilities.find_longest_value_in_list(list, max)}
+    let(:results) {Utilities.max_length_in_list(list, max)}
 
     context "with empty list" do
       it {results.should == nil}
