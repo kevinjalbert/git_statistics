@@ -52,35 +52,6 @@ describe Utilities do
     end
   end
 
-  describe "#unique_data_in_hash" do
-    let(:type) {:word}
-    let(:list) {Utilities.unique_data_in_hash(data, type)}
-
-    context "with valid type" do
-      let(:data) {
-        {:entry_a => {type => "test"},
-         :entry_b => {type => "a"},
-         :entry_c => {type => "a"},
-         :entry_d => {type => "is"},
-         :entry_e => {type => "test"}}
-      }
-
-      it {list.size.should == 3}
-      it {list.include?("is").should be_true}
-      it {list.include?("a").should be_true}
-      it {list.include?("test").should be_true}
-    end
-
-    context "with invalid type" do
-      let(:data) {
-        {:entry_a => {:wrong => "test"},
-         :entry_b => {:wrong => "is"}}
-      }
-
-      it {list.should == [nil]}
-    end
-  end
-
   describe "#clean_string" do
     let(:unclean) {"  master   "}
     let(:clean) {Utilities.clean_string(unclean)}

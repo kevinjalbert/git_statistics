@@ -22,16 +22,6 @@ module GitStatistics
       return max
     end
 
-    def self.unique_data_in_hash(data, type)
-      list = []
-      data.each do |key,value|
-        if not list.include?(value[type])
-          list << value[type]
-        end
-      end
-      return list
-    end
-
     def self.clean_string(string)
       return string.strip.force_encoding("iso-8859-1").encode("utf-8")
     end
@@ -63,16 +53,14 @@ module GitStatistics
 
     def self.find_blob_in_tree(tree, file)
       # Check If cannot find tree in commit or if we found a submodule as the changed file
-      if tree == nil
-        return nil
-      elsif file == nil
+      if tree.nil? || file.nil?
         return nil
       elsif tree.instance_of?(Grit::Submodule)
         return tree
       end
 
       # If the blob is within the current directory (tree)
-      if file.size == 1
+      if file.one?
         blob = tree / file.first
 
         # Check if blob is nil (could not find changed file in tree)
