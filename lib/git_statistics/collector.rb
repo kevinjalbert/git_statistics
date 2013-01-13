@@ -7,10 +7,7 @@ module GitStatistics
       @verbose = verbose
       @repo = Utilities.get_repository
 
-      # Abort if no git repository is found
-      if @repo == nil
-        raise ("No git Repository Found")
-      end
+      raise "No Git repository found" if @repo.nil?
 
       @repo_path = File.expand_path("..", @repo.path) + File::Separator
       @commits_path = @repo_path + ".git_statistics" + File::Separator
@@ -65,18 +62,13 @@ module GitStatistics
                   " --no-color --find-copies-harder --numstat --encoding=utf-8 "\
                   "--summary --format=\"%H,%an,%ae,%ad,%p\"")
 
-      buffer = []
-      pipe.each do |line|
-        buffer << Utilities.clean_string(line)
-      end
+      buffer = pipe.map { |line| Utilities.clean_string(line) }
 
       # Check that the buffer has valid information (i.e., sha was valid)
-      if buffer.empty?
-        return nil
-      elsif buffer.first.split(',').first == sha
-        return buffer
+      if !buffer.empty? && buffer.first.split(',').first == sha
+        buffer
       else
-        return nil
+        nil
       end
     end
 
@@ -105,7 +97,7 @@ module GitStatistics
       data[:files] = []
 
       # Flag commit as merge if necessary (determined if two parents)
-      if commit_info[4] == nil or commit_info[4].split(' ').size == 1
+      if commit_info[4].nil? || commit_info[4].split(' ').size == 1
         data[:merge] = false
       else
         data[:merge] = true
@@ -121,7 +113,7 @@ module GitStatistics
       puts "Extracting #{commit_data[:sha]}" if @verbose
 
       # Abort if the commit sha extracted form the buffer is invalid
-      if commit_data[:sha].scan(/[\d|a-f]{40}/)[0] == nil
+      if commit_data[:sha].scan(/[\d|a-f]{40}/)[0].nil?
         puts "Invalid buffer containing commit information"
         return
       end
@@ -130,7 +122,7 @@ module GitStatistics
       files = identify_changed_files(buffer[2..-1])
 
       # No files were changed in this commit, abort commit
-      if files == nil
+      if files.nil?
         puts "No files were changed"
         return
       end
@@ -159,9 +151,9 @@ module GitStatistics
       blob = Utilities.find_blob_in_tree(@repo.tree(sha), file)
 
       # If we cannot find blob in current commit (deleted file), check previous commit
-      if blob == nil || blob.instance_of?(Grit::Tree)
+      if blob.nil? || blob.instance_of?(Grit::Tree)
         prev_commit = @repo.commits(sha).first.parents[0]
-        return nil if prev_commit == nil
+        return nil if prev_commit.nil?
 
         prev_tree = @repo.tree(prev_commit.id)
         blob = Utilities.find_blob_in_tree(prev_tree, file)
@@ -170,7 +162,7 @@ module GitStatistics
     end
 
     def identify_changed_files(buffer)
-      return buffer if buffer == nil
+      return buffer if buffer.nil?
 
       # For each modification extract the details
       changed_files = []
@@ -178,14 +170,14 @@ module GitStatistics
 
         # Extract changed file information if it exists
         data = extract_change_file(line)
-        if data != nil
+        unless data.nil?
           changed_files << data
           next  # This line is processed, skip to next
         end
 
         # Extract details of create/delete files if it exists
         data = extract_create_delete_file(line)
-        if data != nil
+        unless data.nil?
           augmented = false
           # Augment changed file with create/delete information if possible
           changed_files.each do |file|
@@ -201,7 +193,7 @@ module GitStatistics
 
         # Extract details of rename/copy files if it exists
         data = extract_rename_copy_file(line)
-        if data != nil
+        unless data.nil?
           augmented = false
           # Augment changed file with rename/copy information if possible
           changed_files.each do |file|
@@ -240,11 +232,7 @@ module GitStatistics
       file_hash[:generated] = blob.generated?
 
       # Identify the language of the blob if possible
-      if blob.language == nil
-        file_hash[:language] = "Unknown"
-      else
-        file_hash[:language] = blob.language.name
-      end
+      file_hash[:language] = blob.language.nil? ? "Unknown" : blob.language.name
       data[:files] << file_hash
 
       return data
@@ -253,7 +241,7 @@ module GitStatistics
     def extract_change_file(line)
       # Use regex to detect a rename/copy changed file | 1  2  /path/{test => new}/file.txt
       changes = line.scan(/^([-|\d]+)\s+([-|\d]+)\s+(.+)\s+=>\s+(.+)/)[0]
-      if changes != nil and changes.size == 4
+      if !changes.nil? && changes.size == 4
         # Split up the file into the old and new file
         split_file = Utilities.split_old_new_file(changes[2], changes[3])
         return {:additions => changes[0].to_i,
@@ -264,7 +252,7 @@ module GitStatistics
 
       # Use regex to detect a changed file | 1  2  /path/test/file.txt
       changes = line.scan(/^([-|\d]+)\s+([-|\d]+)\s+(.+)/)[0]
-      if changes != nil and changes.size == 3
+      if !changes.nil? && changes.size == 3
         return {:additions => changes[0].to_i,
                 :deletions => changes[1].to_i,
                 :file => Utilities.clean_string(changes[2])}
@@ -275,7 +263,7 @@ module GitStatistics
     def extract_create_delete_file(line)
       # Use regex to detect a create/delete file | create mode 100644 /path/test/file.txt
       changes = line.scan(/^(create|delete) mode \d+ ([^\\\n]*)/)[0]
-      if changes != nil and changes.size == 2
+      if !changes.nil? && changes.size == 2
         return {:status => Utilities.clean_string(changes[0]),
                 :file => Utilities.clean_string(changes[1])}
       end
@@ -285,7 +273,7 @@ module GitStatistics
     def extract_rename_copy_file(line)
       # Use regex to detect a rename/copy file | copy /path/{test => new}/file.txt
       changes = line.scan(/^(rename|copy)\s+(.+)\s+=>\s+(.+)\s+\((\d+)/)[0]
-      if changes != nil and changes.size == 4
+      if !changes.nil? && changes.size == 4
         # Split up the file into the old and new file
         split_file = Utilities.split_old_new_file(changes[1], changes[2])
         return {:status => Utilities.clean_string(changes[0]),
