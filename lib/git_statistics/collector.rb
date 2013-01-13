@@ -14,7 +14,7 @@ module GitStatistics
       @commits = Commits.new(@commits_path, fresh, limit, pretty)
     end
 
-    def collect(branch, time_since="", time_until="")
+    def collect(branch, time_since = "", time_until = "")
       # Create pipe for git log to acquire branches
       pipe = open("|git --no-pager branch --no-color")
 

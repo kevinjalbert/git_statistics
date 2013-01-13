@@ -10,11 +10,9 @@ describe Collector do
 
   # Create buffer which is an array of cleaned lines
   let(:buffer) {
-    buffer = []
-    fixture(fixture_file).readlines.each do |line|
-      buffer << Utilities.clean_string(line)
+    fixture(fixture_file).readlines.collect do |line|
+      Utilities.clean_string(line)
     end
-    buffer
   }
 
   describe "#collect" do

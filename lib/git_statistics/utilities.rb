@@ -1,6 +1,6 @@
 module GitStatistics
   module Utilities
-    def self.get_repository(path=Dir.pwd)
+    def self.get_repository(path = Dir.pwd)
       # Connect to git repository if it exists
       directory = Pathname.new(path)
       repo = nil
@@ -23,7 +23,7 @@ module GitStatistics
     end
 
     def self.clean_string(string)
-      return string.strip.force_encoding("iso-8859-1").encode("utf-8")
+      string.strip.force_encoding("iso-8859-1").encode("utf-8")
     end
 
     def self.split_old_new_file(old, new)

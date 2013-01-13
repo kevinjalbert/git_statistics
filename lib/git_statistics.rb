@@ -2,7 +2,7 @@ require 'git_statistics/initialize'
 
 module GitStatistics
   class GitStatistics
-    def initialize(args=nil)
+    def initialize(args = nil)
       @opts = Trollop::options do
         opt :email, "Use author's email instead of name", :default => false
         opt :merges, "Factor in merges when calculating statistics", :default => false
