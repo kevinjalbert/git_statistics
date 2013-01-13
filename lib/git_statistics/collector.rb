@@ -19,8 +19,7 @@ module GitStatistics
       pipe = open("|git --no-pager branch --no-color")
 
       # Collect branches to use for git log
-      branches = collect_branches(pipe)
-      branches = ["", ""] if branch
+      branches = branch ? ["", ""] : collect_branches(pipe)
 
       # Create pipe for the git log to acquire commits
       pipe = open("|git --no-pager log #{branches.join(' ')} --date=iso --reverse"\
@@ -52,7 +51,7 @@ module GitStatistics
       end
 
       # Extract the last commit
-      extract_commit(buffer) if not buffer.empty?
+      extract_commit(buffer) unless buffer.empty?
       @commits.flush_commits(true)
     end
 
@@ -241,47 +240,51 @@ module GitStatistics
     def extract_change_file(line)
       # Use regex to detect a rename/copy changed file | 1  2  /path/{test => new}/file.txt
       changes = line.scan(/^([-|\d]+)\s+([-|\d]+)\s+(.+)\s+=>\s+(.+)/)[0]
-      if !changes.nil? && changes.size == 4
-        # Split up the file into the old and new file
+      changes = changes_are_right_size(changes, 4) do |changes|
         split_file = Utilities.split_old_new_file(changes[2], changes[3])
-        return {:additions => changes[0].to_i,
-                :deletions => changes[1].to_i,
-                :file => Utilities.clean_string(split_file[:new_file]),
-                :old_file => Utilities.clean_string(split_file[:old_file])}
+        {:additions => changes[0].to_i,
+          :deletions => changes[1].to_i,
+          :file => Utilities.clean_string(split_file[:new_file]),
+          :old_file => Utilities.clean_string(split_file[:old_file])}
       end
+      return changes unless changes.nil?
 
       # Use regex to detect a changed file | 1  2  /path/test/file.txt
       changes = line.scan(/^([-|\d]+)\s+([-|\d]+)\s+(.+)/)[0]
-      if !changes.nil? && changes.size == 3
-        return {:additions => changes[0].to_i,
-                :deletions => changes[1].to_i,
-                :file => Utilities.clean_string(changes[2])}
+      changes_are_right_size(changes, 3) do |changes|
+        {:additions => changes[0].to_i,
+          :deletions => changes[1].to_i,
+          :file => Utilities.clean_string(changes[2])}
       end
-      return nil
     end
 
     def extract_create_delete_file(line)
       # Use regex to detect a create/delete file | create mode 100644 /path/test/file.txt
       changes = line.scan(/^(create|delete) mode \d+ ([^\\\n]*)/)[0]
-      if !changes.nil? && changes.size == 2
-        return {:status => Utilities.clean_string(changes[0]),
-                :file => Utilities.clean_string(changes[1])}
+      changes_are_right_size(changes, 2) do |changes|
+        {:status => Utilities.clean_string(changes[0]),
+          :file => Utilities.clean_string(changes[1])}
       end
-      return nil
     end
 
     def extract_rename_copy_file(line)
       # Use regex to detect a rename/copy file | copy /path/{test => new}/file.txt
       changes = line.scan(/^(rename|copy)\s+(.+)\s+=>\s+(.+)\s+\((\d+)/)[0]
-      if !changes.nil? && changes.size == 4
-        # Split up the file into the old and new file
+      changes_are_right_size(changes, 4) do |changes|
         split_file = Utilities.split_old_new_file(changes[1], changes[2])
-        return {:status => Utilities.clean_string(changes[0]),
-                :old_file => Utilities.clean_string(split_file[:old_file]),
-                :new_file => Utilities.clean_string(split_file[:new_file]),
-                :similar => changes[3].to_i}
+        {:status => Utilities.clean_string(changes[0]),
+          :old_file => Utilities.clean_string(split_file[:old_file]),
+          :new_file => Utilities.clean_string(split_file[:new_file]),
+          :similar => changes[3].to_i}
       end
-      return nil
+    end
+
+    def changes_are_right_size(changes, size = 4)
+      if !changes.nil? && changes.size == size
+        yield changes
+      else
+        nil
+      end
     end
   end
 end
