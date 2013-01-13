@@ -34,7 +34,7 @@ module GitStatistics
       end
 
       # If no data was collected as there was no present data then start fresh
-      if !collected
+      unless collected
         collector = Collector.new(@opts[:verbose], @opts[:limit], true, @opts[:pretty])
         collector.collect(@opts[:branch])
       end

@@ -39,7 +39,7 @@ module GitStatistics
           # Sometimes 'git log' doesn't populate the buffer (i.e., merges), try fallback option if so
           buffer = fall_back_collect_commit(buffer[0].split(',').first) if buffer.one?
 
-          extract_commit(buffer) if not buffer.empty?
+          extract_commit(buffer) unless buffer.empty?
           buffer = []
 
           # Save commits to file if size exceeds limit or forced
@@ -186,7 +186,7 @@ module GitStatistics
               break
             end
           end
-          changed_files << data if !augmented
+          changed_files << data unless augmented
           next  # This line is processed, skip to next
         end
 
@@ -204,7 +204,7 @@ module GitStatistics
               break
             end
           end
-          changed_files << data if !augmented
+          changed_files << data unless augmented
           next  # This line is processed, skip to next
         end
       end
