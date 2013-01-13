@@ -85,9 +85,9 @@ module GitStatistics
 
     def self.get_modified_time(file)
       command = case
-                when OS.mac? then "stat -f %m #{file}"
-                when OS.linux? then "stat -c %Y #{file}"
-                else raise "Update on the Windows operating system is not supported"; end
+        when OS.mac? then "stat -f %m #{file}"
+        when OS.linux? then "stat -c %Y #{file}"
+        else raise "Update on the Windows operating system is not supported"; end
       time_at(command)
     end
 
