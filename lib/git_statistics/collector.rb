@@ -37,7 +37,7 @@ module GitStatistics
         if line.split(',').size == 5
 
           # Sometimes 'git log' doesn't populate the buffer (i.e., merges), try fallback option if so
-          buffer = fall_back_collect_commit(buffer[0].split(',').first) if buffer.size == 1
+          buffer = fall_back_collect_commit(buffer[0].split(',').first) if buffer.one?
 
           extract_commit(buffer) if not buffer.empty?
           buffer = []
@@ -96,7 +96,7 @@ module GitStatistics
       data[:files] = []
 
       # Flag commit as merge if necessary (determined if two parents)
-      if commit_info[4].nil? || commit_info[4].split(' ').size == 1
+      if commit_info[4].nil? || commit_info[4].split(' ').one?
         data[:merge] = false
       else
         data[:merge] = true

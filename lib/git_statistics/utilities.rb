@@ -32,13 +32,13 @@ module GitStatistics
       split_new = new.split('}')
 
       # Handle recombine the file splits into their whole paths)
-      if split_old.size == 1 && split_new.size == 1
+      if split_old.one? && split_new.one?
         old_file = split_old[0]
         new_file = split_new[0]
-      elsif split_new.size == 1
+      elsif split_new.one?
         old_file = split_old[0] + split_old[1]
         new_file = split_old[0] + split_new[0]
-      elsif split_old.size == 1
+      elsif split_old.one?
         old_file = split_old[0] + split_new[1]
         new_file = split_old[0] + split_new[0] + split_new[1]
       else
