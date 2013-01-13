@@ -64,7 +64,7 @@ module GitStatistics
         blob = tree / file.first
 
         # Check if blob is nil (could not find changed file in tree)
-        if blob == nil
+        if blob.nil?
 
           # Try looking for submodules as they cannot be found using tree / file notation
           tree.contents.each do |content|

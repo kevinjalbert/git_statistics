@@ -18,7 +18,7 @@ describe Utilities do
 
     context "when not in a repository directory" do
       let(:dir) {Dir.pwd + "../"} # git_statistics/../
-      it {repo.should == nil}
+      it {repo.should.nil?}
     end
   end
 
@@ -28,12 +28,12 @@ describe Utilities do
     let(:results) {Utilities.max_length_in_list(list, max)}
 
     context "with empty list" do
-      it {results.should == nil}
+      it {results.should.nil?}
     end
 
     context "with nil list" do
       let(:list) {nil}
-      it {results.should == nil}
+      it {results.should.nil?}
     end
 
     context "with preset minimum length" do
@@ -135,12 +135,12 @@ describe Utilities do
 
     context "file is nil" do
       let(:blob) {Utilities.find_blob_in_tree(tree, nil)}
-      it {blob.should == nil}
+      it {blob.should.nil?}
     end
 
     context "file is empty" do
       let(:file) {""}
-      it {blob.should == nil}
+      it {blob.should.nil?}
     end
 
     context "file is submodule" do

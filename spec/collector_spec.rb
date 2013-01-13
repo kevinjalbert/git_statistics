@@ -204,7 +204,7 @@ describe Collector do
     context "with no changes" do
       let(:buffer) {[]}
       it {files.size.should == 0}
-      it {files[0].should == nil}
+      it {files[0].should.nil?}
     end
 
     context "with all types (create,delete,rename,copy) of files" do
@@ -256,7 +256,7 @@ describe Collector do
       it {data[:files][0][:name].should == "Gemfile"}
       it {data[:files][0][:additions].should == 0}
       it {data[:files][0][:deletions].should == 1}
-      it {data[:files][0][:status].should == nil}
+      it {data[:files][0][:status].should.nil?}
       it {data[:files][0][:binary].should == false}
       it {data[:files][0][:image].should == false}
       it {data[:files][0][:vendored].should == false}
@@ -276,7 +276,7 @@ describe Collector do
       it {data[:files][2][:name].should == "lib/git_statistics/initialize.rb"}
       it {data[:files][2][:additions].should == 0}
       it {data[:files][2][:deletions].should == 1}
-      it {data[:files][2][:status].should == nil}
+      it {data[:files][2][:status].should.nil?}
       it {data[:files][2][:binary].should == false}
       it {data[:files][2][:image].should == false}
       it {data[:files][2][:vendored].should == false}
@@ -286,12 +286,12 @@ describe Collector do
 
     context "with buffer that has no file changes" do
       let(:fixture_file) {"commit_buffer_information.txt"}
-      it {data.should == nil}
+      it {data.should.nil?}
     end
 
     context "with invalid buffer" do
       let(:buffer) {"invalid input"}
-      it {data.should == nil}
+      it {data.should.nil?}
     end
   end
 
@@ -305,7 +305,7 @@ describe Collector do
 
     context "with invalid sha" do
       let(:sha) {"111111aa111a11111a11aa11aaaa11a111111a11"}
-      it {results.should == nil}
+      it {results.should.nil?}
     end
   end
 
@@ -321,7 +321,7 @@ describe Collector do
 
     context "with invalid blob" do
       let(:file) {{:file => "dir/nothing.rb"}}
-      it {blob.should == nil}
+      it {blob.should.nil?}
     end
 
     context "with deleted file" do
@@ -373,7 +373,7 @@ describe Collector do
       it {data_file[:name].should == file[:file]}
       it {data_file[:additions].should == file[:additions]}
       it {data_file[:deletions].should == file[:deletions]}
-      it {data_file[:status].should == nil}
+      it {data_file[:status].should.nil?}
       it {data_file[:binary].should == false}
       it {data_file[:image].should == false}
       it {data_file[:vendored].should == false}
@@ -393,7 +393,7 @@ describe Collector do
       it {data_file[:name].should == file[:file]}
       it {data_file[:additions].should == file[:additions]}
       it {data_file[:deletions].should == file[:deletions]}
-      it {data_file[:status].should == nil}
+      it {data_file[:status].should.nil?}
       it {data_file[:binary].should == false}
       it {data_file[:image].should == false}
       it {data_file[:vendored].should == false}

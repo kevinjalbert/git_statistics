@@ -13,9 +13,7 @@ module GitStatistics
 
       # Acquire data based on sort type and top # to show
       data = @commits.author_top_n_type(sort.to_sym, top_n)
-      if data == nil
-        raise "Parameter for --sort is not valid"
-      end
+      raise "Parameter for --sort is not valid" if data.nil?
 
       # Create config
       config = {:data => data,

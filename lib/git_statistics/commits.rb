@@ -20,7 +20,7 @@ module GitStatistics
       if @fresh
         Dir.entries(@path).each do |file|
           next if file == "." || file == ".."
-          File.delete(path + File::Separator + file)
+          File.delete(File.join(path, file))
         end
       end
 
@@ -31,10 +31,10 @@ module GitStatistics
     end
 
     def flush_commits(force=false)
-      if self.size >= limit || force
+      if size >= limit || force
         file_count = Utilities.number_of_matching_files(path, /\d+\.json/)
-        save(path + File::Separator + file_count.to_s + ".json", @pretty)
-        self.clear
+        save(File.join(path, "#{file_count}.json"), @pretty)
+        clear
       end
     end
 
@@ -74,7 +74,7 @@ module GitStatistics
           # Acquire author (make if not seen before)
           author = @stats[value[type]]
 
-          if author == nil
+          if author.nil?
             @stats[value[type]] = Hash.new(0)
             author = @stats[value[type]]
             author[:languages] = {}
@@ -108,7 +108,7 @@ module GitStatistics
 
     def add_language_stats(data, file)
       # Add stats to data's languages
-      if data[:languages][file[:language].to_sym] == nil
+      if data[:languages][file[:language].to_sym].nil?
         data[:languages][file[:language].to_sym] = Hash.new(0)
       end
 
