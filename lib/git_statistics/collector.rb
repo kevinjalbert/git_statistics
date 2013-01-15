@@ -238,45 +238,15 @@ module GitStatistics
     end
 
     def extract_change_file(line)
-      # Use regex to detect a rename/copy changed file | 1  2  /path/{test => new}/file.txt
-      changes = line.scan(/^([-|\d]+)\s+([-|\d]+)\s+(.+)\s+=>\s+(.+)/)[0]
-      changes = changes_are_right_size(changes, 4) do |changes|
-        split_file = Utilities.split_old_new_file(changes[2], changes[3])
-        {:additions => changes[0].to_i,
-          :deletions => changes[1].to_i,
-          :file => Utilities.clean_string(split_file[:new_file]),
-          :old_file => Utilities.clean_string(split_file[:old_file])}
-      end
-      return changes unless changes.nil?
-
-      # Use regex to detect a changed file | 1  2  /path/test/file.txt
-      changes = line.scan(/^([-|\d]+)\s+([-|\d]+)\s+(.+)/)[0]
-      changes_are_right_size(changes, 3) do |changes|
-        {:additions => changes[0].to_i,
-          :deletions => changes[1].to_i,
-          :file => Utilities.clean_string(changes[2])}
-      end
+      CommitLineExtractor.new(line).changed
     end
 
     def extract_create_delete_file(line)
-      # Use regex to detect a create/delete file | create mode 100644 /path/test/file.txt
-      changes = line.scan(/^(create|delete) mode \d+ ([^\\\n]*)/)[0]
-      changes_are_right_size(changes, 2) do |changes|
-        {:status => Utilities.clean_string(changes[0]),
-          :file => Utilities.clean_string(changes[1])}
-      end
+      CommitLineExtractor.new(line).created_or_deleted
     end
 
     def extract_rename_copy_file(line)
-      # Use regex to detect a rename/copy file | copy /path/{test => new}/file.txt
-      changes = line.scan(/^(rename|copy)\s+(.+)\s+=>\s+(.+)\s+\((\d+)/)[0]
-      changes_are_right_size(changes, 4) do |changes|
-        split_file = Utilities.split_old_new_file(changes[1], changes[2])
-        {:status => Utilities.clean_string(changes[0]),
-          :old_file => Utilities.clean_string(split_file[:old_file]),
-          :new_file => Utilities.clean_string(split_file[:new_file]),
-          :similar => changes[3].to_i}
-      end
+      CommitLineExtractor.new(line).renamed_or_copied
     end
 
     def changes_are_right_size(changes, size = 4)
