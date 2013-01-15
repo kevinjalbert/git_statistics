@@ -252,8 +252,6 @@ module GitStatistics
     def changes_are_right_size(changes, size = 4)
       if !changes.nil? && changes.size == size
         yield changes
-      else
-        nil
       end
     end
   end
