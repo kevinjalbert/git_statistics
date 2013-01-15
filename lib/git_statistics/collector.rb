@@ -168,14 +168,14 @@ module GitStatistics
       buffer.each do |line|
 
         # Extract changed file information if it exists
-        data = extract_change_file(line)
+        data = CommitLineExtractor.new(line).changed
         unless data.nil?
           changed_files << data
           next  # This line is processed, skip to next
         end
 
         # Extract details of create/delete files if it exists
-        data = extract_create_delete_file(line)
+        data = CommitLineExtractor.new(line).created_or_deleted
         unless data.nil?
           augmented = false
           # Augment changed file with create/delete information if possible
@@ -191,7 +191,7 @@ module GitStatistics
         end
 
         # Extract details of rename/copy files if it exists
-        data = extract_rename_copy_file(line)
+        data = CommitLineExtractor.new(line).renamed_or_copied
         unless data.nil?
           augmented = false
           # Augment changed file with rename/copy information if possible
@@ -235,18 +235,6 @@ module GitStatistics
       data[:files] << file_hash
 
       return data
-    end
-
-    def extract_change_file(line)
-      CommitLineExtractor.new(line).changed
-    end
-
-    def extract_create_delete_file(line)
-      CommitLineExtractor.new(line).created_or_deleted
-    end
-
-    def extract_rename_copy_file(line)
-      CommitLineExtractor.new(line).renamed_or_copied
     end
 
   end
