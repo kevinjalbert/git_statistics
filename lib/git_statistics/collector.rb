@@ -249,10 +249,5 @@ module GitStatistics
       CommitLineExtractor.new(line).renamed_or_copied
     end
 
-    def changes_are_right_size(changes, size = 4)
-      if !changes.nil? && changes.size == size
-        yield changes
-      end
-    end
   end
 end
