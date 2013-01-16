@@ -92,7 +92,7 @@ module GitStatistics
     end
 
     def self.time_at(cmd)
-      Time.at(%x{cmd}.to_i)
+      Time.at(%x{#{cmd}}.to_i)
     end
 
     def self.number_of_matching_files(directory, pattern)
