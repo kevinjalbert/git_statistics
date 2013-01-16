@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require 'git_statistics'
+
+GitStatistics::GitStatistics.new(ARGV).execute
