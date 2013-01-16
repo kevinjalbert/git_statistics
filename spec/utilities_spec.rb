@@ -18,22 +18,22 @@ describe Utilities do
 
     context "when not in a repository directory" do
       let(:dir) {Dir.pwd + "../"} # git_statistics/../
-      it {repo.should == nil}
+      it {repo.should.nil?}
     end
   end
 
-  describe "#find_longest_length" do
+  describe "#max_length_in_list" do
     let(:max) {nil}
     let(:list) {[]}
-    let(:results) {Utilities.find_longest_length(list, max)}
+    let(:results) {Utilities.max_length_in_list(list, max)}
 
     context "with empty list" do
-      it {results.should == nil}
+      it {results.should.nil?}
     end
 
     context "with nil list" do
       let(:list) {nil}
-      it {results.should == nil}
+      it {results.should.nil?}
     end
 
     context "with preset minimum length" do
@@ -52,41 +52,29 @@ describe Utilities do
     end
   end
 
-  describe "#unique_data_in_hash" do
-    let(:type) {:word}
-    let(:list) {Utilities.unique_data_in_hash(data, type)}
-
-    context "with valid type" do
-      let(:data) {
-        {:entry_a => {type => "test"},
-         :entry_b => {type => "a"},
-         :entry_c => {type => "a"},
-         :entry_d => {type => "is"},
-         :entry_e => {type => "test"}}
-      }
-
-      it {list.size.should == 3}
-      it {list.include?("is").should be_true}
-      it {list.include?("a").should be_true}
-      it {list.include?("test").should be_true}
-    end
-
-    context "with invalid type" do
-      let(:data) {
-        {:entry_a => {:wrong => "test"},
-         :entry_b => {:wrong => "is"}}
-      }
-
-      it {list.should == [nil]}
-    end
-  end
-
   describe "#clean_string" do
     let(:unclean) {"  master   "}
     let(:clean) {Utilities.clean_string(unclean)}
 
     context "with trailling spaces" do
       it {clean.should == "master"}
+    end
+  end
+
+  describe "#get_modified_time" do
+    let(:file) { 'file' }
+    before do
+      OS.stub(:mac?) { false }
+      OS.stub(:linux?) { false }
+    end
+    after { Utilities.get_modified_time(file) }
+    context "on a Mac" do
+      before { OS.stub(:mac?) { true } }
+      it { Utilities.should_receive(:time_at).with(%[stat -f %m file]) { 10 } }
+    end
+    context "on a Linux" do
+      before { OS.stub(:linux?) { true } }
+      it { Utilities.should_receive(:time_at).with(%[stat -c %Y file]) { 10 } }
     end
   end
 
@@ -147,12 +135,12 @@ describe Utilities do
 
     context "file is nil" do
       let(:blob) {Utilities.find_blob_in_tree(tree, nil)}
-      it {blob.should == nil}
+      it {blob.should.nil?}
     end
 
     context "file is empty" do
       let(:file) {""}
-      it {blob.should == nil}
+      it {blob.should.nil?}
     end
 
     context "file is submodule" do
@@ -163,13 +151,19 @@ describe Utilities do
     end
   end
 
-  describe "#get_number_of_files" do
-    let(:files) {Utilities.get_number_of_files(directory, pattern)}
+  describe "#number_of_matching_files" do
+    let(:files) {Utilities.number_of_matching_files(directory, pattern)}
     let(:pattern) {/\d+\.json/}
     let(:directory) {Dir.pwd + File::Separator + "tmp_dir_for_spec" + File::Separator}
 
     before(:each) do
       FileUtils.mkdir_p(directory)
+    end
+
+    context "with missing directory" do
+      subject { files }
+      before { FileUtils.rmdir(directory) }
+      it { should == 0 }
     end
 
     after(:each) do

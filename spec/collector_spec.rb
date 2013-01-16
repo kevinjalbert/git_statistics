@@ -10,11 +10,9 @@ describe Collector do
 
   # Create buffer which is an array of cleaned lines
   let(:buffer) {
-    buffer = []
-    fixture(fixture_file).readlines.each do |line|
-      buffer << Utilities.clean_string(line)
+    fixture(fixture_file).readlines.collect do |line|
+      Utilities.clean_string(line)
     end
-    buffer
   }
 
   describe "#collect" do
@@ -102,69 +100,6 @@ describe Collector do
     end
   end
 
-  describe "#extract_change_file" do
-    let(:file) {collector.extract_change_file(line)}
-
-    context "with a simple changed file" do
-      let(:line) {"37	30	lib/file.rb"}
-      it {file[:additions].should == 37}
-      it {file[:deletions].should == 30}
-      it {file[:file].should == "lib/file.rb"}
-    end
-
-    context "with a simple rename/copy changed file" do
-      let(:line) {"11	3	old_file.rb => lib/file.rb"}
-      it {file[:additions].should == 11}
-      it {file[:deletions].should == 3}
-      it {file[:file].should == "lib/file.rb"}
-      it {file[:old_file].should == "old_file.rb"}
-    end
-
-    context "with a complex rename/copy changed file" do
-      let(:line) {"-	-	lib/{old_dir => new_dir}/file.rb"}
-      it {file[:additions].should == 0}
-      it {file[:deletions].should == 0}
-      it {file[:file].should == "lib/new_dir/file.rb"}
-      it {file[:old_file].should == "lib/old_dir/file.rb"}
-    end
-  end
-
-  describe "#extract_create_delete_file" do
-    let(:file) {collector.extract_create_delete_file(line)}
-
-    context "with a create changed file" do
-      let(:line) {"create mode 100644 lib/dir/file.rb"}
-      it {file[:status].should == "create"}
-      it {file[:file].should == "lib/dir/file.rb"}
-    end
-
-    context "with a delete changed file" do
-      let(:line) {"delete mode 100644 lib/file.rb"}
-      it {file[:status].should == "delete"}
-      it {file[:file].should == "lib/file.rb"}
-    end
-  end
-
-  describe "#extract_rename_copy_file" do
-    let(:file) {collector.extract_rename_copy_file(line)}
-
-    context "with a rename changed file" do
-      let(:line) {"rename lib/{old_dir => new_dir}/file.rb (100%)"}
-      it {file[:status].should == "rename"}
-      it {file[:old_file].should == "lib/old_dir/file.rb"}
-      it {file[:new_file].should == "lib/new_dir/file.rb"}
-      it {file[:similar].should == 100}
-    end
-
-    context "with a copy changed file" do
-      let(:line) {"copy lib/dir/{old_file.rb => new_file.rb} (75%)"}
-      it {file[:status].should == "copy"}
-      it {file[:old_file].should == "lib/dir/old_file.rb"}
-      it {file[:new_file].should == "lib/dir/new_file.rb"}
-      it {file[:similar].should == 75}
-    end
-  end
-
   describe "#acquire_commit_data" do
     let(:input) {fixture(fixture_file).read}
     let(:data) {collector.acquire_commit_data(input)}
@@ -204,7 +139,7 @@ describe Collector do
     context "with no changes" do
       let(:buffer) {[]}
       it {files.size.should == 0}
-      it {files[0].should == nil}
+      it {files[0].should.nil?}
     end
 
     context "with all types (create,delete,rename,copy) of files" do
@@ -256,7 +191,7 @@ describe Collector do
       it {data[:files][0][:name].should == "Gemfile"}
       it {data[:files][0][:additions].should == 0}
       it {data[:files][0][:deletions].should == 1}
-      it {data[:files][0][:status].should == nil}
+      it {data[:files][0][:status].should.nil?}
       it {data[:files][0][:binary].should == false}
       it {data[:files][0][:image].should == false}
       it {data[:files][0][:vendored].should == false}
@@ -276,7 +211,7 @@ describe Collector do
       it {data[:files][2][:name].should == "lib/git_statistics/initialize.rb"}
       it {data[:files][2][:additions].should == 0}
       it {data[:files][2][:deletions].should == 1}
-      it {data[:files][2][:status].should == nil}
+      it {data[:files][2][:status].should.nil?}
       it {data[:files][2][:binary].should == false}
       it {data[:files][2][:image].should == false}
       it {data[:files][2][:vendored].should == false}
@@ -286,12 +221,12 @@ describe Collector do
 
     context "with buffer that has no file changes" do
       let(:fixture_file) {"commit_buffer_information.txt"}
-      it {data.should == nil}
+      it {data.should.nil?}
     end
 
     context "with invalid buffer" do
       let(:buffer) {"invalid input"}
-      it {data.should == nil}
+      it {data.should.nil?}
     end
   end
 
@@ -305,7 +240,7 @@ describe Collector do
 
     context "with invalid sha" do
       let(:sha) {"111111aa111a11111a11aa11aaaa11a111111a11"}
-      it {results.should == nil}
+      it {results.should.nil?}
     end
   end
 
@@ -321,7 +256,7 @@ describe Collector do
 
     context "with invalid blob" do
       let(:file) {{:file => "dir/nothing.rb"}}
-      it {blob.should == nil}
+      it {blob.should.nil?}
     end
 
     context "with deleted file" do
@@ -373,7 +308,7 @@ describe Collector do
       it {data_file[:name].should == file[:file]}
       it {data_file[:additions].should == file[:additions]}
       it {data_file[:deletions].should == file[:deletions]}
-      it {data_file[:status].should == nil}
+      it {data_file[:status].should.nil?}
       it {data_file[:binary].should == false}
       it {data_file[:image].should == false}
       it {data_file[:vendored].should == false}
@@ -393,7 +328,7 @@ describe Collector do
       it {data_file[:name].should == file[:file]}
       it {data_file[:additions].should == file[:additions]}
       it {data_file[:deletions].should == file[:deletions]}
-      it {data_file[:status].should == nil}
+      it {data_file[:status].should.nil?}
       it {data_file[:binary].should == false}
       it {data_file[:image].should == false}
       it {data_file[:vendored].should == false}

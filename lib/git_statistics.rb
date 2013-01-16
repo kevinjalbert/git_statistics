@@ -2,7 +2,7 @@ require 'git_statistics/initialize'
 
 module GitStatistics
   class GitStatistics
-    def initialize(args=nil)
+    def initialize(args = nil)
       @opts = Trollop::options do
         opt :email, "Use author's email instead of name", :default => false
         opt :merges, "Factor in merges when calculating statistics", :default => false
@@ -23,7 +23,7 @@ module GitStatistics
         collector = Collector.new(@opts[:verbose], @opts[:limit], false, @opts[:pretty])
         commits_directory = collector.repo_path + ".git_statistics" + File::Separator
         FileUtils.mkdir_p(commits_directory)
-        file_count = Utilities.get_number_of_files(commits_directory, /\d+\.json/) - 1
+        file_count = Utilities.number_of_matching_files(commits_directory, /\d+\.json/) - 1
 
         # Only use --since if there is data present
         if file_count >= 0
@@ -34,7 +34,7 @@ module GitStatistics
       end
 
       # If no data was collected as there was no present data then start fresh
-      if !collected
+      unless collected
         collector = Collector.new(@opts[:verbose], @opts[:limit], true, @opts[:pretty])
         collector.collect(@opts[:branch])
       end
