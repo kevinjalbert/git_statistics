@@ -13,18 +13,18 @@ module GitStatistics
     end
 
     def changed
-      changes = line.scan(MODIFIED_OR_RENAMED).first
-      changes = changes_are_right_size(changes, 4) do |changes|
+      modified_or_renamed = line.scan(MODIFIED_OR_RENAMED).first
+      modified_or_renamed = changes_are_right_size(modified_or_renamed, 4) do |changes|
         split_file = Utilities.split_old_new_file(changes[2], changes[3])
         {:additions => changes[0].to_i,
           :deletions => changes[1].to_i,
           :file => Utilities.clean_string(split_file[:new_file]),
           :old_file => Utilities.clean_string(split_file[:old_file])}
       end
-      return changes unless changes.nil?
+      return modified_or_renamed unless modified_or_renamed.empty?
 
-      changes = line.scan(ADDITIONS_OR_DELETIONS).first
-      changes_are_right_size(changes, 3) do |changes|
+      addition_or_deletion = line.scan(ADDITIONS_OR_DELETIONS).first
+      changes_are_right_size(addition_or_deletion, 3) do |changes|
         {:additions => changes[0].to_i,
           :deletions => changes[1].to_i,
           :file => Utilities.clean_string(changes[2])}
@@ -56,7 +56,7 @@ module GitStatistics
         if !changes.nil? && changes.size == size
           yield changes
         else
-          nil
+          {}
         end
       end
 

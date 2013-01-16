@@ -166,49 +166,51 @@ module GitStatistics
       # For each modification extract the details
       changed_files = []
       buffer.each do |line|
+        extracted_line = CommitLineExtractor.new(line)
 
         # Extract changed file information if it exists
-        data = CommitLineExtractor.new(line).changed
-        unless data.nil?
-          changed_files << data
+        changed_file_information = extracted_line.changed
+        if changed_file_information.any?
+          changed_files << changed_file_information
           next  # This line is processed, skip to next
         end
 
         # Extract details of create/delete files if it exists
-        data = CommitLineExtractor.new(line).created_or_deleted
-        unless data.nil?
+        created_or_deleted = extracted_line.created_or_deleted
+        if created_or_deleted.any?
           augmented = false
           # Augment changed file with create/delete information if possible
           changed_files.each do |file|
-            if file[:file] == data[:file]
-              file[:status] = data[:status]
+            if file[:file] == created_or_deleted[:file]
+              file[:status] = created_or_deleted[:status]
               augmented = true
               break
             end
           end
-          changed_files << data unless augmented
+          changed_files << created_or_deleted unless augmented
           next  # This line is processed, skip to next
         end
 
         # Extract details of rename/copy files if it exists
-        data = CommitLineExtractor.new(line).renamed_or_copied
-        unless data.nil?
+        renamed_or_copied = extracted_line.renamed_or_copied
+        if renamed_or_copied.any?
           augmented = false
           # Augment changed file with rename/copy information if possible
           changed_files.each do |file|
-            if file[:file] == data[:new_file]
-              file[:status] = data[:status]
-              file[:old_file] = data[:old_file]
-              file[:similar] = data[:similar]
+            if file[:file] == renamed_or_copied[:new_file]
+              file[:status] = renamed_or_copied[:status]
+              file[:old_file] = renamed_or_copied[:old_file]
+              file[:similar] = renamed_or_copied[:similar]
               augmented = true
               break
             end
           end
-          changed_files << data unless augmented
+          changed_files << renamed_or_copied unless augmented
           next  # This line is processed, skip to next
         end
       end
-      return changed_files
+
+      changed_files
     end
 
     def process_blob(data, blob, file)
