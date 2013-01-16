@@ -7,20 +7,18 @@ module GitStatistics
       @commits = commits
     end
 
-    def prepare_result_summary(sort, email, top_n=0)
+    def prepare_result_summary(sort, email, top_n = 0)
       # Default to a 0 if given a negative number to display
       top_n = 0 if top_n < 0
 
       # Acquire data based on sort type and top # to show
       data = @commits.author_top_n_type(sort.to_sym, top_n)
-      if data == nil
-        raise "Parameter for --sort is not valid"
-      end
+      raise "Parameter for --sort is not valid" if data.nil?
 
       # Create config
       config = {:data => data,
-                :author_length => Utilities.find_longest_length(data.keys, 17),
-                :language_length => Utilities.find_longest_length(@commits.totals[:languages].keys, 8),
+                :author_length => Utilities.max_length_in_list(data.keys, 17),
+                :language_length => Utilities.max_length_in_list(@commits.totals[:languages].keys, 8),
                 :sort => sort,
                 :email => email,
                 :top_n => top_n}
@@ -31,7 +29,7 @@ module GitStatistics
       return config
     end
 
-    def print_summary(sort, email, top_n=0)
+    def print_summary(sort, email, top_n = 0)
       # Prepare and determine the config for the result summary based on parameters
       config = prepare_result_summary(sort, email, top_n)
 

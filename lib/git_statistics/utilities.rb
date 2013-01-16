@@ -1,6 +1,6 @@
 module GitStatistics
   module Utilities
-    def self.get_repository(path=Dir.pwd)
+    def self.get_repository(path = Dir.pwd)
       # Connect to git repository if it exists
       directory = Pathname.new(path)
       repo = nil
@@ -14,26 +14,16 @@ module GitStatistics
       end
     end
 
-    def self.find_longest_length(list, max=nil)
-      return list if list == nil
+    def self.max_length_in_list(list, max = nil)
+      return nil if list.nil?
       list.each do |key,value|
-        max = key.length if max == nil || key.length > max
+        max = key.length if max.nil? || key.length > max
       end
-      return max
-    end
-
-    def self.unique_data_in_hash(data, type)
-      list = []
-      data.each do |key,value|
-        if not list.include?(value[type])
-          list << value[type]
-        end
-      end
-      return list
+      max
     end
 
     def self.clean_string(string)
-      return string.strip.force_encoding("iso-8859-1").encode("utf-8")
+      string.strip.force_encoding("iso-8859-1").encode("utf-8")
     end
 
     def self.split_old_new_file(old, new)
@@ -42,13 +32,13 @@ module GitStatistics
       split_new = new.split('}')
 
       # Handle recombine the file splits into their whole paths)
-      if split_old.size == 1 && split_new.size == 1
+      if split_old.one? && split_new.one?
         old_file = split_old[0]
         new_file = split_new[0]
-      elsif split_new.size == 1
+      elsif split_new.one?
         old_file = split_old[0] + split_old[1]
         new_file = split_old[0] + split_new[0]
-      elsif split_old.size == 1
+      elsif split_old.one?
         old_file = split_old[0] + split_new[1]
         new_file = split_old[0] + split_new[0] + split_new[1]
       else
@@ -63,20 +53,18 @@ module GitStatistics
 
     def self.find_blob_in_tree(tree, file)
       # Check If cannot find tree in commit or if we found a submodule as the changed file
-      if tree == nil
-        return nil
-      elsif file == nil
+      if tree.nil? || file.nil?
         return nil
       elsif tree.instance_of?(Grit::Submodule)
         return tree
       end
 
       # If the blob is within the current directory (tree)
-      if file.size == 1
+      if file.one?
         blob = tree / file.first
 
         # Check if blob is nil (could not find changed file in tree)
-        if blob == nil
+        if blob.nil?
 
           # Try looking for submodules as they cannot be found using tree / file notation
           tree.contents.each do |content|
@@ -96,24 +84,24 @@ module GitStatistics
     end
 
     def self.get_modified_time(file)
-      if OS.mac?
-        Time.at(`stat -f %m #{file}`.to_i)
-      elsif OS.linux?
-        Time.at(`stat -c %Y #{file}`.to_i)
-      else
-        raise "Update on the Windows operating system is not supported"
-      end
+      command = case
+        when OS.mac? then "stat -f %m #{file}"
+        when OS.linux? then "stat -c %Y #{file}"
+        else raise "Update on the Windows operating system is not supported"; end
+      time_at(command)
     end
 
-    def self.get_number_of_files(directory, pattern)
-      count = 0
-      files = Dir.entries(directory)
+    def self.time_at(cmd)
+      Time.at(%x{#{cmd}}.to_i)
+    end
 
-      files.each do |file|
-        count += 1 if file =~ pattern
-      end
-
-      return count
+    def self.number_of_matching_files(directory, pattern)
+      Dir.entries(directory)
+          .select { |file| file =~ pattern }
+          .size
+    rescue SystemCallError
+      ::Kernel.warn "No such directory #{File.expand_path(directory)}"
+      0
     end
   end
 end

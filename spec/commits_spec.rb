@@ -170,12 +170,12 @@ describe Commits do
 
     context "with invalid type" do
       let(:sort) {:wrong}
-      it {stats.should == nil}
+      it {stats.should.nil?}
     end
 
     context "with invalid data" do
       let(:fixture_file) {nil}
-      it {stats.should == nil}
+      it {stats.should.nil?}
     end
   end
 
