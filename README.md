@@ -5,7 +5,7 @@
 
 ### Using the gem
 1. Acquire gem (`gem install git_statistics`)
-2. Run `git_statistics` in any directory that is a git repository (use -h for options)
+2. Run `git statistics` in any directory that is a git repository (use -h for options)
 
 ### Working with source
 1. Clone the repository

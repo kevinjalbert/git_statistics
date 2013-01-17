@@ -12,8 +12,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.files         = `git ls-files`.split($\)
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
-  gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
-  gem.executables << 'git_statistics'
+  gem.executables   = %w[ git_statistics git-statistics ]
   gem.required_ruby_version = '>= 1.9.1'
   gem.add_dependency('json')
   gem.add_dependency('trollop')
