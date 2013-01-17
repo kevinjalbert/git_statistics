@@ -1,5 +1,6 @@
 # CHANGELOG
 
+* [0.5.0 - January 16, 2013](https://github.com/kevinjalbert/git_statistics/compare/v0.4.1...v0.5.0)
 * [0.4.1 - October 9, 2012](https://github.com/kevinjalbert/git_statistics/compare/v0.4.0...v0.4.1)
 * [0.4.0 - September 25, 2012](https://github.com/kevinjalbert/git_statistics/compare/v0.3.0...v0.4.0)
 * [0.3.0 - September 12, 2012](https://github.com/kevinjalbert/git_statistics/compare/v0.2.0...v0.3.0)
