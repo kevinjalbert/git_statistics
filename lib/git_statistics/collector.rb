@@ -31,7 +31,7 @@ module GitStatistics
       buffer = []
       pipe.each do |line|
 
-        line = Utilities.clean_string(line)
+        line = line.clean_for_authors
 
         # Extract the buffer (commit) when we match ','x5 in the log format (delimeter)
         if line.split(',').size == 5
@@ -61,7 +61,7 @@ module GitStatistics
                   " --no-color --find-copies-harder --numstat --encoding=utf-8 "\
                   "--summary --format=\"%H,%an,%ae,%ad,%p\"")
 
-      buffer = pipe.map { |line| Utilities.clean_string(line) }
+      buffer = pipe.map { |line| line.clean_for_authors }
 
       # Check that the buffer has valid information (i.e., sha was valid)
       if !buffer.empty? && buffer.first.split(',').first == sha
@@ -78,7 +78,7 @@ module GitStatistics
 
         # Remove the '*' leading the current branch
         line = line[1..-1] if line[0] == '*'
-        branches << Utilities.clean_string(line)
+        branches << line.clean_for_authors
       end
 
       return branches
