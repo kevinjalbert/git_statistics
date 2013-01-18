@@ -1,5 +1,12 @@
 module GitStatistics
-  class RegexMatcher < Struct.new(:regex, :expected_change_count)
+  class RegexMatcher
+
+    attr_reader :regex, :expected_change_count
+    def initialize(regex, expected_change_count)
+      @regex = regex
+      @expected_change_count = expected_change_count
+    end
+
     def scan(line)
       line.scan(regex).first || []
     end
