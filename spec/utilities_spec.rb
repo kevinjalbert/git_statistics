@@ -54,7 +54,7 @@ describe Utilities do
 
   describe "#clean_string" do
     let(:unclean) {"  master   "}
-    let(:clean) {Utilities.clean_string(unclean)}
+    let(:clean) {unclean.clean_for_authors}
 
     context "with trailling spaces" do
       it {clean.should == "master"}
