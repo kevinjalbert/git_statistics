@@ -10,8 +10,8 @@ Gem::Specification.new do |gem|
   gem.summary       = "Gem that provides the ability to gather detailed git statistics"
   gem.description   = "git_statistics is a gem that provides detailed git statistics"
   gem.require_paths = ["lib"]
-  gem.files         = `git ls-files`.split($\)
-  gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
+  gem.files         = Dir['lib/**/*']
+  gem.test_files    = Dir['spec/**/*_spec.rb']
   gem.executables   = %w[ git_statistics git-statistics ]
   gem.required_ruby_version = '>= 1.9.1'
   gem.add_dependency('json')

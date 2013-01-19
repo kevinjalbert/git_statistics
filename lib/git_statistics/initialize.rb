@@ -13,4 +13,4 @@ module Grit
   end
 end
 
-Dir.glob(File.dirname(__FILE__) + '/*.rb') {|file| require file}
+Dir.glob(File.dirname(__FILE__) + '/**/*.rb') {|file| require file}
