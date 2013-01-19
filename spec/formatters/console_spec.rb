@@ -1,7 +1,7 @@
-require File.dirname(__FILE__) + '/spec_helper'
-include GitStatistics
+require 'spec_helper'
+include GitStatistics::Formatters
 
-describe Results do
+describe Console do
   let(:verbose) {false}
   let(:limit) {100}
   let(:fresh) {true}
@@ -21,7 +21,7 @@ describe Results do
     setup_commits(commits, fixture_file, save_file, pretty)
     commits.calculate_statistics(email, merge)
     commits.author_top_n_type(sort)
-    results = Results.new(commits)
+    results = Console.new(commits)
   }
 
   let(:config) {
