@@ -162,7 +162,10 @@ describe Utilities do
 
     context "with missing directory" do
       subject { files }
-      before { FileUtils.rmdir(directory) }
+      before do
+        subject.class.stub(:warn)
+        FileUtils.rmdir(directory)
+      end
       it { should == 0 }
     end
 

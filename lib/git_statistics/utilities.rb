@@ -100,7 +100,7 @@ module GitStatistics
           .select { |file| file =~ pattern }
           .size
     rescue SystemCallError
-      ::Kernel.warn "No such directory #{File.expand_path(directory)}"
+      warn "No such directory #{File.expand_path(directory)}"
       0
     end
   end
