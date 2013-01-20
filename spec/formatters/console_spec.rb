@@ -1,4 +1,5 @@
 require 'spec_helper'
+include GitStatistics
 include GitStatistics::Formatters
 
 describe Console do
