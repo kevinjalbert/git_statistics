@@ -5,12 +5,8 @@ require 'linguist'
 require 'os'
 require 'pathname'
 
-# Custom Blob for Grit to enable Linguist
-# This must load before other modules
-module Grit
-  class Blob
-    include Linguist::BlobHelper
-  end
-end
+# Must be required before all other files
+require 'git_statistics/blob'
+require 'git_statistics/regex_matcher'
 
-Dir.glob(File.dirname(__FILE__) + '/*.rb') {|file| require file}
+Dir.glob(File.dirname(__FILE__) + '/*.rb') {|file| require file.gsub(/.rb$/, '') }
