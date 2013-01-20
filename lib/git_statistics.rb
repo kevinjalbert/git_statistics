@@ -43,7 +43,7 @@ module GitStatistics
       collector.commits.calculate_statistics(@opts[:email], @opts[:merges])
 
       # Print results
-      results = Results.new(collector.commits)
+      results = Formatters::Console.new(collector.commits)
       puts results.print_summary(@opts[:sort], @opts[:email], @opts[:top])
     end
   end
