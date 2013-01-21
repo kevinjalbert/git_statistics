@@ -63,7 +63,7 @@ module GitStatistics
       if !pipe.empty? && pipe.first.split(',').first == sha
         pipe.to_a
       else
-        nil
+        []
       end
     end
 
