@@ -4,60 +4,71 @@ include GitStatistics
 describe Utilities do
 
   describe "#get_repository" do
-    let(:repo) {Utilities.get_repository(dir)}
+    subject {Utilities.get_repository(dir)}
 
     context "with root directory" do
       let(:dir) {Dir.pwd} # git_statistics/
-      it {repo.instance_of?(Grit::Repo).should be_true}
+      it { should be_a Grit::Repo }
     end
 
     context "with sub directory" do
       let(:dir) {File.dirname(__FILE__)} # git_statistics/spec/
-      it {repo.instance_of?(Grit::Repo).should be_true}
+      it { should be_a Grit::Repo }
     end
 
     context "when not in a repository directory" do
       let(:dir) {Dir.pwd + "../"} # git_statistics/../
-      it {repo.should.nil?}
+      it { should be_nil }
     end
   end
 
   describe "#max_length_in_list" do
     let(:max) {nil}
     let(:list) {[]}
-    let(:results) {Utilities.max_length_in_list(list, max)}
+    subject(:results) {Utilities.max_length_in_list(list, max)}
 
     context "with empty list" do
-      it {results.should.nil?}
+      it { should be_nil }
     end
 
     context "with nil list" do
       let(:list) {nil}
-      it {results.should.nil?}
+      it { should be_nil }
+    end
+
+    context "with empty list and zero max" do
+      let(:list) { [] }
+      let(:max) { 0 }
+      it { should == 0 }
     end
 
     context "with preset minimum length" do
       let(:max) {10}
-      it {results.should == 10}
+      it { should == 10 }
     end
 
     context "with valid list" do
       let(:list) {["abc", "a", "ab"]}
-      it {results.should == 3}
+      it { should == 3 }
     end
 
     context "with valid hash" do
       let(:list) {{"a" => "word_a", "ab" => "word_b", "abc" => "word_c"}}
-      it {results.should == 3}
+      it { should == 3 }
     end
   end
 
   describe "#clean_string" do
     let(:unclean) {"  master   "}
-    let(:clean) {unclean.clean_for_authors}
+    subject { unclean.clean_for_authors }
 
-    context "with trailling spaces" do
-      it {clean.should == "master"}
+    context "without trailing spaces" do
+      let(:unclean) { "master" }
+      it { should == 'master' }
+    end
+
+    context "with trailing spaces" do
+      it { should == "master" }
     end
   end
 
@@ -120,48 +131,52 @@ describe Utilities do
     let(:tree) {Utilities.get_repository(Dir.pwd).tree(sha)}
     let(:file) {nil}
     let(:blob) {Utilities.find_blob_in_tree(tree, file.split(File::Separator))}
+    subject { blob }
 
     context "blob on root tree" do
       let(:file) {"Gemfile"}
-      it {blob.instance_of?(Grit::Blob).should be_true}
-      it {blob.name.should == file}
+      it { should be_instance_of Grit::Blob }
+      its(:name) { should == file }
     end
 
     context "blob down tree" do
       let(:file) {"lib/git_statistics/collector.rb"}
-      it {blob.instance_of?(Grit::Blob).should be_true}
-      it {blob.name.should == file.split(File::Separator).last}
+      it { should be_instance_of Grit::Blob }
+      its(:name) { should == File.basename(file) }
     end
 
     context "file is nil" do
-      let(:blob) {Utilities.find_blob_in_tree(tree, nil)}
-      it {blob.should.nil?}
+      subject {Utilities.find_blob_in_tree(tree, nil)}
+      it { should be_nil }
     end
 
     context "file is empty" do
       let(:file) {""}
-      it {blob.should.nil?}
+      it { should be_nil }
     end
 
     context "file is submodule" do
       let(:sha) {"1940ef1c613a04f855d3867b874a4267d3e2c011"}
       let(:file) {"Spoon-Knife"}
-      it {blob.instance_of?(Grit::Submodule).should be_true}
-      it {blob.name.should == file}
+      it { should be_instance_of Grit::Submodule }
+      its(:name) { should == file }
     end
   end
 
   describe "#number_of_matching_files" do
-    let(:files) {Utilities.number_of_matching_files(directory, pattern)}
-    let(:pattern) {/\d+\.json/}
-    let(:directory) {Dir.pwd + File::Separator + "tmp_dir_for_spec" + File::Separator}
+    let(:directory) { File.join(Dir.pwd, "tmp_dir_for_spec") }
+    let(:pattern) { (/\d+\.json/) }
+    subject {Utilities.number_of_matching_files(directory, pattern)}
 
-    before(:each) do
+    around do |example|
       FileUtils.mkdir_p(directory)
+      Dir.chdir(directory) do
+        example.run
+      end
+      FileUtils.rmdir(directory)
     end
 
     context "with missing directory" do
-      subject { files }
       before do
         subject.class.stub(:warn)
         FileUtils.rmdir(directory)
@@ -169,36 +184,39 @@ describe Utilities do
       it { should == 0 }
     end
 
-    after(:each) do
-      FileUtils.rmdir(directory)
-    end
-
     context "with valid files" do
-      it do
-        FileUtils.touch(directory + "0.json")
-        FileUtils.touch(directory + "1.json")
-        FileUtils.touch(directory + "2.json")
-        files.should == 3
-        FileUtils.rm(directory + "0.json")
-        FileUtils.rm(directory + "1.json")
-        FileUtils.rm(directory + "2.json")
+      around do |example|
+        Dir.chdir(directory) { example.run }
       end
+      before do
+        FileUtils.touch("0.json")
+        FileUtils.touch("1.json")
+        FileUtils.touch("2.json")
+      end
+      after do
+        FileUtils.rm("0.json")
+        FileUtils.rm("1.json")
+        FileUtils.rm("2.json")
+      end
+      it { should == 3 }
     end
 
     context "with invalid files" do
-      it do
-        FileUtils.touch(directory + "0.json")
-        FileUtils.touch(directory + "incorrect.json")
-        FileUtils.touch(directory + "1.json")
-        files.should == 2
-        FileUtils.rm(directory + "0.json")
-        FileUtils.rm(directory + "incorrect.json")
-        FileUtils.rm(directory + "1.json")
+      before do
+        FileUtils.touch("0.json")
+        FileUtils.touch("incorrect.json")
+        FileUtils.touch("1.json")
       end
+      after do
+        FileUtils.rm("0.json")
+        FileUtils.rm("incorrect.json")
+        FileUtils.rm("1.json")
+      end
+      it { should == 2 }
     end
 
     context "with no files" do
-      it {files.should == 0}
+      it { should == 0 }
     end
   end
 

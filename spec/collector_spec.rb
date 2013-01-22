@@ -231,38 +231,38 @@ describe Collector do
   end
 
   describe "#fall_back_collect_commit" do
-    let(:results) {collector.fall_back_collect_commit(sha)}
+    subject { collector.fall_back_collect_commit(sha) }
     context "with valid sha" do
-      let(:fixture_file) {"commit_buffer_whole.txt"}
-      let(:sha) {"260bc61e2c42930d91f3503c5849b0a2351275cf"}
-      it {results.should == buffer}
+      let(:fixture_file) { "commit_buffer_whole.txt" }
+      let(:sha) { "260bc61e2c42930d91f3503c5849b0a2351275cf" }
+      it { should == buffer }
     end
 
     context "with invalid sha" do
-      let(:sha) {"111111aa111a11111a11aa11aaaa11a111111a11"}
-      it {results.should.nil?}
+      let(:sha) { "111111aa111a11111a11aa11aaaa11a111111a11" }
+      it { should be_nil }
     end
   end
 
   describe "#get_blob" do
-    let(:sha) {"695b487432e8a1ede765b4e3efda088ab87a77f8"}  # Commit within repository
-    let(:blob) {collector.get_blob(sha, file)}
+    let(:sha) { "695b487432e8a1ede765b4e3efda088ab87a77f8" }  # Commit within repository
+    subject { collector.get_blob(sha, file) }
 
     context "with valid blob" do
       let(:file) {{:file => "Gemfile.lock"}}
-      it {blob.instance_of?(Grit::Blob).should be_true}
-      it {blob.name.should == file[:file].split(File::Separator).last}
-    end
-
-    context "with invalid blob" do
-      let(:file) {{:file => "dir/nothing.rb"}}
-      it {blob.should.nil?}
+      it { should be_a Grit::Blob }
+      its(:name) { should == file[:file].split(File::Separator).last }
     end
 
     context "with deleted file" do
       let(:file) {{:file => "spec/collector_spec.rb"}}
-      it {blob.instance_of?(Grit::Blob).should be_true}
-      it {blob.name.should == file[:file].split(File::Separator).last}
+      it { should be_a Grit::Blob }
+      its(:name) { should == file[:file].split(File::Separator).last }
+    end
+
+    context "with invalid blob" do
+      let(:file) {{:file => "dir/nothing.rb"}}
+      it { should be_nil }
     end
   end
 
