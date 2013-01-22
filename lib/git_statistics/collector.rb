@@ -82,8 +82,8 @@ module GitStatistics
         # Clean the line (remove spacing)
         line = line.clean_for_authors
 
-        # Ignore (no branch) as it is a detached HEAD state for the repository
-        branches << line.clean_for_authors if line != '(no branch)'
+        # Ignore (no branch) if repository is in a detached HEAD state
+        branches << line unless line == '(no branch)'
       end
 
       return branches
