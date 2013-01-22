@@ -12,7 +12,7 @@ describe Console do
   let(:commits) {collector.commits}
 
   let(:fixture_file) {"multiple_authors.json"}
-  let(:save_file) {collector.commits_path + "0.json"}
+  let(:save_file) { File.join(collector.commits_path, "0.json") }
   let(:email) {false}
   let(:merge) {false}
   let(:sort) {:commits}

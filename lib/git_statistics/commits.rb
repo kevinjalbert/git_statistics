@@ -14,12 +14,11 @@ module GitStatistics
 
     def clean
       # Ensure the path exists
-      FileUtils.mkdir_p(@path)
+      FileUtils.mkdir_p(path)
 
       # Remove all files within path if saving
-      if @fresh
-        Dir.entries(@path).each do |file|
-          next if %w[. ..].include? file
+      if fresh
+        files_in_path.each do |file|
           File.delete(File.join(path, file))
         end
       end
@@ -28,6 +27,10 @@ module GitStatistics
       @stats = Hash.new
       @totals = Hash.new(0)
       @totals[:languages] = {}
+    end
+
+    def files_in_path
+      Dir.entries(path).reject { |file| %w[. ..].include?(file) }
     end
 
     def flush_commits(force = false)
