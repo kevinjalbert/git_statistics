@@ -78,7 +78,12 @@ module GitStatistics
 
         # Remove the '*' leading the current branch
         line = line[1..-1] if line[0] == '*'
-        branches << line.clean_for_authors
+
+        # Clean the line (remove spacing)
+        line = line.clean_for_authors
+
+        # Ignore (no branch) if repository is in a detached HEAD state
+        branches << line unless line == '(no branch)'
       end
 
       return branches
