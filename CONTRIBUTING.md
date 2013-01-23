@@ -25,6 +25,7 @@ If you are submitting a pull requests we recommend the following process:
 5. If you wish for this topic branch to eventually proceed into the main repository, *create a pull requests as soon as possible*
 6. Continue to work on your topic branch, which is now exposed on the main repository (for further discussion with collaborators)
 7. Complete your topic branch's feature or fix
-8. Signify that you are completed in the pull requests
-9. At least one of the repository collaborators will sign off (i.e., with a thumbs up) that your changes are good to merge
-10. Your pull requests is accepted into the main repository's master branch
+8. Make sure you *write green specs*. Your pull request will not be merged until there are passing specs.
+9. Signify that you are completed in the pull requests
+10. At least one of the repository collaborators will sign off (i.e., with a thumbs up) that your changes are good to merge
+11. Your pull requests is accepted into the main repository's master branch
