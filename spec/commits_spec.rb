@@ -44,53 +44,44 @@ describe Commits do
   describe "#flush_commits" do
     let(:commits) {collector.commits.load(fixture(fixture_file))}
 
+    def commit_size_changes_from(beginning, opts = {})
+      commits.size.should == beginning
+      commits.flush_commits(opts[:force] || false)
+      commits.size.should == opts[:to]
+    end
+
     context "with commits exceeding limit" do
       let(:limit) {2}
-      it do
-        commits.size.should == 3
-        commits.flush_commits
-        commits.size.should == 0
-      end
+      it { commit_size_changes_from(3, to: 0) }
     end
 
     context "with commits equal to limit" do
       let(:limit) {3}
-      it do
-        commits.size.should == 3
-        commits.flush_commits
-        commits.size.should == 0
-      end
+      it { commit_size_changes_from(3, to: 0) }
     end
 
     context "with commits less than limit" do
       let(:limit) {5}
-      it do
-        commits.size.should == 3
-        commits.flush_commits
-        commits.size.should == 3
-      end
+      it { commit_size_changes_from(3, to: 3) }
     end
 
     context "with commits less than limit but forced" do
       let(:limit) {5}
-      it do
-        commits.size.should == 3
-        commits.flush_commits(true)
-        commits.size.should == 0
-      end
+      it { commit_size_changes_from(3, to: 0, force: true) }
     end
   end
 
   describe "#process_commits" do
     let(:commits) {collector.commits.load(fixture(fixture_file))}
     let(:type) {:author}
+    subject { commits.stats[author_name] }
+
+    before do
+      commits.process_commits(type, merge)
+    end
 
     context "with merge" do
       let(:merge) {true}
-      subject {
-        commits.process_commits(type, merge)
-        commits.stats[author_name]
-      }
 
       context "on first author" do
         let(:author_name) {"Kevin Jalbert"}
@@ -122,10 +113,6 @@ describe Commits do
 
     context "without merge" do
       let(:merge) {false}
-      subject {
-        commits.process_commits(type, merge)
-        commits.stats[author_name]
-      }
 
       context "on first author" do
         let(:author_name) {"Kevin Jalbert"}
@@ -156,11 +143,11 @@ describe Commits do
 
   describe "#author_top_n_type" do
     let(:sort) {:deletions}
+    subject {stats[author]}
 
     context "with valid data" do
       context "on first author" do
-        author = "John Smith"
-        subject {stats[author]}
+        let(:author) { 'John Smith' }
         it {stats.has_key?(author).should be_true}
         it {subject[:commits].should == 1}
         it {subject[:deletions].should == 16}
@@ -171,8 +158,7 @@ describe Commits do
       end
 
       context "on second author" do
-        author = "Kevin Jalbert"
-        subject {stats[author]}
+        let(:author) { "Kevin Jalbert" }
         it {stats.has_key?(author).should be_true}
         it {subject[:commits].should == 1}
         it {subject[:additions].should == 73}
@@ -190,22 +176,22 @@ describe Commits do
 
     context "with invalid type" do
       let(:sort) {:wrong}
-      it {stats.should.nil?}
+      it { stats.should be_nil }
     end
 
     context "with invalid data" do
       let(:fixture_file) {nil}
-      it {stats.should.nil?}
+      it { stats.should be_nil }
     end
   end
 
   describe "#calculate_statistics" do
     let(:fixture_file) {"single_author_pretty.json"}
+    subject {stats[author]}
 
     context "with email" do
       let(:email) {true}
-      author = "kevin.j.jalbert@gmail.com"
-      subject {stats[author]}
+      let(:author) { "kevin.j.jalbert@gmail.com" }
 
       it {stats.has_key?(author).should be_true}
       it {subject[:commits].should == 1}
@@ -222,8 +208,7 @@ describe Commits do
 
     context "with merge" do
       let(:merge) {true}
-      author = "Kevin Jalbert"
-      subject {stats[author]}
+      let(:author) { 'Kevin Jalbert' }
 
       it {stats.has_key?(author).should be_true}
       it {subject[:commits].should == 2}
