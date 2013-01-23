@@ -253,7 +253,7 @@ describe Collector do
 
     context "with invalid sha" do
       let(:sha) { "111111aa111a11111a11aa11aaaa11a111111a11" }
-      it { should be_nil }
+      it { should be_empty }
     end
   end
 
