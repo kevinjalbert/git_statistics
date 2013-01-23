@@ -98,6 +98,19 @@ describe Collector do
       it {branches.size.should == 1}
       it {branches[0].should == "master"}
     end
+
+    context "with many branches in detached state" do
+      let(:fixture_file) {"git_many_branches_detached_state.txt"}
+      it {branches.size.should == 2}
+      it {branches[0].should == "issue_2"}
+      it {branches[1].should == "master"}
+    end
+
+    context "with zero branches in detached state" do
+      let(:fixture_file) {"git_zero_branches_detached_state.txt"}
+      it {branches.size.should == 1}
+      it {branches[0].should == "master"}
+    end
   end
 
   describe "#acquire_commit_data" do
