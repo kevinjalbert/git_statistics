@@ -27,11 +27,12 @@ module GitStatistics
         # Acquire formatting pattern for output
         pattern = "%-#{config[:author_length]}s | %-#{config[:language_length]}s | %7s | %9s | %9s | %7s | %7s | %7s | %6s | %6s |"
         config[:pattern] = pattern
-        return config
+        config
       end
 
       def print_summary(sort, email, top_n = 0)
         # Prepare and determine the config for the result summary based on parameters
+        commit_totals = @commits.totals
         config = prepare_result_summary(sort, email, top_n)
 
         # Print query/header information
@@ -39,56 +40,58 @@ module GitStatistics
 
         # Print per author information
         config[:data].each do |key,value|
-          output += config[:pattern] % [key, "", value[:commits], value[:additions],
+          output << config[:pattern] % [key, "", value[:commits], value[:additions],
                           value[:deletions], value[:create], value[:delete],
                           value[:rename], value[:copy], value[:merges]]
-          output += "\n"
-          output += print_language_data(config[:pattern], value)
+          output << "\n"
+          output << print_language_data(config[:pattern], value)
         end
 
         # Reprint query/header for repository information
-        output += "\n"
-        output += print_header(config)
-        data = @commits.totals
-        output += config[:pattern] % ["Repository Totals", "", data[:commits],
-                        data[:additions], data[:deletions], data[:create],
-                        data[:delete], data[:rename], data[:copy], data[:merges]]
-        output += "\n"
-        output += print_language_data(config[:pattern], data)
-        return output
+        output << "\n"
+        output << print_header(config)
+        output << config[:pattern] % ["Repository Totals", "", commit_totals[:commits],
+                        commit_totals[:additions], commit_totals[:deletions], commit_totals[:create],
+                        commit_totals[:delete], commit_totals[:rename], commit_totals[:copy], commit_totals[:merges]]
+        output << "\n"
+        output += print_language_data(config[:pattern], commit_totals)
+        output
       end
 
       def print_language_data(pattern, data)
         output = ""
         # Print information of each language for the data
         data[:languages].each do |key,value|
-          output += pattern % ["", key, "", value[:additions], value[:deletions],
+          output << pattern % ["", key, "", value[:additions], value[:deletions],
                           value[:create], value[:delete], value[:rename],
                           value[:copy], value[:merges]]
-          output += "\n"
+          output << "\n"
         end
-        return output
+
+        output
       end
 
       def print_header(config)
-        total_authors = @commits.stats.size
+        output = get_author_info(config, @commits.stats.size)
+        output << get_header_info(config)
+        output << "\n"
+        output
+      end
 
-        output = ""
-        # Print summary information of displayed results
-        if config[:top_n] > 0 and config[:top_n] < total_authors
-          output += "Top #{config[:top_n]} authors(#{total_authors}) sorted by #{config[:sort]}\n"
-        else
-          output += "All authors(#{total_authors}) sorted by #{config[:sort]}\n"
+      def get_header_info(config)
+        top_and_bottom = "-"*87 + "-"*config[:author_length] + "-"*config[:language_length]
+        headers = [top_and_bottom]
+        headers << config[:pattern] % ['Name/Email', 'Language', 'Commits', 'Additions', 'Deletions', 'Creates', 'Deletes', 'Renames', 'Copies', 'Merges']
+        headers << top_and_bottom
+        headers.join("\n")
+      end
+
+      def get_author_info(config, total_authors)
+        if config[:top_n] > 0 && config[:top_n] < total_authors
+          return "Top #{config[:top_n]} authors(#{total_authors}) sorted by #{config[:sort]}\n"
         end
 
-        # Print column headers
-        output += "-"*87 + "-"*config[:author_length] + "-"*config[:language_length]
-        output += "\n"
-        output += config[:pattern] % ['Name/Email', 'Language', 'Commits', 'Additions', 'Deletions', 'Creates', 'Deletes', 'Renames', 'Copies', 'Merges']
-        output += "\n"
-        output +=  "-"*87 + "-"*config[:author_length] + "-"*config[:language_length]
-        output += "\n"
-        return output
+        "All authors(#{total_authors}) sorted by #{config[:sort]}\n"
       end
     end
   end
