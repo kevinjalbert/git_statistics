@@ -24,7 +24,7 @@ describe Pipe do
       let(:lines) { [] }
       it { pipe.should be_empty }
     end
-    context "with empty lines" do
+    context "with a single line" do
       let(:lines) { [stub] }
       it { pipe.should_not be_empty }
     end
