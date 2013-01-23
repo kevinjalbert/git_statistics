@@ -16,22 +16,20 @@ module GitStatistics
 
     def collect(branch, time_since = "", time_until = "")
       # Create pipe for git log to acquire branches
-      pipe = open("|git --no-pager branch --no-color")
+      pipe = Pipe.new("git --no-pager branch --no-color")
 
       # Collect branches to use for git log
       branches = branch ? ["", ""] : collect_branches(pipe)
 
       # Create pipe for the git log to acquire commits
-      pipe = open("|git --no-pager log #{branches.join(' ')} --date=iso --reverse"\
-                  " --no-color --find-copies-harder --numstat --encoding=utf-8"\
-                  " --summary #{time_since} #{time_until}"\
-                  " --format=\"%H,%an,%ae,%ad,%p\"")
+      pipe = Pipe.new("git --no-pager log #{branches.join(' ')} --date=iso --reverse"\
+                      " --no-color --find-copies-harder --numstat --encoding=utf-8"\
+                      " --summary #{time_since} #{time_until}"\
+                      " --format=\"%H,%an,%ae,%ad,%p\"")
 
       # Use a buffer approach to queue up lines from the log for each commit
       buffer = []
       pipe.each do |line|
-
-        line = line.clean_for_authors
 
         # Extract the buffer (commit) when we match ','x5 in the log format (delimeter)
         if line.split(',').size == 5
@@ -57,17 +55,15 @@ module GitStatistics
 
     def fall_back_collect_commit(sha)
       # Create pipe for the git log to acquire commits
-      pipe = open("|git --no-pager show #{sha} --date=iso --reverse"\
-                  " --no-color --find-copies-harder --numstat --encoding=utf-8 "\
-                  "--summary --format=\"%H,%an,%ae,%ad,%p\"")
-
-      buffer = pipe.map { |line| line.clean_for_authors }
+      pipe = Pipe.new("git --no-pager show #{sha} --date=iso --reverse"\
+                      " --no-color --find-copies-harder --numstat --encoding=utf-8 "\
+                      "--summary --format=\"%H,%an,%ae,%ad,%p\"")
 
       # Check that the buffer has valid information (i.e., sha was valid)
-      if !buffer.empty? && buffer.first.split(',').first == sha
-        buffer
+      if !pipe.empty? && pipe.first.split(',').first == sha
+        pipe.to_a
       else
-        nil
+        []
       end
     end
 
@@ -75,7 +71,6 @@ module GitStatistics
       # Acquire all available branches from repository
       branches = []
       pipe.each do |line|
-
         # Remove the '*' leading the current branch
         line = line[1..-1] if line[0] == '*'
 
