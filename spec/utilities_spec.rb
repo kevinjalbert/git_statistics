@@ -185,9 +185,6 @@ describe Utilities do
     end
 
     context "with valid files" do
-      around do |example|
-        Dir.chdir(directory) { example.run }
-      end
       before do
         FileUtils.touch("0.json")
         FileUtils.touch("1.json")
