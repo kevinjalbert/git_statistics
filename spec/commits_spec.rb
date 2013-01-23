@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'fileutils'
 include GitStatistics
 
 describe Commits do
@@ -11,7 +12,7 @@ describe Commits do
   let(:commits) {collector.commits}
 
   let(:fixture_file) {"multiple_authors.json"}
-  let(:save_file) {collector.commits_path + "0.json"}
+  let(:save_file) { File.join(collector.commits_path, "0.json") }
   let(:email) {false}
   let(:merge) {false}
   let(:sort) {:commits}
@@ -19,6 +20,25 @@ describe Commits do
     setup_commits(commits, fixture_file, save_file, pretty)
     commits.calculate_statistics(email, merge)
     commits.author_top_n_type(sort)
+  end
+
+  describe "#files_in_path" do
+    let(:path) { '/tmp/example' }
+    subject { commits.files_in_path }
+    before do
+      FileUtils.mkdir_p(path)
+      Dir.chdir(path) do
+        FileUtils.touch '0.json'
+        FileUtils.touch '1.json'
+      end
+      commits.stub(:path) { path }
+    end
+    after do
+      FileUtils.rm_rf(path)
+    end
+    its(:count) { should == 2 }
+    it { should_not include '.' }
+    it { should_not include '..' }
   end
 
   describe "#flush_commits" do
