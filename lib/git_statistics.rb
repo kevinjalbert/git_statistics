@@ -14,6 +14,7 @@ module GitStatistics
         opt :top, "Show the top N authors in results", default:  0
         opt :branch, "Use current branch for statistics (otherwise all branches)", default:  false
         opt :verbose, "Verbose output (shows INFO log message)", default:  false
+        opt :debug, "Debug output (shows DEBUG log messages)", default:  false
         opt :limit, "The maximum limit of commits to hold in memory at a time", default:  100
       end
     end
@@ -22,6 +23,11 @@ module GitStatistics
       if opts[:verbose]
         global_logger_level( Logger::INFO )
         logger.sev_threshold = Logger::INFO
+      end
+
+      if opts[:debug]
+        global_logger_level( Logger::DEBUG )
+        logger.sev_threshold = Logger::DEBUG
       end
 
       # Collect data (incremental or fresh) based on presence of old data
