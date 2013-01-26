@@ -3,9 +3,6 @@ gemspec
 
 group :test do
   gem "simplecov"
-end
-
-group :development do
   gem "guard-rspec"
 end
 
