@@ -1,19 +1,8 @@
 source 'https://rubygems.org'
-
-gem "json"
-gem "trollop"
-gem "grit"
-gem "github-linguist"
-gem "os"
+gemspec
 
 group :test do
   gem "simplecov"
-  gem "rspec"
-  gem "rake"
-end
-
-group :development do
-  gem "guard"
   gem "guard-rspec"
 end
 
