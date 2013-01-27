@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
-require File.expand_path('../lib/git_statistics/version', __FILE__)
+$:.unshift File.expand_path("../lib", __FILE__)
+require 'git_statistics/version'
 
 Gem::Specification.new do |gem|
   gem.homepage      = 'https://github.com/kevinjalbert/git_statistics'
