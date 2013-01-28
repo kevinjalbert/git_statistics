@@ -4,7 +4,7 @@ rvm:
   - 1.9.2
   - 1.9.3
 
-bundler_args: --without development darwin
+bundler_args: --without test darwin
 
 before_install:
   - sudo apt-get update

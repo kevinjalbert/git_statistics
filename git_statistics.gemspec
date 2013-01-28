@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
-require File.expand_path('../lib/git_statistics/version', __FILE__)
+$:.unshift File.expand_path("../lib", __FILE__)
+require 'git_statistics/version'
 
 Gem::Specification.new do |gem|
   gem.homepage      = 'https://github.com/kevinjalbert/git_statistics'
@@ -14,9 +15,14 @@ Gem::Specification.new do |gem|
   gem.test_files    = Dir['spec/**/*_spec.rb']
   gem.executables   = %w[ git_statistics git-statistics ]
   gem.required_ruby_version = '>= 1.9.1'
+
   gem.add_dependency('json')
   gem.add_dependency('trollop')
   gem.add_dependency('grit')
   gem.add_dependency('github-linguist')
   gem.add_dependency('os')
+
+  gem.add_development_dependency "rspec", "~> 2.12.0"
+  gem.add_development_dependency "rake"
+  gem.add_development_dependency "simplecov"
 end
