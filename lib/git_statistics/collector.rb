@@ -19,7 +19,7 @@ module GitStatistics
       pipe = Pipe.new("git --no-pager branch --no-color")
 
       # Collect branches to use for git log
-      branches = branch ? ["", ""] : collect_branches(pipe)
+      branches = branch ? [] : collect_branches(pipe)
 
       # Create pipe for the git log to acquire commits
       pipe = Pipe.new("git --no-pager log #{branches.join(' ')} --date=iso --reverse"\
@@ -67,21 +67,11 @@ module GitStatistics
       end
     end
 
+    # TODO: Move into some sort of Branch object for clarity and better testing
     def collect_branches(pipe)
-      # Acquire all available branches from repository
-      branches = []
-      pipe.each do |line|
-        # Remove the '*' leading the current branch
-        line = line[1..-1] if line[0] == '*'
-
-        # Clean the line (remove spacing)
-        line = line.clean_for_authors
-
-        # Ignore (no branch) if repository is in a detached HEAD state
-        branches << line unless line == '(no branch)'
-      end
-
-      return branches
+      pipe.map do |line|
+        line.clean_for_authors.sub(/\A\*\s/, '')
+      end.reject { |branch| branch == '(no branch)' }
     end
 
     def acquire_commit_data(line)
