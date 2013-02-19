@@ -6,9 +6,6 @@ module GitStatistics
     def initialize(verbose, limit, fresh, pretty)
       @verbose = verbose
       @repo = Utilities.get_repository
-
-      raise "No Git repository found" if @repo.nil?
-
       @repo_path = File.expand_path("..", @repo.path)
       @commits_path = File.join(@repo_path, ".git_statistics")
       @commits = Commits.new(@commits_path, fresh, limit, pretty)
