@@ -21,13 +21,11 @@ module GitStatistics
 
     def execute
       if opts[:verbose]
-        global_logger_level( Logger::INFO )
-        logger.sev_threshold = Logger::INFO
+        set_global_logger_level( Logger::INFO )
       end
 
       if opts[:debug]
-        global_logger_level( Logger::DEBUG )
-        logger.sev_threshold = Logger::DEBUG
+        set_global_logger_level( Logger::DEBUG )
       end
 
       # Collect data (incremental or fresh) based on presence of old data
