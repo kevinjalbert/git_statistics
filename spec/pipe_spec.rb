@@ -3,7 +3,7 @@ require 'spec_helper'
 include GitStatistics
 
 describe Pipe do
-  let(:command) { 'time' }
+  let(:command) { 'git' }
   let(:line)    { stub }
   let(:pipe)    { Pipe.new(command) }
 
