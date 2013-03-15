@@ -1,5 +1,7 @@
 module GitStatistics
   module Utilities
+    extend Logging
+
     def self.get_repository(path = Dir.pwd)
       # Connect to git repository if it exists
       directory = Pathname.new(path)
@@ -100,7 +102,7 @@ module GitStatistics
           .select { |file| file =~ pattern }
           .size
     rescue SystemCallError
-      warn "No such directory #{File.expand_path(directory)}"
+      logger.warn "No such directory #{File.expand_path(directory)}"
       0
     end
   end

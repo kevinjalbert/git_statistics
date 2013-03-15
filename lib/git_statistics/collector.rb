@@ -1,12 +1,10 @@
 module GitStatistics
   class Collector
+    include Logging
+    attr_accessor :repo, :repo_path, :commits_path, :commits
 
-    attr_accessor :repo, :repo_path, :commits_path, :commits, :verbose
-
-    def initialize(verbose, limit, fresh, pretty)
-      @verbose = verbose
+    def initialize(limit, fresh, pretty)
       @repo = Utilities.get_repository
-
       raise "No Git repository found" if @repo.nil?
 
       @repo_path = File.expand_path("..", @repo.path)
@@ -20,6 +18,7 @@ module GitStatistics
 
       # Collect branches to use for git log
       branches = branch ? [] : collect_branches(pipe)
+      logger.debug "Found git branches #{branches.to_s}"
 
       # Create pipe for the git log to acquire commits
       pipe = Pipe.new("git --no-pager log #{branches.join(' ')} --date=iso --reverse"\
@@ -42,7 +41,6 @@ module GitStatistics
 
           # Save commits to file if size exceeds limit or forced
           @commits.flush_commits
-          @repo = Utilities.get_repository
         end
 
         buffer << line
@@ -99,11 +97,11 @@ module GitStatistics
       # Acquire general commit information
       commit_data = acquire_commit_data(buffer[0])
 
-      puts "Extracting #{commit_data[:sha]}" if @verbose
+      logger.info "Extracting #{commit_data[:sha]}"
 
       # Abort if the commit sha extracted form the buffer is invalid
       if commit_data[:sha].scan(/[\d|a-f]{40}/)[0].nil?
-        puts "Invalid buffer containing commit information"
+        logger.warn "Invalid buffer containing commit information"
         return
       end
 
@@ -112,7 +110,7 @@ module GitStatistics
 
       # No files were changed in this commit, abort commit
       if files.nil?
-        puts "No files were changed"
+        logger.debug "No files were changed in commit"
         return
       end
 
@@ -124,9 +122,9 @@ module GitStatistics
         if blob.instance_of?(Grit::Blob)
           process_blob(commit_data[:data], blob, file)
         elsif blob.instance_of?(Grit::Submodule)
-          puts "Ignoring submodule #{blob.name}"
+          logger.debug "Ignoring submodule #{blob.name}"
         else
-          puts "Problem processing file #{file[:file]}"
+          logger.error "Problem processing file #{file[:file]}"
         end
       end
       return commit_data[:data]

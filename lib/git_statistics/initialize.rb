@@ -6,6 +6,7 @@ require 'os'
 require 'pathname'
 
 # Must be required before all other files
+require 'git_statistics/logger'
 require 'git_statistics/core_ext/string'
 require 'git_statistics/blob'
 require 'git_statistics/regex_matcher'
