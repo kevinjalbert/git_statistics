@@ -1,17 +1,16 @@
 module GitStatistics
   module Utilities
+
+    class NotInRepository < StandardError; end
+
     def self.get_repository(path = Dir.pwd)
-      # Connect to git repository if it exists
-      directory = Pathname.new(path)
-      repo = nil
-      while !directory.root? do
-        begin
-          repo = Grit::Repo.new(directory)
-          return repo
-        rescue
-          directory = directory.parent
-        end
-      end
+      ascender = Pathname.new(path).to_enum(:ascend)
+      repo_path = ascender.detect { |path| (path + '.git').exist? }
+      raise NotInRepository if repo_path.nil?
+      Grit::Repo.new(repo_path.to_s)
+    rescue NotInRepository
+      puts "You must be within a Git project to run git-statistics."
+      exit 0
     end
 
     def self.max_length_in_list(list, max = nil)
