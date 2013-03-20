@@ -85,12 +85,11 @@ module GitStatistics
     end
 
     def self.get_modified_time(file)
-      command = case os
-                when :mac           then "stat -f %m #{file}"
-                when :linux, :unix  then "stat -c %Y #{file}"
-                else raise "`stat` is not supported on the Windows operating system"
-                end
-      time_at(command)
+      if os == :windows
+        raise "`stat` is not supported on the Windows operating system"
+      end
+      flags = os == :mac ? "-f %m" : "-c %Y"
+      time_at("stat #{flags} #{file}")
     end
 
     def os
