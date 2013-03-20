@@ -10,9 +10,7 @@ describe Collector do
 
   # Create buffer which is an array of cleaned lines
   let(:buffer) {
-    fixture(fixture_file).readlines.collect do |line|
-      line.clean_for_authors
-    end
+    fixture(fixture_file).readlines.map(&:clean_for_authors)
   }
 
   describe "#collect" do
