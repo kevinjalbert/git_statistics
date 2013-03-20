@@ -39,7 +39,6 @@ module GitStatistics
 
           # Save commits to file if size exceeds limit or forced
           @commits.flush_commits
-          @repo = Utilities.get_repository
         end
 
         buffer << line
