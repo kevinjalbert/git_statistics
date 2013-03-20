@@ -45,8 +45,6 @@ module GitStatistics
         output << separator
         output << print_row("Repository Totals", commit_totals)
         output << print_language_data(commit_totals)
-        output << separator
-        output << separator
         output.flatten.join("\n")
       end
 
