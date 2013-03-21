@@ -35,7 +35,7 @@ module GitStatistics
         config = prepare_result_summary(sort, email, top_n)
 
         # Print query/header information
-        output = print_header(config)
+        output = print_header
 
         # Print per author information
         config[:data].each do |name, commit_data|
@@ -63,14 +63,14 @@ module GitStatistics
                         commit_info[:delete], commit_info[:rename], commit_info[:copy], commit_info[:merges])
       end
 
-      def print_header(config)
+      def print_header
         output = []
-        output << get_author_info(config, @commits.stats.size)
-        output << get_header_info(config)
+        output << get_author_info(@commits.stats.size)
+        output << get_header_info
         output
       end
 
-      def get_header_info(config)
+      def get_header_info
         headers = []
         headers << separator
         headers << format_for_row('Name/Email', 'Language', 'Commits', 'Additions', 'Deletions', 'Creates', 'Deletes', 'Renames', 'Copies', 'Merges')
@@ -86,7 +86,7 @@ module GitStatistics
         "-"*87 + "-"*config[:author_length] + "-"*config[:language_length]
       end
 
-      def get_author_info(config, total_authors)
+      def get_author_info(total_authors)
         if config[:top_n] > 0 && config[:top_n] < total_authors
           return "Top #{config[:top_n]} authors(#{total_authors}) sorted by #{config[:sort]}"
         end
