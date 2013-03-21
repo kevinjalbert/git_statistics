@@ -16,7 +16,7 @@ module GitStatistics
       pipe = Pipe.new("git --no-pager branch --no-color")
 
       # Collect branches to use for git log
-      branches = branch ? [] : collect_branches(pipe)
+      branches = branch ? [] : Branches.collect
 
       # Create pipe for the git log to acquire commits
       pipe = Pipe.new("git --no-pager log #{branches.join(' ')} --date=iso --reverse"\
@@ -61,13 +61,6 @@ module GitStatistics
       else
         []
       end
-    end
-
-    # TODO: Move into some sort of Branch object for clarity and better testing
-    def collect_branches(pipe)
-      pipe.map do |line|
-        line.clean_for_authors.sub(/\A\*\s/, '')
-      end.reject { |branch| branch == '(no branch)' }
     end
 
     def acquire_commit_data(line)

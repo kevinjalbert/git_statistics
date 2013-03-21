@@ -81,36 +81,6 @@ describe Collector do
     end
   end
 
-  describe "#collect_branches" do
-    let(:branches) {collector.collect_branches(fixture(fixture_file))}
-
-    context "with many branches" do
-    let(:fixture_file) {"git_many_branches.txt"}
-      it {branches.size.should == 2}
-      it {branches[0].should == "issue_2"}
-      it {branches[1].should == "master"}
-    end
-
-    context "with zero branches" do
-      let(:fixture_file) {"git_zero_branches.txt"}
-      it {branches.size.should == 1}
-      it {branches[0].should == "master"}
-    end
-
-    context "with many branches in detached state" do
-      let(:fixture_file) {"git_many_branches_detached_state.txt"}
-      it {branches.size.should == 2}
-      it {branches[0].should == "issue_2"}
-      it {branches[1].should == "master"}
-    end
-
-    context "with zero branches in detached state" do
-      let(:fixture_file) {"git_zero_branches_detached_state.txt"}
-      it {branches.size.should == 1}
-      it {branches[0].should == "master"}
-    end
-  end
-
   describe "#acquire_commit_data" do
     let(:input) {fixture(fixture_file).read}
     let(:data) {collector.acquire_commit_data(input)}
