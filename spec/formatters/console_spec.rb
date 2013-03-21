@@ -29,6 +29,8 @@ describe Console do
     results.prepare_result_summary(sort, email, top_n)
   }
 
+  before { config }
+
   describe "#prepare_result_summary" do
     context "with email and sorting" do
       context "on first author" do
@@ -160,7 +162,6 @@ describe Console do
 
   describe "#print_header" do
     context "with valid data" do
-      before { results.prepare_result_summary(sort, email, top_n) }
       subject { results.print_header.join("\n") }
       it {should == fixture("header_output.txt").read.chomp}
     end
