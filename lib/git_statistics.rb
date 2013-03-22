@@ -15,6 +15,7 @@ module GitStatistics
         top: 0,
         branch: false,
         verbose: false,
+        debug: false,
         limit: 100
       )
       parse_options
@@ -22,6 +23,7 @@ module GitStatistics
 
     def execute
       Log.level = Logger::INFO if options.verbose
+      Log.level = Logger::DEBUG if options.debug
 
       # Collect data (incremental or fresh) based on presence of old data
       if options.update
@@ -76,8 +78,11 @@ module GitStatistics
         opt.on "-b", "--branch", "Use current branch for statistics (otherwise all branches)" do
           options.branch = true
         end
-        opt.on "-v", "--verbose", "Verbose output (shows progress)" do
+        opt.on "-v", "--verbose", "Verbose output (shows INFO level log statements)" do
           options.verbose = true
+        end
+        opt.on "-d", "--debug", "Debug output (shows DEBUG level log statements)" do
+          options.debug = true
         end
         opt.on "-l", "--limit MAX_COMMITS", Float, "The maximum limit of commits to hold in memory at a time" do |number|
           options.limit = number
