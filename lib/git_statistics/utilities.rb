@@ -11,7 +11,7 @@ module GitStatistics
       raise NotInRepository if repo_path.nil?
       Grit::Repo.new(repo_path.to_s)
     rescue NotInRepository
-      puts "You must be within a Git project to run git-statistics."
+      Log.error "You must be within a Git project to run git-statistics."
       exit 0
     end
 
