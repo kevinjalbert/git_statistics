@@ -1,5 +1,4 @@
 require 'json'
-require 'trollop'
 require 'grit'
 require 'linguist'
 require 'os'
