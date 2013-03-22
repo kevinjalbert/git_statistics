@@ -21,10 +21,12 @@ module GitStatistics
     end
 
     def execute
+      Log.level = Logger::INFO if options.verbose
+
       # Collect data (incremental or fresh) based on presence of old data
       if options.update
         # Ensure commit directory is present
-        collector = Collector.new(options.verbose, options.limit, false, options.pretty)
+        collector = Collector.new(options.limit, false, options.pretty)
         commits_directory = File.join(collector.repo_path, ".git_statistics")
         FileUtils.mkdir_p(commits_directory)
         file_count = Utilities.number_of_matching_files(commits_directory, /\d+\.json/) - 1
@@ -39,7 +41,7 @@ module GitStatistics
 
       # If no data was collected as there was no present data then start fresh
       unless collected
-        collector = Collector.new(options.verbose, options.limit, true, options.pretty)
+        collector = Collector.new(options.limit, true, options.pretty)
         collector.collect(options.branch)
       end
 

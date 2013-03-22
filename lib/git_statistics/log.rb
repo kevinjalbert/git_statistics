@@ -9,6 +9,7 @@ class Log
   def initialize
     @base_directory = File.expand_path("../..", __FILE__) + "/"
     @logger = Logger.new(STDOUT)
+    @logger.level = Logger::ERROR
     @logger.formatter = proc do |sev, datetime, progname, msg|
       "#{sev} [#{progname}]: #{msg}\n"
     end

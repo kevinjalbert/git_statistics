@@ -1,10 +1,9 @@
 module GitStatistics
   class Collector
 
-    attr_accessor :repo, :repo_path, :commits_path, :commits, :verbose
+    attr_accessor :repo, :repo_path, :commits_path, :commits
 
-    def initialize(verbose, limit, fresh, pretty)
-      @verbose = verbose
+    def initialize(limit, fresh, pretty)
       @repo = Utilities.get_repository
       @repo_path = File.expand_path("..", @repo.path)
       @commits_path = File.join(@repo_path, ".git_statistics")
@@ -95,7 +94,7 @@ module GitStatistics
       # Acquire general commit information
       commit_data = acquire_commit_data(buffer[0])
 
-      Log.debug "Extracting #{commit_data[:sha]}" if @verbose
+      Log.info "Extracting #{commit_data[:sha]}"
 
       # Abort if the commit sha extracted form the buffer is invalid
       if commit_data[:sha].scan(/[\d|a-f]{40}/)[0].nil?
