@@ -1,3 +1,5 @@
+require 'rbconfig'
+
 module GitStatistics
   module Utilities
 
@@ -83,11 +85,26 @@ module GitStatistics
     end
 
     def self.get_modified_time(file)
-      command = case
-        when OS.mac? then "stat -f %m #{file}"
-        when OS.linux? then "stat -c %Y #{file}"
-        else raise "Update on the Windows operating system is not supported"; end
-      time_at(command)
+      if os == :windows
+        raise "`stat` is not supported on the Windows operating system"
+      end
+      flags = os == :mac ? "-f %m" : "-c %Y"
+      time_at("stat #{flags} #{file}")
+    end
+
+    def os
+      case RbConfig::CONFIG['host_os']
+      when /mswin|msys|mingw|cygwin|bccwin|wince|emc/
+        :windows
+      when /darwin|mac os/
+        :mac
+      when /linux/
+        :linux
+      when /solaris|bsd/
+        :unix
+      else
+        :unknown
+      end
     end
 
     def self.time_at(cmd)

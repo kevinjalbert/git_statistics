@@ -75,17 +75,17 @@ describe Utilities do
 
   describe "#get_modified_time" do
     let(:file) { 'file' }
-    before do
-      OS.stub(:mac?) { false }
-      OS.stub(:linux?) { false }
-    end
     after { Utilities.get_modified_time(file) }
     context "on a Mac" do
-      before { OS.stub(:mac?) { true } }
+      before { Utilities.stub(:os) { :mac } }
       it { Utilities.should_receive(:time_at).with(%[stat -f %m file]) { 10 } }
     end
     context "on a Linux" do
-      before { OS.stub(:linux?) { true } }
+      before { Utilities.stub(:os) { :linux } }
+      it { Utilities.should_receive(:time_at).with(%[stat -c %Y file]) { 10 } }
+    end
+    context "on a Unix" do
+      before { Utilities.stub(:os) { :unix } }
       it { Utilities.should_receive(:time_at).with(%[stat -c %Y file]) { 10 } }
     end
   end
