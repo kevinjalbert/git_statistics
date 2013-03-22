@@ -1,7 +1,6 @@
 require 'json'
 require 'grit'
 require 'linguist'
-require 'os'
 require 'pathname'
 
 # Must be required before all other files

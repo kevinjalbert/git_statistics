@@ -19,7 +19,6 @@ Gem::Specification.new do |gem|
   gem.add_dependency('json')
   gem.add_dependency('grit')
   gem.add_dependency('github-linguist')
-  gem.add_dependency('os')
 
   gem.add_development_dependency "rspec", "~> 2.12.0"
   gem.add_development_dependency "rake"
