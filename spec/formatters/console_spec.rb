@@ -29,6 +29,8 @@ describe Console do
     results.prepare_result_summary(sort, email, top_n)
   }
 
+  before { config }
+
   describe "#prepare_result_summary" do
     context "with email and sorting" do
       context "on first author" do
@@ -36,7 +38,7 @@ describe Console do
         author = "Kevin Jalbert"
         subject {data[author]}
 
-        it {data.has_key?(author).should be_true}
+        it {data.should have_key author}
 
         it {subject[:commits].should == 1}
         it {subject[:additions].should == 73}
@@ -146,22 +148,22 @@ describe Console do
 
   describe "#print_summary" do
     context "with valid data" do
-      let(:language_data) {results.print_summary(sort, email)}
-      it {language_data.should == fixture("summary_output.txt").read}
+      subject {results.print_summary(sort, email)}
+      it {should == fixture("summary_output.txt").read.chomp}
     end
   end
 
   describe "#print_language_data" do
     context "with valid data" do
-      let(:language_data) {results.print_language_data(config[:pattern], config[:data]["Kevin Jalbert"])}
-      it {language_data.should == fixture("language_data_output.txt").read}
+      subject {results.print_language_data(config[:data]["Kevin Jalbert"])}
+      it {should == fixture("language_data_output.txt").read.split("\n")}
     end
   end
 
   describe "#print_header" do
     context "with valid data" do
-      let(:header) {results.print_header(config)}
-      it {header.should == fixture("header_output.txt").read}
+      subject { results.print_header.join("\n") }
+      it {should == fixture("header_output.txt").read.chomp}
     end
   end
 
