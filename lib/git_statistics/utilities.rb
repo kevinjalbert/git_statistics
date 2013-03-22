@@ -23,10 +23,6 @@ module GitStatistics
       max
     end
 
-    def self.clean_string(string)
-      string.strip.force_encoding("iso-8859-1").encode("utf-8")
-    end
-
     def self.split_old_new_file(old, new)
       # Split the old and new chunks up (separted by the =>)
       split_old = old.split('{')

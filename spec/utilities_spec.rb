@@ -59,20 +59,6 @@ describe Utilities do
     end
   end
 
-  describe "#clean_string" do
-    let(:unclean) {"  master   "}
-    subject { unclean.clean_for_authors }
-
-    context "without trailing spaces" do
-      let(:unclean) { "master" }
-      it { should == 'master' }
-    end
-
-    context "with trailing spaces" do
-      it { should == "master" }
-    end
-  end
-
   describe "#get_modified_time" do
     let(:file) { 'file' }
     after { Utilities.get_modified_time(file) }
