@@ -8,7 +8,7 @@ module GitStatistics
     def self.get_repository(path = Dir.pwd)
       ascender = Pathname.new(path).to_enum(:ascend)
       repo_path = ascender.detect { |path| (path + '.git').exist? }
-      raise NotInRepository if repo_path.nil?
+      raise NotInRepository unless repo_path
       Grit::Repo.new(repo_path.to_s)
     rescue NotInRepository
       puts "You must be within a Git project to run git-statistics."
