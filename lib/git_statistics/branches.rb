@@ -1,7 +1,15 @@
 module GitStatistics
   class Branches
+
+    CURRENT_BRANCH = /\A\*\s/
+
     def self.all
-      list.collect { |branch| branch.sub(/\A\*\s/, "") }
+      list.collect { |branch| branch.sub(CURRENT_BRANCH, "") }
+    end
+
+    def self.current
+      result = list.detect { |branch| branch =~ CURRENT_BRANCH } || '(none)'
+      result.sub(CURRENT_BRANCH, "")
     end
 
     private
