@@ -8,8 +8,12 @@ module GitStatistics
     end
 
     def self.current
-      result = list.detect { |branch| branch =~ CURRENT_BRANCH } || '(none)'
-      result.sub(CURRENT_BRANCH, "")
+      return '(none)' if detached?
+      list.detect { |branch| branch =~ CURRENT_BRANCH }.sub(CURRENT_BRANCH, "")
+    end
+
+    def self.detached?
+      pipe.map(&:strip).any? { |branch| branch =~ /no branch/i }
     end
 
     private

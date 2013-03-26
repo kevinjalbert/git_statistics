@@ -14,6 +14,7 @@ describe Branches do
     its(:all) { should include "issue_2" }
     its(:all) { should include "master" }
     its(:current) { should == "issue_2" }
+    its(:detached?) { should be_false }
   end
 
   context "with zero branches" do
@@ -21,6 +22,7 @@ describe Branches do
     its(:all) { should have(1).items }
     its(:all) { should include "master" }
     its(:current) { should == "master" }
+    its(:detached?) { should be_false }
   end
 
   context "with many branches in detached state" do
@@ -29,6 +31,7 @@ describe Branches do
     its(:all) { should include "issue_2" }
     its(:all) { should include "master" }
     its(:current) { should == "(none)" }
+    its(:detached?) { should be_true }
   end
 
   context "with zero branches in detached state" do
@@ -36,5 +39,6 @@ describe Branches do
     its(:all) { should have(1).items }
     its(:all) { should include "master" }
     its(:current) { should == "(none)" }
+    its(:detached?) { should be_true }
   end
 end
