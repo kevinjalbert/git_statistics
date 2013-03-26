@@ -4,13 +4,21 @@ require 'singleton'
 class Log
   include Singleton
 
-  attr_accessor :logger, :base_directory
+  attr_accessor :logger, :base_directory, :debugging
 
   def initialize
     @base_directory = File.expand_path("../..", __FILE__) + "/"
+    @debugging = false
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::ERROR
     @logger.formatter = proc do |sev, datetime, progname, msg|
+      "#{msg}\n"
+    end
+  end
+
+  def self.use_debug
+    instance.debugging = true
+    instance.logger.formatter = proc do |sev, datetime, progname, msg|
       "#{sev} [#{progname}]: #{msg}\n"
     end
   end
@@ -27,7 +35,7 @@ class Log
 
   def self.method_missing(method, *args, &blk)
     if valid_method? method
-      instance.logger.progname = parse_caller(caller(1).first)
+      instance.logger.progname = parse_caller(caller(1).first) if instance.debugging
       instance.logger.send(method, *args, &blk)
     else
       super

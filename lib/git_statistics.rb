@@ -22,8 +22,12 @@ module GitStatistics
     end
 
     def execute
-      Log.level = Logger::INFO if options.verbose
-      Log.level = Logger::DEBUG if options.debug
+      if options.debug
+        Log.level = Logger::DEBUG
+        Log.use_debug
+      elsif options.verbose
+        Log.level = Logger::INFO
+      end
 
       # Collect data (incremental or fresh) based on presence of old data
       if options.update
