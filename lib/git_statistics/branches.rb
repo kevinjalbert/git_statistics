@@ -13,17 +13,22 @@ module GitStatistics
     end
 
     def self.detached?
-      pipe.map(&:strip).any? { |branch| branch =~ /no branch/i }
+      stripped.any? { |branch| branch =~ /no branch/i }
     end
 
     private
 
       def self.list
-        pipe.map(&:strip).reject { |b| b =~ /no branch/i }
+        stripped.reject { |b| b =~ /no branch/i }
+      end
+
+      def self.stripped
+        pipe.map(&:strip)
       end
 
       def self.pipe
         Pipe.new("git --no-pager branch --no-color")
       end
+
   end
 end
