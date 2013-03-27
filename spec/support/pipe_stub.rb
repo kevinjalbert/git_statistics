@@ -2,7 +2,6 @@ module GitStatistics
   class PipeStub < Pipe
     def initialize(file)
       @file = file
-      @dir = fixture_path
     end
 
     def io
