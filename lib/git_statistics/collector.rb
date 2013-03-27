@@ -12,9 +12,6 @@ module GitStatistics
     end
 
     def collect(branch, time_since = "", time_until = "")
-      # Create pipe for git log to acquire branches
-      pipe = Pipe.new("git --no-pager branch --no-color")
-
       # Collect branches to use for git log
       branches = branch ? [] : Branches.all
 
