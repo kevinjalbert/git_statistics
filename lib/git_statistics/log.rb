@@ -42,7 +42,7 @@ class Log
     end
   end
 
-  def self.respond_to_missing?(method)
+  def self.respond_to_missing?(method, *)
     if valid_method? method
       true
     else
