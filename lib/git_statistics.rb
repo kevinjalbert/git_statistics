@@ -53,6 +53,7 @@ module GitStatistics
 
     def parse_options
       OptionParser.new do |opt|
+        opt.version = VERSION
         opt.on "-e", "--email", "Use author's email instead of name" do
           options.email = true
         end
