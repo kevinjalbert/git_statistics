@@ -4,7 +4,7 @@ include GitStatistics
 
 describe Pipe do
   let(:command) { 'git' }
-  let(:line)    { stub }
+  let(:line)    { "" }
   let(:pipe)    { Pipe.new(command) }
 
   context "initializes correctly" do
@@ -42,7 +42,7 @@ describe Pipe do
 
   context "#lines" do
     before do
-      line.should_receive(:clean_for_authors).twice
+      line.should_receive(:strip).twice.and_call_original
       pipe.stub(:io) { [line, line] }
     end
     it { pipe.lines }

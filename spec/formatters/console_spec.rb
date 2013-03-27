@@ -149,21 +149,21 @@ describe Console do
   describe "#print_summary" do
     context "with valid data" do
       subject {results.print_summary(sort, email)}
-      it {should == fixture("summary_output.txt").read.chomp}
+      it {should == read_file("summary_output.txt").read.chomp}
     end
   end
 
   describe "#print_language_data" do
     context "with valid data" do
       subject {results.print_language_data(config[:data]["Kevin Jalbert"])}
-      it {should == fixture("language_data_output.txt").read.split("\n")}
+      it {should == read_file("language_data_output.txt").read.split("\n")}
     end
   end
 
   describe "#print_header" do
     context "with valid data" do
       subject { results.print_header.join("\n") }
-      it {should == fixture("header_output.txt").read.chomp}
+      it {should == read_file("header_output.txt").read.chomp}
     end
   end
 

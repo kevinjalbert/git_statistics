@@ -17,7 +17,7 @@ module GitStatistics
     end
 
     def lines
-      io.map(&:clean_for_authors)
+      io.map { |line| line.strip.force_encoding("iso-8859-1").encode("utf-8") }
     end
 
     def io
