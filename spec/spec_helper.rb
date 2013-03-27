@@ -1,8 +1,10 @@
 $:.unshift File.expand_path("../../lib", __FILE__)
 begin
-  require 'simplecov'
-  SimpleCov.start do
-    add_filter "/spec/"
+  unless ENV['COVERAGE']
+    require 'simplecov'
+    SimpleCov.start do
+      add_filter "/spec/"
+    end
   end
 rescue LoadError
 end
