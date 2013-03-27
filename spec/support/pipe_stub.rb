@@ -5,7 +5,7 @@ module GitStatistics
     end
 
     def io
-      Dir.chdir(fixture_path) do
+      Dir.chdir(FIXTURE_PATH) do
         File.open(@file, 'r').readlines
       end
     end
