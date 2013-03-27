@@ -2,6 +2,7 @@ module GitStatistics
   class Branches
 
     CURRENT_BRANCH = /\A\*\s/
+    NO_BRANCH = /no branch/i
 
     def self.all
       list.collect { |branch| branch.sub(CURRENT_BRANCH, "") }
@@ -13,13 +14,13 @@ module GitStatistics
     end
 
     def self.detached?
-      stripped.any? { |branch| branch =~ /no branch/i }
+      stripped.any? { |branch| branch =~ NO_BRANCH }
     end
 
     private
 
       def self.list
-        stripped.reject { |b| b =~ /no branch/i }
+        stripped.reject { |b| b =~ NO_BRANCH }
       end
 
       def self.stripped
