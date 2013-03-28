@@ -10,7 +10,7 @@ module GitStatistics
     end
 
     def file
-      @opened = File.open(filepath)
+      File.open(filepath)
     end
 
     def filepath
