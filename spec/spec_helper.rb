@@ -18,3 +18,10 @@ def setup_commits(commits, file_load, file_save, pretty)
   commits.load(fixture(file_load))
   commits.save(file_save, pretty)
 end
+
+RSpec.configure do |config|
+  # Stub puts calls. Don't like them in the spec output
+  config.before(:each) do
+    Object.any_instance.stub(:puts)
+  end
+end
