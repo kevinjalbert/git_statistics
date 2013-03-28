@@ -2,10 +2,12 @@ module GitStatistics
   class Pipe
     include Enumerable
 
-    attr_reader :command
     def initialize(command)
-      command.gsub!(/^\|/i, '')
       @command  = command
+    end
+
+    def command
+      @command.dup.gsub(/\A\|/i, '')
     end
 
     def each(&block)
