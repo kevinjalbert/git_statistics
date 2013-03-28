@@ -14,7 +14,7 @@ module GitStatistics
     end
 
     def self.detached?
-      stripped.any? { |branch| branch =~ NO_BRANCH }
+      stripped.grep(NO_BRANCH).any?
     end
 
     private
