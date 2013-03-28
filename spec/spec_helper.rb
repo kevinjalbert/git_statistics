@@ -17,10 +17,6 @@ def fixture(file)
   GitStatistics::PipeStub.new(file)
 end
 
-def read_file(file)
-  File.new(FIXTURE_PATH + file, "r")
-end
-
 def setup_commits(commits, file_load, file_save, pretty)
   Dir.chdir(FIXTURE_PATH) do
     return if file_load.nil? || file_save.nil?
