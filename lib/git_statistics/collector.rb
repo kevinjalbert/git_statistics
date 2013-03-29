@@ -1,10 +1,9 @@
 module GitStatistics
   class Collector
 
-    attr_accessor :repo, :repo_path, :commits_path, :commits, :verbose
+    attr_accessor :repo, :repo_path, :commits_path, :commits
 
-    def initialize(verbose, limit, fresh, pretty)
-      @verbose = verbose
+    def initialize(limit, fresh, pretty)
       @repo = Utilities.get_repository
       @repo_path = File.expand_path("..", @repo.path)
       @commits_path = File.join(@repo_path, ".git_statistics")
@@ -85,11 +84,11 @@ module GitStatistics
       # Acquire general commit information
       commit_data = acquire_commit_data(buffer[0])
 
-      puts "Extracting #{commit_data[:sha]}" if @verbose
+      Log.info "Extracting #{commit_data[:sha]}"
 
       # Abort if the commit sha extracted form the buffer is invalid
       if commit_data[:sha].scan(/[\d|a-f]{40}/)[0].nil?
-        puts "Invalid buffer containing commit information"
+        Log.warn "Invalid buffer containing commit information"
         return
       end
 
@@ -98,7 +97,7 @@ module GitStatistics
 
       # No files were changed in this commit, abort commit
       if files.nil?
-        puts "No files were changed"
+        Log.debug "No files were changed"
         return
       end
 
@@ -110,9 +109,9 @@ module GitStatistics
         if blob.instance_of?(Grit::Blob)
           process_blob(commit_data[:data], blob, file)
         elsif blob.instance_of?(Grit::Submodule)
-          puts "Ignoring submodule #{blob.name}"
+          Log.debug "Ignoring submodule #{blob.name}"
         else
-          puts "Problem processing file #{file[:file]}"
+          Log.warn "Problem processing file #{file[:file]}"
         end
       end
       return commit_data[:data]

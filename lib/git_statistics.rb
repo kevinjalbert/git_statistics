@@ -15,16 +15,24 @@ module GitStatistics
         top: 0,
         branch: false,
         verbose: false,
+        debug: false,
         limit: 100
       )
       parse_options
     end
 
     def execute
+      if options.debug
+        Log.level = Logger::DEBUG
+        Log.use_debug
+      elsif options.verbose
+        Log.level = Logger::INFO
+      end
+
       # Collect data (incremental or fresh) based on presence of old data
       if options.update
         # Ensure commit directory is present
-        collector = Collector.new(options.verbose, options.limit, false, options.pretty)
+        collector = Collector.new(options.limit, false, options.pretty)
         commits_directory = File.join(collector.repo_path, ".git_statistics")
         FileUtils.mkdir_p(commits_directory)
         file_count = Utilities.number_of_matching_files(commits_directory, /\d+\.json/) - 1
@@ -39,7 +47,7 @@ module GitStatistics
 
       # If no data was collected as there was no present data then start fresh
       unless collected
-        collector = Collector.new(options.verbose, options.limit, true, options.pretty)
+        collector = Collector.new(options.limit, true, options.pretty)
         collector.collect(options.branch)
       end
 
@@ -75,8 +83,11 @@ module GitStatistics
         opt.on "-b", "--branch", "Use current branch for statistics (otherwise all branches)" do
           options.branch = true
         end
-        opt.on "-v", "--verbose", "Verbose output (shows progress)" do
+        opt.on "-v", "--verbose", "Verbose output (shows INFO level log statements)" do
           options.verbose = true
+        end
+        opt.on "-d", "--debug", "Debug output (shows DEBUG level log statements)" do
+          options.debug = true
         end
         opt.on "-l", "--limit MAX_COMMITS", Float, "The maximum limit of commits to hold in memory at a time" do |number|
           options.limit = number
