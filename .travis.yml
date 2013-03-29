@@ -13,4 +13,4 @@ before_install:
 notifications:
   email: false
 
-script: bundle exec rspec spec --tag ~@skip_travis
+script: bundle exec rspec spec
