@@ -142,7 +142,7 @@ describe Utilities do
       it { should be_nil }
     end
 
-    context "file is submodule" do
+    context "file is submodule", skip_travis: true do
       let(:sha) {"1940ef1c613a04f855d3867b874a4267d3e2c011"}
       let(:file) {"Spoon-Knife"}
       it { should be_instance_of Grit::Submodule }
