@@ -3,11 +3,10 @@ include GitStatistics
 include GitStatistics::Formatters
 
 describe Console do
-  let(:verbose) {false}
   let(:limit) {100}
   let(:fresh) {true}
   let(:pretty) {false}
-  let(:collector) {Collector.new(verbose, limit, fresh, pretty)}
+  let(:collector) {Collector.new(limit, fresh, pretty)}
 
   let(:commits) {collector.commits}
 

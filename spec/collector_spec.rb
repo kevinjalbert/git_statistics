@@ -2,11 +2,10 @@ require 'spec_helper'
 include GitStatistics
 
 describe Collector do
-  let(:verbose) {false}
   let(:limit) {100}
   let(:fresh) {true}
   let(:pretty) {false}
-  let(:collector) {Collector.new(verbose, limit, fresh, pretty)}
+  let(:collector) {Collector.new(limit, fresh, pretty)}
 
   # Create buffer which is an array of cleaned lines
   let(:buffer) {
