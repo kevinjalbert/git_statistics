@@ -50,7 +50,7 @@ describe Pipe do
 
   context "#io" do
     it "should call #open and pass the command through" do
-      pipe.should_receive(:open).with("|#{command}")
+      pipe.should_receive(:open).with(/\A|#{command}/)
       pipe.io
     end
     it { pipe.io.should be_an IO }
