@@ -9,7 +9,7 @@ describe Collector do
 
   # Create buffer which is an array of cleaned lines
   let(:buffer) {
-    fixture(fixture_file).readlines.map(&:clean_for_authors)
+    fixture(fixture_file).lines
   }
 
   describe "#collect" do
@@ -81,8 +81,7 @@ describe Collector do
   end
 
   describe "#acquire_commit_data" do
-    let(:input) {fixture(fixture_file).read}
-    let(:data) {collector.acquire_commit_data(input)}
+    let(:data) {collector.acquire_commit_data(buffer.first)}
 
     context "no parent, first commit" do
       let(:fixture_file) {"commit_buffer_information_first.txt"}

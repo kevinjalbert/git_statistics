@@ -41,7 +41,7 @@ describe Commits do
   end
 
   describe "#flush_commits" do
-    let(:commits) {collector.commits.load(fixture(fixture_file))}
+    let(:commits) {collector.commits.load(fixture(fixture_file).file)}
 
     def commit_size_changes_from(beginning, opts = {})
       commits.size.should == beginning
@@ -71,7 +71,7 @@ describe Commits do
   end
 
   describe "#process_commits" do
-    let(:commits) {collector.commits.load(fixture(fixture_file))}
+    let(:commits) {collector.commits.load(fixture(fixture_file).file)}
     let(:type) {:author}
     subject { commits.stats[author_name] }
 
@@ -338,10 +338,10 @@ describe Commits do
       let(:pretty) {true}
 
       it do
-        commits.load(fixture(fixture_file))
+        commits.load(fixture(fixture_file).file)
         commits.save("tmp.json", pretty)
 
-        same = FileUtils.compare_file("tmp.json", fixture(fixture_file))
+        same = FileUtils.compare_file("tmp.json", fixture(fixture_file).file)
         FileUtils.remove_file("tmp.json")
 
         same.should be_true
@@ -353,10 +353,10 @@ describe Commits do
       let(:pretty) {false}
 
       it do
-        commits.load(fixture(fixture_file))
+        commits.load(fixture(fixture_file).file)
         commits.save("tmp.json", pretty)
 
-        same = FileUtils.compare_file("tmp.json", fixture(fixture_file))
+        same = FileUtils.compare_file("tmp.json", fixture(fixture_file).file)
         FileUtils.remove_file("tmp.json")
 
         same.should be_true

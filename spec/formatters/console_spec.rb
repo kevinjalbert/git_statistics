@@ -145,24 +145,30 @@ describe Console do
     end
   end
 
-  describe "#print_summary" do
-    context "with valid data" do
-      subject {results.print_summary(sort, email)}
-      it {should == fixture("summary_output.txt").read.chomp}
+  describe "output" do
+    let(:output) { fixture(file).file.read }
+    describe "#print_summary" do
+      context "with valid data" do
+        let(:file) { "summary_output.txt" }
+        subject {results.print_summary(sort, email)}
+        it { should == output.chomp }
+      end
     end
-  end
 
-  describe "#print_language_data" do
-    context "with valid data" do
-      subject {results.print_language_data(config[:data]["Kevin Jalbert"])}
-      it {should == fixture("language_data_output.txt").read.split("\n")}
+    describe "#print_language_data" do
+      context "with valid data" do
+        let(:file) { "language_data_output.txt" }
+        subject {results.print_language_data(config[:data]["Kevin Jalbert"])}
+        it {should == output.split("\n")}
+      end
     end
-  end
 
-  describe "#print_header" do
-    context "with valid data" do
-      subject { results.print_header.join("\n") }
-      it {should == fixture("header_output.txt").read.chomp}
+    describe "#print_header" do
+      context "with valid data" do
+        let(:file) { "header_output.txt" }
+        subject { results.print_header.join("\n") }
+        it {should == output.chomp}
+      end
     end
   end
 
