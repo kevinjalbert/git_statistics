@@ -25,7 +25,7 @@ module GitStatistics
                   :top_n => top_n}
 
         # Acquire formatting pattern for output
-        @pattern = "%-#{config[:author_length]}s | %-#{config[:language_length]}s | %7s | %9s | %9s | %7s | %7s | %7s | %6s | %6s |"
+        @pattern = "| %-#{config[:author_length]}s | %-#{config[:language_length]}s | %7s | %9s | %9s | %7s | %7s | %7s | %6s | %6s |"
         config
       end
 
@@ -83,7 +83,7 @@ module GitStatistics
       end
 
       def separator
-        "-"*87 + "-"*config[:author_length] + "-"*config[:language_length]
+        "-" * 89 + "-"*config[:author_length] + "-"*config[:language_length]
       end
 
       def get_author_info(total_authors)
