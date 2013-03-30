@@ -23,7 +23,7 @@ module GitStatistics
     end
 
     def io
-      open("|#{command}")
+      open("|#{command} 2>/dev/null")
     end
   end
 end
