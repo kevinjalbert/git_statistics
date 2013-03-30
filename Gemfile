@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 gemspec
 
-gem "charlock_holmes", "0.6.9.1"
+gem "charlock_holmes"
 
 group :test do
   gem "simplecov"

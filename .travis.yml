@@ -13,4 +13,6 @@ before_install:
 notifications:
   email: false
 
+before_script: git pull -q --depth=1000000
+
 script: bundle exec rspec spec
