@@ -108,9 +108,7 @@ module GitStatistics
     end
 
     def self.number_of_matching_files(directory, pattern)
-      Dir.entries(directory)
-          .select { |file| file =~ pattern }
-          .size
+      Dir.entries(directory).grep(pattern).size
     rescue SystemCallError
       warn "No such directory #{File.expand_path(directory)}"
       0
