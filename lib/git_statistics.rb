@@ -37,9 +37,9 @@ module GitStatistics
         FileUtils.mkdir_p(commits_directory)
         file_count = Utilities.number_of_matching_files(commits_directory, /\d+\.json/) - 1
 
-        # Only use --since if there is data present
         if file_count >= 0
           time = Utilities.get_modified_time(commits_directory + "#{file_count}.json")
+          # Only use --since if there is data present
           collector.collect(options.branch, "--since=\"#{time}\"")
           collected = true
         end
