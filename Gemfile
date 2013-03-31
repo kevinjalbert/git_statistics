@@ -1,8 +1,6 @@
 source 'https://rubygems.org'
 gemspec
 
-gem "charlock_holmes"
-
 group :test do
   gem "simplecov"
   gem "guard-rspec"
