@@ -2,6 +2,8 @@ require 'json'
 require 'grit'
 require 'linguist'
 require 'pathname'
+require 'ostruct'
+require 'optparse'
 
 # Must be required before all other files
 require 'git_statistics/blob'
