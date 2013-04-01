@@ -1,9 +1,9 @@
 require 'spec_helper'
 include GitStatistics
 
-describe Repository do
+describe Repo do
   describe "#find" do
-    subject { Repository.find(dir) }
+    subject { Repo.find(dir) }
 
     let(:current) { Pathname.new(Dir.pwd) }
 
@@ -22,7 +22,7 @@ describe Repository do
     end
 
     context "when not in a repository directory" do
-      before { Repository.should_receive(:exit) }
+      before { Repo.should_receive(:exit) }
       let(:dir) { Dir.home } # /Users/username/
       it { should be_nil }
     end

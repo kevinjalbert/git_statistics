@@ -1,5 +1,5 @@
 module GitStatistics
-  class Repository
+  class Repo
 
     class NotInRepository < StandardError; end
 

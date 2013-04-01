@@ -95,7 +95,7 @@ describe Utilities do
 
   describe "#find_blob_in_tree" do
     let(:sha) {"7d6c29f0ad5860d3238debbaaf696e361bf8c541"}  # Commit within repository
-    let(:tree) {Repository.find(Dir.pwd).tree(sha)}
+    let(:tree) {Repo.find(Dir.pwd).tree(sha)}
     let(:file) {nil}
     let(:blob) {Utilities.find_blob_in_tree(tree, file.split(File::Separator))}
     subject { blob }
