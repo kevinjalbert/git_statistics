@@ -1,4 +1,6 @@
 $:.unshift File.expand_path("../../lib", __FILE__)
+require 'tmpdir'
+
 begin
   if ENV['COVERAGE']
     require 'simplecov'
