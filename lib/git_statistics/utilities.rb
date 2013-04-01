@@ -88,7 +88,7 @@ module GitStatistics
       time_at("stat #{flags} #{file}")
     end
 
-    def os
+    def self.os
       case RbConfig::CONFIG['host_os']
       when /mswin|msys|mingw|cygwin|bccwin|wince|emc/
         :windows
