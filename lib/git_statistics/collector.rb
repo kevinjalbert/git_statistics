@@ -12,7 +12,7 @@ module GitStatistics
 
     def collect(branch, time_since = "", time_until = "")
       # Collect branches to use for git log
-      branches = branch ? [] : Branches.all
+      branches = branch ? [] : @repo.branches.compact.map(&:name)
 
       # Create pipe for the git log to acquire commits
       pipe = Pipe.new("git --no-pager log #{branches.join(' ')} --date=iso --reverse"\
