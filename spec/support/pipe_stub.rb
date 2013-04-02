@@ -1,3 +1,5 @@
+require 'git_statistics/pipe'
+
 module GitStatistics
   class PipeStub < Pipe
 
