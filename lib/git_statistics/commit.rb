@@ -32,13 +32,17 @@ module GitStatistics
     # Blobs pulled from the files of this commit
     def blobs
       files.collect do |filepath|
-        repo.tree(sha) / filepath
+        current_tree / filepath
       end
     end
 
     # Files that changed in this commit
     def files
       diffstats.map(&:filename)
+    end
+
+    def current_tree
+      @current_tree ||= repo.tree(sha)
     end
 
     private
