@@ -38,7 +38,7 @@ module GitStatistics
 
     # Files that changed in this commit
     def files
-      stats.to_diffstat.map(&:filename)
+      diffstats.map(&:filename)
     end
 
     private
