@@ -13,7 +13,37 @@ describe Commit do
     its(:blobs) { should have(3).items }
     its(:files) { should have(3).items }
     its(:languages) { should have(1).items }
-    it { subject.languages.first.should == "Ruby" }
+  end
+
+  context "language-specific changes" do
+    let(:name) { "Ruby" }
+    subject(:language) { commit.languages.detect { |lang| lang.name == name } }
+    context "for commit 9c94e69411263bcb0f7c1114ea6bd43f1b2a3be5" do
+      let(:sha) { "2aa45e4ff23c1a558b127c06e95d313a56cc6890" }
+      context "language count" do
+        subject { commit }
+        its(:languages) { should have(2).items }
+      end
+      context "Ruby" do
+        let(:name) { "Ruby" }
+        its(:additions) { should == 14 }
+        its(:deletions) { should == 13 }
+        its(:net) { should == 1 }
+      end
+      context "Unknown (or txt)" do
+        let(:name) { "Unknown" }
+        its(:additions) { should == 7 }
+        its(:deletions) { should == 11 }
+        its(:net) { should == -4 }
+      end
+    end
+    context "for commit bf09a64b" do
+      subject { commit.languages.first }
+      its(:name) { should == "Ruby" }
+      its(:additions) { should == 10 }
+      its(:deletions) { should == 27 }
+      its(:net) { should == -17 }
+    end
   end
 
   context "with a removed file" do

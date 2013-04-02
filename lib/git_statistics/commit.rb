@@ -6,14 +6,17 @@ module GitStatistics
       super(commit)
     end
 
+    # A Git commit is a merge if it has more than one parent
     def merge?
       parents.size > 1
     end
 
+    # How many files were removed in this commit
     def removed_files
       show.select { |diff| diff.deleted_file == true }.count
     end
 
+    # How many files were added in this commit
     def new_files
       show.select { |diff| diff.new_file == true }.count
     end
@@ -24,9 +27,35 @@ module GitStatistics
       end
     end
 
-    # All languages touched in this commit
+    class LanguageStat
+      attr_reader :name
+      attr_reader :additions
+      attr_reader :deletions
+      attr_reader :net
+
+      def initialize(language, additions, deletions, net)
+        @name = (language && language.name) || language || "Unknown"
+        @additions = additions
+        @deletions = deletions
+        @net = net
+      end
+    end
+
     def languages
-      blobs.map { |b| b.language.name }.uniq
+      langs = Hash.new { |k,v| k[v] = [] }
+
+      diffstats.each do |diff|
+        language = (current_tree / diff.filename).language
+        stat = LanguageStat.new(language, diff.additions, diff.deletions, diff.net)
+        langs[stat.name] << stat
+      end
+
+      langs.collect do |lang, stats|
+        additions = stats.map(&:additions).inject(0, :+)
+        deletions = stats.map(&:deletions).inject(0, :+)
+        net       = stats.map(&:net).inject(0, :+)
+        LanguageStat.new(OpenStruct.new(name: lang), additions, deletions, net)
+      end
     end
 
     # Blobs pulled from the files of this commit
