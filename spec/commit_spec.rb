@@ -13,7 +13,7 @@ describe Commit do
     its(:merge?) { should be_false }
   end
 
-  context "without a merge" do
+  context "with a merge" do
     let(:sha) { "9d31467f6759c92f8535038c470d24a37ae93a9d" }
     its(:merge?) { should be_true }
   end
