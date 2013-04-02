@@ -9,8 +9,11 @@ describe Commit do
 
   its(:__getobj__) { should be_a Grit::Commit }
 
-  context "without a merge" do
-    it { should_not be_a_merge }
+  context "understands its blobs, files, and languages" do
+    its(:blobs) { should have(3).items }
+    its(:files) { should have(3).items }
+    its(:languages) { should have(1).items }
+    it { subject.languages.first.should == "Ruby" }
   end
 
   context "with a removed file" do
@@ -36,6 +39,10 @@ describe Commit do
   context "with a merge" do
     let(:sha) { "9d31467f6759c92f8535038c470d24a37ae93a9d" }
     it { should be_a_merge }
+  end
+
+  context "without a merge" do
+    it { should_not be_a_merge }
   end
 
   context "net, additions, and deletions" do

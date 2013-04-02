@@ -24,6 +24,23 @@ module GitStatistics
       end
     end
 
+    # All languages touched in this commit
+    def languages
+      blobs.map(&:language).map(&:name).uniq
+    end
+
+    # Blobs pulled from the files of this commit
+    def blobs
+      files.map do |filepath|
+        repo.tree(sha) / filepath
+      end
+    end
+
+    # Files that changed in this commit
+    def files
+      stats.to_diffstat.map(&:filename)
+    end
+
     private
 
       def summarize_diffstat(what)
