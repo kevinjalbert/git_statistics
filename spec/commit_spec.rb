@@ -10,12 +10,12 @@ describe Commit do
   its(:__getobj__) { should be_a Grit::Commit }
 
   context "without a merge" do
-    its(:merge?) { should be_false }
+    it { should_not be_a_merge }
   end
 
   context "with a merge" do
     let(:sha) { "9d31467f6759c92f8535038c470d24a37ae93a9d" }
-    its(:merge?) { should be_true }
+    it { should be_a_merge }
   end
 
   context "net, additions, and deletions" do
