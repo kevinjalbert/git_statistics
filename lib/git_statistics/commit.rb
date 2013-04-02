@@ -10,16 +10,10 @@ module GitStatistics
       parents.size > 1
     end
 
-    def additions
-      summarize_diffstat(:additions)
-    end
-
-    def deletions
-      summarize_diffstat(:deletions)
-    end
-
-    def net
-      summarize_diffstat(:net)
+    %w[additions deletions net].each do |stats|
+      define_method(stats) do
+        summarize_diffstat(stats.to_sym)
+      end
     end
 
     private
