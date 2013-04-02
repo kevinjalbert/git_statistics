@@ -10,6 +10,14 @@ module GitStatistics
       parents.size > 1
     end
 
+    def removed_files
+      show.select { |diff| diff.deleted_file == true }.count
+    end
+
+    def new_files
+      show.select { |diff| diff.new_file == true }.count
+    end
+
     %w[additions deletions net].each do |stats|
       define_method(stats) do
         summarize_diffstat(stats.to_sym)
