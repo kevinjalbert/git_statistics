@@ -31,7 +31,7 @@ module GitStatistics
 
     # Blobs pulled from the files of this commit
     def blobs
-      files.map do |filepath|
+      files.collect do |filepath|
         repo.tree(sha) / filepath
       end
     end
