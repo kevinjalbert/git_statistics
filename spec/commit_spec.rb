@@ -18,4 +18,10 @@ describe Commit do
     its(:merge?) { should be_true }
   end
 
+  context "net, additions, and deletions" do
+    its(:additions) { should == 10 }
+    its(:deletions) { should == 27 }
+    its(:net) { should == -17 }
+  end
+
 end
