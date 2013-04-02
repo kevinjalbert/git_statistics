@@ -7,7 +7,7 @@ describe Commit do
   let(:repo) { Utilities.get_repository }
   subject(:commit) { Commit.new(repo.commit(sha)) }
 
-  its(:obj) { should be_a Grit::Commit }
+  its(:__getobj__) { should be_a Grit::Commit }
 
   context "without a merge" do
     its(:merge?) { should be_false }
