@@ -26,7 +26,7 @@ module GitStatistics
 
     # All languages touched in this commit
     def languages
-      blobs.map(&:language).map(&:name).uniq
+      blobs.map { |b| b.language.name }.uniq
     end
 
     # Blobs pulled from the files of this commit
