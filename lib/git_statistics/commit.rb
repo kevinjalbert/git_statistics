@@ -42,11 +42,11 @@ module GitStatistics
 
     # Array of LanguageStat objects (one for each language) for simple calculations
     def languages
-      grouped_language_files.collect do |lang, stats|
+      grouped_language_files.collect do |language, stats|
         additions = summarize(stats, :additions)
         deletions = summarize(stats, :deletions)
         net       = summarize(stats, :net)
-        LanguageStat.new(lang, additions, deletions, net)
+        LanguageStat.new(language, additions, deletions, net)
       end
     end
 
@@ -76,7 +76,19 @@ module GitStatistics
       end
 
       def diffstats
-        stats.to_diffstat
+        if merge?
+          merge_diffstats
+        else
+          stats.to_diffstat
+        end
+      end
+
+      # Hackery coming...
+      DIFFSTAT_REGEX = /(\d+)\s+(\d+)\s+([_\/\\\w]+)\n?/i
+      def merge_diffstats
+        stats = repo.git.native(:diff, {numstat: true}, "#{parents[0].id_abbrev}...#{parents[1].id_abbrev}")
+        per_file_info = stats.scan(DIFFSTAT_REGEX)
+        per_file_info.map { |add, del, file| Grit::DiffStat.new(file, add.to_i, del.to_i) }
       end
 
   end

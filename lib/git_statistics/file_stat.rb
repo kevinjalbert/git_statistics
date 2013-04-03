@@ -16,7 +16,7 @@ module GitStatistics
 
     # Determine the language of the file from the blob
     def language
-      (blob.language && blob.language.name) || "Unknown"
+      (blob && blob.language && blob.language.name) || "Unknown"
     end
   end
 end
