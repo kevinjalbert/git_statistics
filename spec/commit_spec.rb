@@ -69,11 +69,11 @@ describe Commit do
     let(:sha) { "9d31467f6759c92f8535038c470d24a37ae93a9d" }
     it { should be_a_merge }
     context "statistics" do
-      its(:languages) { should have(1).items }
       its(:files) { should have(11).items }
+      its(:languages) { should have(2).items }
       its(:additions) { should == 69 }
       its(:deletions) { should == 68 }
-      its(:net) { should == 1}
+      its(:net) { should == 1 }
     end
   end
 
