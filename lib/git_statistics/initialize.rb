@@ -3,6 +3,7 @@ require 'grit'
 require 'pathname'
 require 'ostruct'
 require 'optparse'
+require 'delegate'
 
 # Must be required before all other files
 require 'git_statistics/blob'
