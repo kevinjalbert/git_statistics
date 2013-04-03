@@ -35,7 +35,6 @@ module GitStatistics
     def net
       commit_summary(:net)
     end
-    end
 
     def file_stats
       diffstats.map { |diff| FileStat.new(diff, current_tree) }
@@ -91,6 +90,7 @@ module GitStatistics
         net       = stats.map(&:net).inject(0, :+)
         LanguageStat.new(OpenStruct.new(name: lang), additions, deletions, net)
       end
+    end
 
     # Files touched in this commit
     def files
