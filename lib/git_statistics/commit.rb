@@ -21,9 +21,44 @@ module GitStatistics
       show.select { |diff| diff.new_file == true }.count
     end
 
-    %w[additions deletions net].each do |stats|
-      define_method(stats) do
-        summarize_diffstat(stats.to_sym)
+    # How many total additions in this commit?
+    def additions
+      commit_summary(:additions)
+    end
+
+    # How many total deletions in this commit?
+    def deletions
+      commit_summary(:deletions)
+    end
+
+    # What is the net # of lines changes in this commit?
+    def net
+      commit_summary(:net)
+    end
+    end
+
+    def file_stats
+      diffstats.map { |diff| FileStat.new(diff, current_tree) }
+    end
+
+    class FileStat < SimpleDelegator
+      def initialize(diffstat, tree)
+        super(diffstat)
+        @tree = tree
+      end
+
+      # Get the blob from the current tree and filename/filepath
+      def blob
+        @tree / filename
+      end
+
+      def inspect
+        %Q{<GitStatistics::Commit::FileStat @language=#{language} @additions=#{additions}, @deletions=#{deletions}, @net=#{net}>}
+      end
+
+      # Determine the language of the file from the blob
+      def language
+        (blob.language && blob.language.name) || "Unknown"
       end
     end
 
@@ -56,32 +91,25 @@ module GitStatistics
         net       = stats.map(&:net).inject(0, :+)
         LanguageStat.new(OpenStruct.new(name: lang), additions, deletions, net)
       end
-    end
 
-    # Blobs pulled from the files of this commit
-    def blobs
-      files.collect do |filepath|
-        current_tree / filepath
-      end
-    end
-
-    # Files that changed in this commit
+    # Files touched in this commit
     def files
       diffstats.map(&:filename)
     end
 
+    # Fetch the current Grit::Repo tree from this commit
     def current_tree
       @current_tree ||= repo.tree(sha)
     end
 
     private
 
-      def summarize_diffstat(what)
-        diffstats.map(&what).inject(0, :+)
+      def commit_summary(what)
+        file_stats.map(&what).inject(0, :+)
       end
 
       def diffstats
-        stats.to_diffstat
+        @diffstats ||= stats.to_diffstat
       end
 
   end

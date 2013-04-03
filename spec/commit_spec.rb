@@ -9,8 +9,7 @@ describe Commit do
 
   its(:__getobj__) { should be_a Grit::Commit }
 
-  context "understands its blobs, files, and languages" do
-    its(:blobs) { should have(3).items }
+  context "understands its files and languages" do
     its(:files) { should have(3).items }
     its(:languages) { should have(1).items }
   end
