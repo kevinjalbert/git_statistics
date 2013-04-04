@@ -2,8 +2,9 @@ require 'git_statistics/initialize'
 
 module GitStatistics
   class GitStatistics
-    attr_reader :options
+    attr_reader :repository, :options
     def initialize
+      @repository = Repo.new(Dir.pwd)
       @options = OpenStruct.new(
         email: false,
         merges: false,
@@ -30,8 +31,8 @@ module GitStatistics
       # Collect data (incremental or fresh) based on presence of old data
       if options.update
         # Ensure commit directory is present
-        collector = Collector.new(options.limit, false, options.pretty)
-        commits_directory = File.join(collector.repo_path, ".git_statistics")
+        collector = Collector.new(@repository, options.limit, false, options.pretty)
+        commits_directory = File.join(@repository.path, ".git_statistics")
         FileUtils.mkdir_p(commits_directory)
         file_count = Utilities.number_of_matching_files(commits_directory, /\d+\.json/) - 1
 
@@ -45,7 +46,7 @@ module GitStatistics
 
       # If no data was collected as there was no present data then start fresh
       unless collected
-        collector = Collector.new(options.limit, true, options.pretty)
+        collector = Collector.new(@repository, options.limit, true, options.pretty)
         collector.collect(options.branch)
       end
 

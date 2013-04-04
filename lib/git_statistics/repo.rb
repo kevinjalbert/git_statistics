@@ -3,17 +3,30 @@ module GitStatistics
 
     class NotInRepository < StandardError; end
 
-    def self.find(path = Dir.pwd)
-      Thread.current[:repository] ||= begin
-        ascender = Pathname.new(path).to_enum(:ascend)
-        repo_path = ascender.detect { |path| (path + '.git').exist? }
-        raise NotInRepository unless repo_path
-        Grit::Repo.new(repo_path.to_s)
-      end
-    rescue NotInRepository
-      Log.error "You must be within a Git project to run git-statistics."
-      exit 0
+    def initialize(current_path = nil)
+      @path = current_path || Dir.pwd
     end
+
+    def repo
+      @repo ||= Grit::Repo.new(path)
+    rescue Grit::NoSuchPathError
+      Log.error "You must be within a Git project to run git-statistics."
+      exit 1
+    end
+
+    def path
+      detected_git_path
+    end
+
+    private
+
+      def detected_git_path
+        ascending_paths.detect { |path| (path + '.git').exist? }
+      end
+
+      def ascending_paths
+        Pathname.new(@path).to_enum(:ascend)
+      end
 
   end
 end
