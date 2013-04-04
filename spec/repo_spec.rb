@@ -7,25 +7,19 @@ describe Repo do
 
   context "within the current directory" do
     let(:dir) { current }
-    its(:repo) { should be_a Grit::Repo }
-    its(:path) { should == current }
+    it { should be_a Grit::Repo }
+    its(:working_dir) { should == current }
   end
 
   context "with sub directory of the repo" do
     let(:dir) { current + "spec" } # git_statistics/spec/
-    its(:repo) { should be_a Grit::Repo }
-    its(:path) { should == current }
+    it { should be_a Grit::Repo }
+    its(:working_dir) { should == current }
   end
 
-  describe "failure if not in repository" do
-    context "should log a message and exit" do
-      before do
-        Log.should_receive(:error).once
-        repository.stub(:path) { double.as_null_object }
-        repository.should_receive(:exit).with(1)
-      end
-      let(:dir) { Dir.home } # /Users/username/
-      its(:repo) { should be_nil }
-    end
+  describe "fails if not in repository" do
+    let(:dir) { "/some/non/repo/directory" }
+    before { Repo.any_instance.should_receive(:exit).with(1) }
+    it { expect { repository }.not_to raise_error(Grit::NoSuchPathError) }
   end
 end
