@@ -1,5 +1,5 @@
 module GitStatistics
-  class FileStat < SimpleDelegator
+  class DiffSummary < SimpleDelegator
     def initialize(diffstat, tree)
       super(diffstat)
       @tree = tree

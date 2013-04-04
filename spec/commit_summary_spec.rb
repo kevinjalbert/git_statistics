@@ -1,11 +1,11 @@
 require 'spec_helper'
 include GitStatistics
 
-describe Commit do
+describe CommitSummary do
 
   let(:sha) { "bf09a64b0e0f801d3e7fe4e002cbd1bf517340a7" }
   let(:repo) { Utilities.get_repository }
-  subject(:commit) { Commit.new(repo.commit(sha)) }
+  subject(:commit) { CommitSummary.new(repo.commit(sha)) }
 
   its(:__getobj__) { should be_a Grit::Commit }
 

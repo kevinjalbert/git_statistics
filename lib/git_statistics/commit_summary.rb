@@ -1,5 +1,5 @@
 module GitStatistics
-  class Commit < SimpleDelegator
+  class CommitSummary < SimpleDelegator
     def initialize(commit)
       super(commit)
     end
@@ -35,7 +35,7 @@ module GitStatistics
     end
 
     def file_stats
-      diffstats.map { |diff| FileStat.new(diff, current_tree) }
+      diffstats.map { |diff| DiffSummary.new(diff, current_tree) }
     end
 
     LanguageStat = Struct.new(:name, :additions, :deletions, :net)
