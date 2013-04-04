@@ -21,7 +21,7 @@ describe Repo do
     context "should log a message and exit" do
       before do
         Log.should_receive(:error).once
-        repository.stub(:path) { stub }
+        repository.stub(:path) { double.as_null_object }
         repository.should_receive(:exit).with(1)
       end
       let(:dir) { Dir.home } # /Users/username/
