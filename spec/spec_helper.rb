@@ -1,19 +1,16 @@
 $:.unshift File.expand_path("../../lib", __FILE__)
-begin
-  if ENV['COVERAGE']
-    require 'simplecov'
-    SimpleCov.start do
-      add_filter "/spec/"
-    end
-  end
-rescue LoadError
-end
 
-FIXTURE_PATH = Pathname.new(Dir.pwd) + "spec" + "fixtures"
+require 'pathname'
+require 'tmpdir'
+
+home_dir = Pathname.new(Dir.pwd)
+spec_dir = home_dir + "spec"
+
+FIXTURE_PATH = spec_dir + "fixtures"
+
+Dir.glob(spec_dir + 'support/**/*.rb') {|file| require file}
 
 require 'git_statistics/initialize'
-
-Dir.glob(File.dirname(__FILE__) + '/support/**/*.rb') {|file| require file}
 
 def fixture(file)
   GitStatistics::PipeStub.new(file)

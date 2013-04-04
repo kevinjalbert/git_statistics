@@ -4,6 +4,7 @@ gemspec
 group :test do
   gem "simplecov"
   gem "guard-rspec"
+  gem "tailor"
 end
 
 group :darwin do

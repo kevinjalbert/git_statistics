@@ -1,5 +1,3 @@
-require 'ostruct'
-require 'optparse'
 require 'git_statistics/initialize'
 
 module GitStatistics

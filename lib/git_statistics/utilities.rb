@@ -76,7 +76,7 @@ module GitStatistics
       time_at("stat #{flags} #{file}")
     end
 
-    def os
+    def self.os
       case RbConfig::CONFIG['host_os']
       when /mswin|msys|mingw|cygwin|bccwin|wince|emc/
         :windows
@@ -98,7 +98,7 @@ module GitStatistics
     def self.number_of_matching_files(directory, pattern)
       Dir.entries(directory).grep(pattern).size
     rescue SystemCallError
-      warn "No such directory #{File.expand_path(directory)}"
+      Log.error "No such directory #{File.expand_path(directory)}"
       0
     end
   end

@@ -131,50 +131,31 @@ describe Utilities do
   end
 
   describe "#number_of_matching_files" do
-    let(:directory) { File.join(Dir.pwd, "tmp_dir_for_spec") }
     let(:pattern) { (/\d+\.json/) }
-    subject {Utilities.number_of_matching_files(directory, pattern)}
+    subject {Utilities.number_of_matching_files(Dir.pwd, pattern)}
 
     around do |example|
-      FileUtils.mkdir_p(directory)
-      Dir.chdir(directory) do
-        example.run
+      Dir.mktmpdir do |dir|
+        Dir.chdir(dir) do
+          example.run
+        end
       end
-      FileUtils.rmdir(directory)
     end
 
     context "with missing directory" do
-      before do
-        subject.class.stub(:warn)
-        FileUtils.rmdir(directory)
-      end
       it { should == 0 }
     end
 
     context "with valid files" do
       before do
-        FileUtils.touch("0.json")
-        FileUtils.touch("1.json")
-        FileUtils.touch("2.json")
-      end
-      after do
-        FileUtils.rm("0.json")
-        FileUtils.rm("1.json")
-        FileUtils.rm("2.json")
+        FileUtils.touch(["0.json", "1.json", "2.json"])
       end
       it { should == 3 }
     end
 
     context "with invalid files" do
       before do
-        FileUtils.touch("0.json")
-        FileUtils.touch("incorrect.json")
-        FileUtils.touch("1.json")
-      end
-      after do
-        FileUtils.rm("0.json")
-        FileUtils.rm("incorrect.json")
-        FileUtils.rm("1.json")
+        FileUtils.touch(["0.json", "incorrect.json", "1.json"])
       end
       it { should == 2 }
     end
