@@ -3,18 +3,6 @@ require 'rbconfig'
 module GitStatistics
   module Utilities
 
-    class NotInRepository < StandardError; end
-
-    def self.get_repository(path = Dir.pwd)
-      ascender = Pathname.new(path).to_enum(:ascend)
-      repo_path = ascender.detect { |path| (path + '.git').exist? }
-      raise NotInRepository unless repo_path
-      Grit::Repo.new(repo_path.to_s)
-    rescue NotInRepository
-      Log.error "You must be within a Git project to run git-statistics."
-      exit 0
-    end
-
     def self.max_length_in_list(list, max = nil)
       return nil if list.nil?
       list.each do |key,value|

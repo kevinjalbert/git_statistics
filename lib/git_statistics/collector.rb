@@ -4,7 +4,7 @@ module GitStatistics
     attr_accessor :repo, :repo_path, :commits_path, :commits
 
     def initialize(limit, fresh, pretty)
-      @repo = Utilities.get_repository
+      @repo = Repo.find
       @repo_path = Pathname.new(@repo.path).parent
       @commits_path = @repo_path + ".git_statistics"
       @commits = Commits.new(@commits_path, fresh, limit, pretty)

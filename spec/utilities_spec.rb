@@ -3,26 +3,6 @@ include GitStatistics
 
 describe Utilities do
 
-  describe "#get_repository" do
-    subject { Utilities.get_repository(dir) }
-
-    context "with root directory" do
-      let(:dir) { Dir.pwd } # git_statistics/
-      it { should be_a Grit::Repo }
-    end
-
-    context "with sub directory" do
-      let(:dir) { File.dirname(__FILE__) } # git_statistics/spec/
-      it { should be_a Grit::Repo }
-    end
-
-    context "when not in a repository directory" do
-      before { Utilities.should_receive(:exit) }
-      let(:dir) { Dir.home } # /Users/username/
-      it { should be_nil }
-    end
-  end
-
   describe "#max_length_in_list" do
     let(:max) {nil}
     let(:list) {[]}
@@ -115,7 +95,7 @@ describe Utilities do
 
   describe "#find_blob_in_tree" do
     let(:sha) {"7d6c29f0ad5860d3238debbaaf696e361bf8c541"}  # Commit within repository
-    let(:tree) {Utilities.get_repository(Dir.pwd).tree(sha)}
+    let(:tree) {Repo.find(Dir.pwd).tree(sha)}
     let(:file) {nil}
     let(:blob) {Utilities.find_blob_in_tree(tree, file.split(File::Separator))}
     subject { blob }
