@@ -86,8 +86,8 @@ module GitStatistics
       # Hackery coming...
       DIFFSTAT_REGEX = /(\d+)\s+(\d+)\s+([._\/\\\w]+)\n?/i
       def merge_diffstats
-        stats = repo.git.native(:diff, {numstat: true}, "#{parents[0].id_abbrev}...#{parents[1].id_abbrev}")
-        per_file_info = stats.scan(DIFFSTAT_REGEX)
+        native_diff = repo.git.native(:diff, {numstat: true}, parents.join("..."))
+        per_file_info = native_diff.scan(DIFFSTAT_REGEX)
         per_file_info.map { |add, del, file| Grit::DiffStat.new(file, add.to_i, del.to_i) }
       end
 
