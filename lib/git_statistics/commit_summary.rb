@@ -84,7 +84,7 @@ module GitStatistics
       end
 
       # Hackery coming...
-      DIFFSTAT_REGEX = /(\d+)\s+(\d+)\s+([._\/\\\w]+)\n?/i
+      DIFFSTAT_REGEX = /([-|\d]+)\s+([-|\d]+)\s+(.+)/i
       def merge_diffstats
         native_diff = repo.git.native(:diff, {numstat: true}, parents.join("..."))
         per_file_info = native_diff.scan(DIFFSTAT_REGEX)
