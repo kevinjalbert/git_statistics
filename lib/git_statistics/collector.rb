@@ -202,10 +202,10 @@ module GitStatistics
       data[:deletions] += file[:deletions]
 
       # Acquire specifics on blob
-      file_hash[:binary] = blob.binary?
-      file_hash[:image] = blob.image?
-      file_hash[:vendored] = blob.vendored?
-      file_hash[:generated] = blob.generated?
+      # file_hash[:binary] = blob.binary_mime_type?
+      # file_hash[:image] = blob.image?
+      # file_hash[:vendored] = blob.vendored?
+      # file_hash[:generated] = blob.generated?
 
       # Identify the language of the blob if possible
       file_hash[:language] = blob.language.nil? ? "Unknown" : blob.language.name

@@ -1,6 +1,5 @@
 require 'json'
 require 'grit'
-require 'linguist'
 require 'pathname'
 require 'ostruct'
 require 'optparse'
