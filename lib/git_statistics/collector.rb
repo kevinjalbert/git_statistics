@@ -202,7 +202,8 @@ module GitStatistics
       data[:deletions] += file[:deletions]
 
       # Acquire specifics on blob
-      # file_hash[:binary] = blob.binary_mime_type?
+      # If langauge_sniffer ever supports this, add it back in
+      # file_hash[:binary] = blob.binary?
       # file_hash[:image] = blob.image?
       # file_hash[:vendored] = blob.vendored?
       # file_hash[:generated] = blob.generated?

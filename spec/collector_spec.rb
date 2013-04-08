@@ -171,30 +171,18 @@ describe Collector do
       it {data[:files][0][:additions].should == 0}
       it {data[:files][0][:deletions].should == 1}
       it {data[:files][0][:status].should.nil?}
-      # it {data[:files][0][:binary].should == false}
-      # it {data[:files][0][:image].should == false}
-      # it {data[:files][0][:vendored].should == false}
-      # it {data[:files][0][:generated].should == false}
       it {data[:files][0][:language].should == "Ruby"}
 
       it {data[:files][1][:name].should == "Gemfile.lock"}
       it {data[:files][1][:additions].should == 30}
       it {data[:files][1][:deletions].should == 0}
       it {data[:files][1][:status].should == "create"}
-      # it {data[:files][1][:binary].should == false}
-      # it {data[:files][1][:image].should == false}
-      # it {data[:files][1][:vendored].should == false}
-      # it {data[:files][1][:generated].should == true}
       it {data[:files][1][:language].should == "Unknown"}
 
       it {data[:files][2][:name].should == "lib/git_statistics/initialize.rb"}
       it {data[:files][2][:additions].should == 0}
       it {data[:files][2][:deletions].should == 1}
       it {data[:files][2][:status].should.nil?}
-      # it {data[:files][2][:binary].should == false}
-      # it {data[:files][2][:image].should == false}
-      # it {data[:files][2][:vendored].should == false}
-      # it {data[:files][2][:generated].should == false}
       it {data[:files][2][:language].should == "Ruby"}
     end
 
@@ -268,10 +256,6 @@ describe Collector do
       it {data_file[:additions].should == file[:additions]}
       it {data_file[:deletions].should == file[:deletions]}
       it {data_file[:status].should == file[:status]}
-      # it {data_file[:binary].should == false}
-      # it {data_file[:image].should == false}
-      # it {data_file[:vendored].should == false}
-      # it {data_file[:generated].should == false}
       it {data_file[:language].should == "Ruby"}
     end
 
@@ -288,10 +272,6 @@ describe Collector do
       it {data_file[:additions].should == file[:additions]}
       it {data_file[:deletions].should == file[:deletions]}
       it {data_file[:status].should.nil?}
-      # it {data_file[:binary].should == false}
-      # it {data_file[:image].should == false}
-      # it {data_file[:vendored].should == false}
-      # it {data_file[:generated].should == true}
       it {data_file[:language].should == "Unknown"}
     end
 
@@ -308,10 +288,6 @@ describe Collector do
       it {data_file[:additions].should == file[:additions]}
       it {data_file[:deletions].should == file[:deletions]}
       it {data_file[:status].should.nil?}
-      # it {data_file[:binary].should == false}
-      # it {data_file[:image].should == false}
-      # it {data_file[:vendored].should == false}
-      # it {data_file[:generated].should == false}
       it {data_file[:language].should == "Markdown"}
     end
   end
