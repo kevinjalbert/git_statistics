@@ -1,12 +1,11 @@
 module GitStatistics
   class Collector
 
-    attr_accessor :repo, :repo_path, :commits_path, :commits
+    attr_accessor :repo, :commits_path, :commits
 
-    def initialize(limit, fresh, pretty)
-      @repo = Repo.find
-      @repo_path = Pathname.new(@repo.path).parent
-      @commits_path = @repo_path + ".git_statistics"
+    def initialize(repo, limit, fresh, pretty)
+      @repo = repo
+      @commits_path = repo.working_dir + ".git_statistics"
       @commits = Commits.new(@commits_path, fresh, limit, pretty)
     end
 

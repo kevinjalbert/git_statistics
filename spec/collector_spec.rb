@@ -5,7 +5,8 @@ describe Collector do
   let(:limit) {100}
   let(:fresh) {true}
   let(:pretty) {false}
-  let(:collector) {Collector.new(limit, fresh, pretty)}
+  let(:repo) { Repo.new(Dir.pwd) }
+  let(:collector) {Collector.new(repo, limit, fresh, pretty)}
 
   # Create buffer which is an array of cleaned lines
   let(:buffer) {
