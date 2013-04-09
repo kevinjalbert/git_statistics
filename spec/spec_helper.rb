@@ -12,6 +12,8 @@ Dir.glob(spec_dir + 'support/**/*.rb') {|file| require file}
 
 require 'git_statistics/initialize'
 
+GIT_REPO = GitStatistics::Repo.new(home_dir)
+
 def fixture(file)
   GitStatistics::PipeStub.new(file)
 end

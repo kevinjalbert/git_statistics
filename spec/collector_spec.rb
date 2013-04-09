@@ -5,7 +5,7 @@ describe Collector do
   let(:limit) {100}
   let(:fresh) {true}
   let(:pretty) {false}
-  let(:repo) { Repo.new(Dir.pwd) }
+  let(:repo) { GIT_REPO }
   let(:collector) {Collector.new(repo, limit, fresh, pretty)}
 
   # Create buffer which is an array of cleaned lines

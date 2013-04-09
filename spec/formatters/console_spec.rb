@@ -6,7 +6,7 @@ describe Console do
   let(:limit) {100}
   let(:fresh) {true}
   let(:pretty) {false}
-  let(:repo) { Repo.new(Dir.pwd) }
+  let(:repo) { GIT_REPO }
   let(:collector) {Collector.new(repo, limit, fresh, pretty)}
 
   let(:commits) {collector.commits}
