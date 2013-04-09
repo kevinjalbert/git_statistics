@@ -4,7 +4,7 @@ include GitStatistics
 describe CommitSummary do
 
   let(:sha) { "bf09a64b0e0f801d3e7fe4e002cbd1bf517340a7" }
-  let(:repo) { Repo.find }
+  let(:repo) { Repo.new }
   subject(:commit) { CommitSummary.new(repo.commit(sha)) }
 
   its(:__getobj__) { should be_a Grit::Commit }
@@ -17,7 +17,7 @@ describe CommitSummary do
   context "language-specific changes" do
     let(:name) { "Ruby" }
     subject(:language) { commit.languages.detect { |lang| lang.name == name } }
-    context "for commit 9c94e69411263bcb0f7c1114ea6bd43f1b2a3be5" do
+    context "for commit 2aa45e4ff23c1a558b127c06e95d313a56cc6890" do
       let(:sha) { "2aa45e4ff23c1a558b127c06e95d313a56cc6890" }
       context "language count" do
         subject { commit }
@@ -29,8 +29,8 @@ describe CommitSummary do
         its(:deletions) { should == 13 }
         its(:net) { should == 1 }
       end
-      context "Unknown (or txt)" do
-        let(:name) { "Unknown" }
+      context "Text" do
+        let(:name) { "Text" }
         its(:additions) { should == 7 }
         its(:deletions) { should == 11 }
         its(:net) { should == -4 }
