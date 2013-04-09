@@ -334,33 +334,34 @@ describe Commits do
   end
 
   describe "#save and #load" do
+
+    let(:fixture_contents) { fixture(fixture_file).io.join("\n") }
+    let(:tmpfile_contents) { File.read("tmp.json") }
+
+    before do
+      commits.load(fixture(fixture_file).file)
+      commits.save("tmp.json", pretty)
+    end
+
+    after do
+      FileUtils.remove_file("tmp.json")
+    end
+
     context "with pretty" do
-      let(:fixture_file) {"single_author_pretty.json"}
-      let(:pretty) {true}
+      let(:fixture_file) { "single_author_pretty.json" }
+      let(:pretty) { true }
 
       it do
-        commits.load(fixture(fixture_file).file)
-        commits.save("tmp.json", pretty)
-
-        same = FileUtils.compare_file("tmp.json", fixture(fixture_file).file)
-        FileUtils.remove_file("tmp.json")
-
-        same.should be_true
+        JSON.parse(fixture_contents).should == JSON.parse(tmpfile_contents)
       end
     end
 
     context "with no pretty" do
-      let(:fixture_file) {"multiple_authors.json"}
-      let(:pretty) {false}
+      let(:fixture_file) { "multiple_authors.json" }
+      let(:pretty) { false }
 
       it do
-        commits.load(fixture(fixture_file).file)
-        commits.save("tmp.json", pretty)
-
-        same = FileUtils.compare_file("tmp.json", fixture(fixture_file).file)
-        FileUtils.remove_file("tmp.json")
-
-        same.should be_true
+        JSON.parse(fixture_contents).should == JSON.parse(tmpfile_contents)
       end
     end
   end

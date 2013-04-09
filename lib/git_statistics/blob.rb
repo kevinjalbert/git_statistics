@@ -1,5 +1,6 @@
+require 'language_sniffer'
 module Grit
   class Blob
-    include Linguist::BlobHelper
+    include LanguageSniffer::BlobHelper
   end
 end

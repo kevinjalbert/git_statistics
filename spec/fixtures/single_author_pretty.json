@@ -9,10 +9,6 @@
         "additions": 11,
         "deletions": 0,
         "status": "create",
-        "binary": false,
-        "image": false,
-        "vendored": false,
-        "generated": false,
         "language": "Markdown"
       },
       {
@@ -20,10 +16,6 @@
         "additions": 62,
         "deletions": 0,
         "status": "create",
-        "binary": false,
-        "image": false,
-        "vendored": false,
-        "generated": false,
         "language": "Ruby"
       }
     ],
@@ -42,10 +34,6 @@
         "additions": 7,
         "deletions": 1,
         "status": null,
-        "binary": false,
-        "image": false,
-        "vendored": false,
-        "generated": false,
         "language": "Markdown"
       },
       {
@@ -53,10 +41,6 @@
         "additions": 64,
         "deletions": 0,
         "status": "create",
-        "binary": false,
-        "image": false,
-        "vendored": false,
-        "generated": false,
         "language": "Ruby"
       },
       {
@@ -64,10 +48,6 @@
         "additions": 9,
         "deletions": 4,
         "status": null,
-        "binary": false,
-        "image": false,
-        "vendored": false,
-        "generated": false,
         "language": "Ruby"
       }
     ],
