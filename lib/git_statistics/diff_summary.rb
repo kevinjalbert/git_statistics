@@ -10,22 +10,6 @@ module GitStatistics
       @tree / filename
     end
 
-    def binary?
-      submodule? ? false : blob.binary?
-    end
-
-    def image?
-      submodule? ? false : blob.binary?
-    end
-
-    def vendored?
-      submodule? ? false : blob.vendored?
-    end
-
-    def generated?
-      submodule? ? false : blob.generated?
-    end
-
     def submodule?
       blob.kind_of? Grit::Submodule
     end
