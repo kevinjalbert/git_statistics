@@ -32,7 +32,7 @@ describe Collector do
       let(:time_since) {"--since \"Tue Sep 10 14:15:44 2012 -0400\""}
       let(:time_until) {"--until \"Tue Sep 11 14:45:05 2012 -0400\""}
 
-      before(:all) {setup}
+      before(:all) { setup }
 
       it{@subject[:additions].should == 276}
       it{@subject[:deletions].should == 99}
@@ -42,13 +42,13 @@ describe Collector do
       it{@subject[:languages][:Ruby][:additions].should == 270}
       it{@subject[:languages][:Ruby][:deletions].should == 99}
       it{@subject[:languages][:Ruby][:create].should == 2}
-      it{@subject[:languages][:Unknown][:additions].should == 6}
-      it{@subject[:languages][:Unknown][:deletions].should == 0}
-      it{@subject[:languages][:Unknown][:create].should == 1}
+      it{@subject[:languages][:Text][:additions].should == 6}
+      it{@subject[:languages][:Text][:deletions].should == 0}
+      it{@subject[:languages][:Text][:create].should == 1}
     end
 
     context "with merge commits and merge option" do
-      before(:all) {setup}
+      before(:all) { setup }
 
       it{@subject[:additions].should == 667}
       it{@subject[:deletions].should == 483}
@@ -65,7 +65,7 @@ describe Collector do
 
     context "with merge commits and no merge option" do
       let(:merge) {false}
-      before(:all) {setup}
+      before(:all) { setup }
 
       it{@subject[:additions].should == 8}
       it{@subject[:deletions].should == 1}
@@ -172,30 +172,18 @@ describe Collector do
       it {data[:files][0][:additions].should == 0}
       it {data[:files][0][:deletions].should == 1}
       it {data[:files][0][:status].should.nil?}
-      it {data[:files][0][:binary].should == false}
-      it {data[:files][0][:image].should == false}
-      it {data[:files][0][:vendored].should == false}
-      it {data[:files][0][:generated].should == false}
       it {data[:files][0][:language].should == "Ruby"}
 
       it {data[:files][1][:name].should == "Gemfile.lock"}
       it {data[:files][1][:additions].should == 30}
       it {data[:files][1][:deletions].should == 0}
       it {data[:files][1][:status].should == "create"}
-      it {data[:files][1][:binary].should == false}
-      it {data[:files][1][:image].should == false}
-      it {data[:files][1][:vendored].should == false}
-      it {data[:files][1][:generated].should == true}
       it {data[:files][1][:language].should == "Unknown"}
 
       it {data[:files][2][:name].should == "lib/git_statistics/initialize.rb"}
       it {data[:files][2][:additions].should == 0}
       it {data[:files][2][:deletions].should == 1}
       it {data[:files][2][:status].should.nil?}
-      it {data[:files][2][:binary].should == false}
-      it {data[:files][2][:image].should == false}
-      it {data[:files][2][:vendored].should == false}
-      it {data[:files][2][:generated].should == false}
       it {data[:files][2][:language].should == "Ruby"}
     end
 
@@ -269,10 +257,6 @@ describe Collector do
       it {data_file[:additions].should == file[:additions]}
       it {data_file[:deletions].should == file[:deletions]}
       it {data_file[:status].should == file[:status]}
-      it {data_file[:binary].should == false}
-      it {data_file[:image].should == false}
-      it {data_file[:vendored].should == false}
-      it {data_file[:generated].should == false}
       it {data_file[:language].should == "Ruby"}
     end
 
@@ -289,10 +273,6 @@ describe Collector do
       it {data_file[:additions].should == file[:additions]}
       it {data_file[:deletions].should == file[:deletions]}
       it {data_file[:status].should.nil?}
-      it {data_file[:binary].should == false}
-      it {data_file[:image].should == false}
-      it {data_file[:vendored].should == false}
-      it {data_file[:generated].should == true}
       it {data_file[:language].should == "Unknown"}
     end
 
@@ -309,10 +289,6 @@ describe Collector do
       it {data_file[:additions].should == file[:additions]}
       it {data_file[:deletions].should == file[:deletions]}
       it {data_file[:status].should.nil?}
-      it {data_file[:binary].should == false}
-      it {data_file[:image].should == false}
-      it {data_file[:vendored].should == false}
-      it {data_file[:generated].should == false}
       it {data_file[:language].should == "Markdown"}
     end
   end
