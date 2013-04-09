@@ -6,10 +6,6 @@ rvm:
 
 bundler_args: --without test darwin
 
-before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get -qq install libicu-dev
-
 notifications:
   email: false
 
