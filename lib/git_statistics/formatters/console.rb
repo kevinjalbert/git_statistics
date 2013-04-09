@@ -2,10 +2,13 @@ module GitStatistics
   module Formatters
     class Console
 
+      attr_reader :output
       attr_accessor :commits, :config
 
       def initialize(commits)
         @commits = commits
+        @config = {}
+        @output = []
       end
 
       def prepare_result_summary(sort, email, top_n = 0)
@@ -26,7 +29,7 @@ module GitStatistics
 
         # Acquire formatting pattern for output
         @pattern = "| %-#{config[:author_length]}s | %-#{config[:language_length]}s | %7s | %9s | %9s | %7s | %7s | %7s | %6s | %6s |"
-        config
+        @config
       end
 
       def print_summary(sort, email, top_n = 0)
@@ -35,47 +38,45 @@ module GitStatistics
         config = prepare_result_summary(sort, email, top_n)
 
         # Print query/header information
-        output = print_header
-
+        print_header
         # Print per author information
         config[:data].each do |name, commit_data|
-          output << print_row(name, commit_data)
-          output << print_language_data(commit_data)
+          print_row(name, commit_data)
+          print_language_data(commit_data)
         end
-        output << separator
-        output << print_row("Repository Totals", commit_totals)
-        output << print_language_data(commit_totals)
-        output.flatten.join("\n")
+        add_row separator
+        print_row("Repository Totals", commit_totals)
+        print_language_data(commit_totals)
+        display!
+      end
+
+      def display!
+        output.join("\n")
       end
 
       def print_language_data(data)
-        output = []
         # Print information of each language for the data
         data[:languages].each do |language, commit_data|
-          output << print_row("", commit_data, language)
+          print_row("", commit_data, language)
         end
         output
       end
 
       def print_row(name, commit_info, language = '')
-        format_for_row(name, language, commit_info[:commits],
+        add_row format_for_row(name, language, commit_info[:commits],
                         commit_info[:additions], commit_info[:deletions], commit_info[:create],
                         commit_info[:delete], commit_info[:rename], commit_info[:copy], commit_info[:merges])
       end
 
       def print_header
-        output = []
-        output << get_author_info(@commits.stats.size)
-        output << get_header_info
-        output
+        get_author_info(@commits.stats.size)
+        get_header_info
       end
 
       def get_header_info
-        headers = []
-        headers << separator
-        headers << format_for_row('Name/Email', 'Language', 'Commits', 'Additions', 'Deletions', 'Creates', 'Deletes', 'Renames', 'Copies', 'Merges')
-        headers << separator
-        headers
+        add_row separator
+        add_row format_for_row('Name/Email', 'Language', 'Commits', 'Additions', 'Deletions', 'Creates', 'Deletes', 'Renames', 'Copies', 'Merges')
+        add_row separator
       end
 
       def format_for_row(*columns)
@@ -83,15 +84,19 @@ module GitStatistics
       end
 
       def separator
-        "-" * 89 + "-"*config[:author_length] + "-"*config[:language_length]
+        ("-" * 89) + ("-" * config[:author_length]) + ("-" * config[:language_length])
       end
 
       def get_author_info(total_authors)
         if config[:top_n] > 0 && config[:top_n] < total_authors
-          return "Top #{config[:top_n]} authors(#{total_authors}) sorted by #{config[:sort]}"
+          add_row "Top #{config[:top_n]} authors(#{total_authors}) sorted by #{config[:sort]}"
+        else
+          add_row "All authors(#{total_authors}) sorted by #{config[:sort]}"
         end
+      end
 
-        "All authors(#{total_authors}) sorted by #{config[:sort]}"
+      def add_row(string_or_array)
+        output.concat Array(string_or_array)
       end
     end
   end
