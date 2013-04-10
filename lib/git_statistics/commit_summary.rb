@@ -38,15 +38,15 @@ module GitStatistics
       diffstats.map { |diff| DiffSummary.new(diff, current_tree) }
     end
 
-    LanguageStat = Struct.new(:name, :additions, :deletions, :net)
+    LanguageSummary = Struct.new(:name, :additions, :deletions, :net)
 
-    # Array of LanguageStat objects (one for each language) for simple calculations
+    # Array of LanguageSummary objects (one for each language) for simple calculations
     def languages
       grouped_language_files.collect do |language, stats|
         additions = summarize(stats, :additions)
         deletions = summarize(stats, :deletions)
         net       = summarize(stats, :net)
-        LanguageStat.new(language, additions, deletions, net)
+        LanguageSummary.new(language, additions, deletions, net)
       end
     end
 
