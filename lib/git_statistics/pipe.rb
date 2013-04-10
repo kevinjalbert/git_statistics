@@ -3,7 +3,7 @@ module GitStatistics
     include Enumerable
 
     def initialize(command)
-      @command  = command
+      @command = command
     end
 
     def command
