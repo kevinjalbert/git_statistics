@@ -1,10 +1,12 @@
 require 'git_statistics/initialize'
 
 module GitStatistics
-  class GitStatistics
+  class CLI
     attr_reader :repository, :options
     def initialize
       @repository = Repo.new(Dir.pwd)
+      @collected = false
+      @collector = nil
       @options = OpenStruct.new(
         email: false,
         merges: false,
@@ -21,17 +23,17 @@ module GitStatistics
     end
 
     def execute
-      if options.debug
-        Log.level = Logger::DEBUG
-        Log.use_debug
-      elsif options.verbose
-        Log.level = Logger::INFO
-      end
+      determine_log_level
+      collect_and_only_update
+      fresh_collect! unless @collected
+      calculate!
+      output_results
+    end
 
-      # Collect data (incremental or fresh) based on presence of old data
+    def collect_and_only_update
       if options.update
         # Ensure commit directory is present
-        collector = Collector.new(repository, options.limit, false, options.pretty)
+        @collector = Collector.new(repository, options.limit, false, options.pretty)
         commits_directory = repository.working_dir + ".git_statistics"
         FileUtils.mkdir_p(commits_directory)
         file_count = Utilities.number_of_matching_files(commits_directory, /\d+\.json/) - 1
@@ -40,22 +42,23 @@ module GitStatistics
           time = Utilities.get_modified_time(commits_directory + "#{file_count}.json")
           # Only use --since if there is data present
           collector.collect(options.branch, %Q{--since="#{time}"})
-          collected = true
+          @collected = true
         end
       end
+    end
 
-      # If no data was collected as there was no present data then start fresh
-      unless collected
-        collector = Collector.new(repository, options.limit, true, options.pretty)
-        collector.collect(options.branch)
-      end
+    def calculate!
+      @collector.commits.calculate_statistics(options.email, options.merges)
+    end
 
-      # Calculate statistics
-      collector.commits.calculate_statistics(options.email, options.merges)
-
-      # Print results
-      results = Formatters::Console.new(collector.commits)
+    def output_results
+      results = Formatters::Console.new(@collector.commits)
       puts results.print_summary(options.sort, options.email, options.top)
+    end
+
+    def fresh_collect!
+      @collector = Collector.new(repository, options.limit, true, options.pretty)
+      @collector.collect(options.branch)
     end
 
     def parse_options
@@ -93,6 +96,17 @@ module GitStatistics
         end
       end.parse!
     end
-  end
 
+    private
+
+      def determine_log_level
+        if options.debug
+          Log.level = Logger::DEBUG
+          Log.use_debug
+        elsif options.verbose
+          Log.level = Logger::INFO
+        end
+      end
+
+  end
 end

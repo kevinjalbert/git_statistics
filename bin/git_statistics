@@ -3,4 +3,4 @@
 $:.unshift File.expand_path("../../lib", __FILE__)
 require 'git_statistics'
 
-GitStatistics::GitStatistics.new.execute
+GitStatistics::CLI.new.execute
