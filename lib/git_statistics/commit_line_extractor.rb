@@ -1,3 +1,5 @@
+require 'git_statistics/regex_matcher'
+
 module GitStatistics
   class CommitLineExtractor
 
