@@ -23,8 +23,8 @@ module GitStatistics
       end
 
       # Initilize/resets stats and totals
-      @stats = Hash.new
-      @totals = Hash.new(0)
+      @stats = Stats.new
+      @totals = Hash.new { |h,k| h[k] = 0 }
       @totals[:languages] = {}
     end
 
