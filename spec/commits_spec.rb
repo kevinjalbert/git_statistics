@@ -25,16 +25,15 @@ describe Commits do
   describe "#files_in_path" do
     let(:path) { '/tmp/example' }
     subject { commits.files_in_path }
-    before do
-      FileUtils.mkdir_p(path)
-      Dir.chdir(path) do
-        FileUtils.touch '0.json'
-        FileUtils.touch '1.json'
+    around do |example|
+      Dir.mktmpdir do |dir|
+        Dir.chdir(dir) do
+          FileUtils.touch '0.json'
+          FileUtils.touch '1.json'
+          commits.stub(:path) { dir }
+          example.run
+        end
       end
-      commits.stub(:path) { path }
-    end
-    after do
-      FileUtils.rm_rf(path)
     end
     its(:count) { should == 2 }
     it { should_not include '.' }
