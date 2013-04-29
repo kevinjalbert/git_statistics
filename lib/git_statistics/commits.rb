@@ -41,11 +41,10 @@ module GitStatistics
     end
 
     def author_top_n_type(type, top_n = 0)
-      top_n = 0 if top_n < 0
-      if @stats.empty? || !@stats.first[1].key?(type)
+      if @stats.empty? || !@stats.first[1].has_key?(type)
         nil
       else
-        Hash[*@stats.sorted {|a,b| b[1][type.to_sym] <=> a[1][type]}.to_a[0..top_n-1].flatten]
+        @stats.sort_by(type).take_top(top_n)
       end
     end
 
