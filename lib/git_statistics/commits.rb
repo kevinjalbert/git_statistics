@@ -45,7 +45,7 @@ module GitStatistics
       if @stats.empty? || !@stats.first[1].key?(type)
         nil
       else
-        Hash[*@stats.sorted_hash { |a, b| b[1][type.to_sym] <=> a[1][type] }.to_a[0..top_n - 1].flatten]
+        Hash[*@stats.sorted {|a,b| b[1][type.to_sym] <=> a[1][type]}.to_a[0..top_n-1].flatten]
       end
     end
 
@@ -149,12 +149,6 @@ module GitStatistics
         json_content = pretty ? JSON.pretty_generate(self) : to_json
         f.write(json_content)
       end
-    end
-  end
-
-  class Hash < Hash
-    def sorted_hash(&block)
-      self.class[sort(&block)]
     end
   end
 end

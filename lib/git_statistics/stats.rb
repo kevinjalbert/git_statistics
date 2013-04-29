@@ -1,5 +1,7 @@
 module GitStatistics
   class Stats < Hash
-    # Statistics calculation will eventually go here
+    def sorted(&block)
+      self.class[sort(&block)]
+    end
   end
 end
