@@ -1,6 +1,11 @@
 module GitStatistics
   class Stats < Hash
 
+    def initialize(values = {})
+      super()
+      values.each { |k,v| self[k] = v}
+    end
+
     def sorted(&block)
       self.class[sort(&block)]
     end
@@ -10,8 +15,8 @@ module GitStatistics
     end
 
     def take_top(top_n = 0)
-      top_n = 0 if top_n < 0
-      self.class[*to_a[0..(top_n - 1)].flatten]
+      top_n = self.size if top_n.nil? || top_n <= 0
+      self.class[to_a.take(top_n)]
     end
 
   end
