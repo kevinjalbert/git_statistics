@@ -10,6 +10,26 @@ describe Stats do
     it { should == Stats.new({key: "value"}) }
   end
 
+  context "#sort_by" do
+    let(:values) { { "Kevin Jalbert" => { a: 1, b: 2, c: 3 }, "Matt Bridges" => { a: 2, b: 1, c: 20 } } }
+    subject { stats.sort_by(what).first[0] }
+
+    context "sorted by :a" do
+      let(:what) { :a }
+      it { should == "Matt Bridges" }
+    end
+
+    context "sorted by :b" do
+      let(:what) { :b }
+      it { should == "Kevin Jalbert" }
+    end
+
+    context "sorted by :c" do
+      let(:what) { :c }
+      it { should == "Matt Bridges" }
+    end
+  end
+
   context "#take_top" do
     let(:values) { { 1=>2, 3=>4, 5=>6, 7=>8 } }
     subject { stats.take_top(number) }
