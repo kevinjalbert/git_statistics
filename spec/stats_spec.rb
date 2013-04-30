@@ -5,6 +5,11 @@ describe Stats do
   let(:values) { {} }
   subject(:stats)  { Stats.new(values) }
 
+  context "initialization" do
+    let(:values) { { key: "value" } }
+    it { should == Stats.new({key: "value"}) }
+  end
+
   context "#take_top" do
     let(:values) { { 1=>2, 3=>4, 5=>6, 7=>8 } }
     subject { stats.take_top(number) }
