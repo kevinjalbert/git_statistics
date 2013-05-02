@@ -4,17 +4,17 @@ include GitStatistics
 describe Utilities do
 
   describe "#max_length_in_list" do
-    let(:max) {nil}
-    let(:list) {[]}
+    let(:max) { nil }
+    let(:list) { [] }
     subject(:results) {Utilities.max_length_in_list(list, max)}
 
     context "with empty list" do
-      it { should be_nil }
+      it { should == 0 }
     end
 
     context "with nil list" do
-      let(:list) {nil}
-      it { should be_nil }
+      let(:list) { nil }
+      it { should == 0 }
     end
 
     context "with empty list and zero max" do
@@ -24,17 +24,17 @@ describe Utilities do
     end
 
     context "with preset minimum length" do
-      let(:max) {10}
+      let(:max) { 10 }
       it { should == 10 }
     end
 
     context "with valid list" do
-      let(:list) {["abc", "a", "ab"]}
+      let(:list) { ["abc", "a", "ab"] }
       it { should == 3 }
     end
 
     context "with valid hash" do
-      let(:list) {{"a" => "word_a", "ab" => "word_b", "abc" => "word_c"}}
+      let(:list) { {"a" => "word_a", "ab" => "word_b", "abc" => "word_c"} }
       it { should == 3 }
     end
   end

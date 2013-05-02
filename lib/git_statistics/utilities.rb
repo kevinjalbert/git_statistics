@@ -4,11 +4,10 @@ module GitStatistics
   module Utilities
 
     def self.max_length_in_list(list, max = nil)
-      return nil if list.nil?
-      list.each do |key,value|
-        max = key.length if max.nil? || key.length > max
-      end
-      max
+      list ||= []
+      max = max.to_i
+      list_max = list.map { |k,_| k.length }.max || 0
+      list_max >= max ? list_max : max
     end
 
     def self.split_old_new_file(old, new)
