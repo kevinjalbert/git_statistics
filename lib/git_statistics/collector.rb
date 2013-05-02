@@ -60,7 +60,6 @@ module GitStatistics
 
     def acquire_commit_data(line)
       # Split up formated line
-      commit_info = line.split(',')
       sha, author, email, time, parents = line.split(",")
 
       # Initialize commit data
