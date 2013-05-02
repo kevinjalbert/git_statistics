@@ -61,22 +61,19 @@ module GitStatistics
     def acquire_commit_data(line)
       # Split up formated line
       commit_info = line.split(',')
+      sha, author, email, time, parents = line.split(",")
 
       # Initialize commit data
-      data = (@commits[commit_info[0]] ||= Hash.new(0))
-      data[:author] = commit_info[1]
-      data[:author_email] = commit_info[2]
-      data[:time] = commit_info[3]
+      data = (@commits[sha] ||= Hash.new(0))
+      data[:author] = author
+      data[:author_email] = email
+      data[:time] = time
       data[:files] = []
 
       # Flag commit as merge if necessary (determined if two parents)
-      if commit_info[4].nil? || commit_info[4].split(' ').one?
-        data[:merge] = false
-      else
-        data[:merge] = true
-      end
+      data[:merge] = !(parents.nil? || parents.split(' ').one?)
 
-      return {:sha => commit_info[0], :data => data}
+      return {:sha => sha, :data => data}
     end
 
     def extract_commit(buffer)
