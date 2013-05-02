@@ -3,11 +3,11 @@ require 'rbconfig'
 module GitStatistics
   module Utilities
 
-    def self.max_length_in_list(list, max = nil)
+    def self.max_length_in_list(list, min_length = nil)
       list ||= []
-      max = max.to_i
+      min_length = min_length.to_i
       list_max = list.map { |k,_| k.length }.max || 0
-      list_max >= max ? list_max : max
+      list_max >= min_length ? list_max : min_length
     end
 
     def self.split_old_new_file(old, new)
