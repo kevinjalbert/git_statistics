@@ -1,8 +1,5 @@
 $:.unshift File.expand_path("../../lib", __FILE__)
 
-require 'coveralls'
-Coveralls.wear!
-
 require 'pathname'
 require 'tmpdir'
 
