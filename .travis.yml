@@ -4,7 +4,7 @@ rvm:
   - 1.9.2
   - 1.9.3
 
-bundler_args: --without test darwin
+bundler_args: --without darwin
 
 notifications:
   email: false

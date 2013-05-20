@@ -5,6 +5,7 @@ group :test do
   gem "simplecov"
   gem "guard-rspec"
   gem "tailor"
+  gem 'coveralls', require: false
 end
 
 group :darwin do
