@@ -14,7 +14,7 @@ module GitStatistics
       branches = branch ? [] : @repo.branches.compact.map(&:name)
 
       # Create pipe for the git log to acquire commits
-      pipe = Pipe.new("git --no-pager log #{branches.join(' ')} --date=iso --reverse"\
+      pipe = Pipe.new("git --git-dir=#{(@repo.working_dir + ".git")} --no-pager log #{branches.join(' ')} --date=iso --reverse"\
                       " --no-color --find-copies-harder --numstat --encoding=utf-8"\
                       " --summary #{time_since} #{time_until}"\
                       " --format=\"%H,%an,%ae,%ad,%p\"")
@@ -46,7 +46,7 @@ module GitStatistics
 
     def fall_back_collect_commit(sha)
       # Create pipe for the git log to acquire commits
-      pipe = Pipe.new("git --no-pager show #{sha} --date=iso --reverse"\
+      pipe = Pipe.new("git --git-dir=#{(@repo.working_dir + ".git")} --no-pager show #{sha} --date=iso --reverse"\
                       " --no-color --find-copies-harder --numstat --encoding=utf-8 "\
                       "--summary --format=\"%H,%an,%ae,%ad,%p\"")
 

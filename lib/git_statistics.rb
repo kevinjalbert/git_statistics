@@ -3,8 +3,9 @@ require 'git_statistics/initialize'
 module GitStatistics
   class CLI
     attr_reader :repository, :options
-    def initialize
-      @repository = Repo.new(Dir.pwd)
+
+    def initialize(dir)
+      @repository = dir.nil? ? Repo.new(Dir.pwd) : Repo.new(dir)
       @collected = false
       @collector = nil
       @options = OpenStruct.new(
