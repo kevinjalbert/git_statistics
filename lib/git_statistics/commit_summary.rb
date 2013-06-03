@@ -88,7 +88,16 @@ module GitStatistics
 
         # If blob is nil (i.e., deleted file) grab the previous version of this file for the language
         if stats.blob.nil?
-          language = Utilities.get_blob(self.parents.first, stats.filename).language.name
+          # Try to find a valid blob using the parents of the current commit
+          blob = Utilities.get_blob(self.parents.first, stats.filename)
+          blob = Utilities.get_blob(self.parents.last, stats.filename) if blob.nil?
+
+          # Special handling of blob (could still be nil or a submodule)
+          if blob.nil? || blob.kind_of?(Grit::Submodule)
+            language = "Unknown"
+          else
+            language = blob.language.to_s
+          end
         else
           language = stats.language
         end
