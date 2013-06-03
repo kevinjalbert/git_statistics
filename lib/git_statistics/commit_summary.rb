@@ -55,8 +55,15 @@ module GitStatistics
       file_stats.group_by(&:language)
     end
 
-    # Files touched in this commit
+    FileSummary = Struct.new(:name, :language, :additions, :deletions, :net, :filestatus)
+
+    # Array of FileSummary objects (one for each file) for simple calculations
     def files
+      file_stats.collect{ |stats| determine_file_summary(stats) }
+    end
+
+    # Files touched in this commit
+    def file_names
       diffstats.map(&:filename)
     end
 
@@ -66,6 +73,28 @@ module GitStatistics
     end
 
     private
+
+      def determine_file_summary(stats)
+        # Extract file status from commit's diff object
+        filestatus = :modified
+        show.select.each do |diff|
+          if stats.filename == diff.b_path
+            filestatus = :new if diff.new_file
+            filestatus = :deleted if diff.deleted_file
+            filestatus = :renamed if diff.renamed_file
+            break
+          end
+        end
+
+        # If blob is nil (i.e., deleted file) grab the previous version of this file for the language
+        if stats.blob.nil?
+          language = Utilities.get_blob(self.parents.first, stats.filename).language.name
+        else
+          language = stats.language
+        end
+
+        FileSummary.new(stats.filename, language, stats.additions, stats.deletions, stats.net, filestatus)
+      end
 
       def summarize(stats, what)
         stats.map(&what).inject(0, :+)

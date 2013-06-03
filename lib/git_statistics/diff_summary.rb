@@ -15,7 +15,7 @@ module GitStatistics
     end
 
     def inspect
-      %Q{<GitStatistics::FileStat @language=#{language} @additions=#{additions}, @deletions=#{deletions}, @net=#{net}>}
+      %Q{<GitStatistics::FileStat @filename=#{filename} @language=#{language} @additions=#{additions}, @deletions=#{deletions}, @net=#{net}>}
     end
 
     # Determine the language of the file from the blob

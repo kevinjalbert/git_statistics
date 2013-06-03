@@ -214,7 +214,7 @@ describe Collector do
 
   describe "#get_blob" do
     let(:sha) { "695b487432e8a1ede765b4e3efda088ab87a77f8" }  # Commit within repository
-    subject { collector.get_blob(sha, file) }
+    subject { Utilities.get_blob(repo.commit(sha), file[:file]) }
 
     context "with valid blob" do
       let(:file) {{:file => "Gemfile.lock"}}
@@ -236,7 +236,7 @@ describe Collector do
 
   describe "#process_blob" do
     let(:sha) {"695b487432e8a1ede765b4e3efda088ab87a77f8"}  # Commit within repository
-    let(:blob) {collector.get_blob(sha, file)}
+    let(:blob) {Utilities.get_blob(repo.commit(sha), file[:file])}
     let(:data) {
       data = Hash.new(0)
       data[:files] = []

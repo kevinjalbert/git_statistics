@@ -45,6 +45,42 @@ describe CommitSummary do
     end
   end
 
+  context "file-specific changes" do
+    let(:name) { "lib/git_statistics/formatters/console.rb" }
+    subject(:file) { commit.files.detect { |file| file.name == name } }
+    context "for commit ef9292a92467430e0061e1b1ad4cbbc3ad7da6fd" do
+      let(:sha) { "ef9292a92467430e0061e1b1ad4cbbc3ad7da6fd" }
+      context "file count" do
+        subject { commit }
+        its(:files) { should have(12).items }
+      end
+      context "bin/git_statistics (new)" do
+        let(:name) { "bin/git_statistics" }
+        its(:language) { should == "Ruby" }
+        its(:additions) { should == 5 }
+        its(:deletions) { should == 0 }
+        its(:net) { should == 5 }
+        its(:filestatus) { should == :new }
+      end
+      context "lib/initialize.rb (deleted)" do
+        let(:name) { "lib/initialize.rb" }
+        its(:language) { should == "Ruby" }
+        its(:additions) { should == 0 }
+        its(:deletions) { should == 4 }
+        its(:net) { should == -4 }
+        its(:filestatus) { should == :deleted }
+      end
+      context "lib/git_statistics.rb (modified)" do
+        let(:name) { "lib/git_statistics.rb" }
+        its(:language) { should == "Ruby" }
+        its(:additions) { should == 37 }
+        its(:deletions) { should == 30 }
+        its(:net) { should == 7 }
+        its(:filestatus) { should == :modified }
+      end
+    end
+  end
+
   context "with a removed file" do
     let(:sha) { "4ce86b844458a1fd77c6066c9297576b9520f97e" }
     its(:removed_files) { should == 2 }
