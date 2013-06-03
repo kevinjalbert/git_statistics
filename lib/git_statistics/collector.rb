@@ -98,7 +98,7 @@ module GitStatistics
 
       # Acquire blob for each changed file and process it
       files.each do |file|
-        blob = get_blob(commit_data[:sha], file)
+        blob = Utilities.get_blob(@repo.commit(commit_data[:sha]), file[:file])
 
         # Only process blobs, or log the submodules and problematic files
         if blob.instance_of?(Grit::Blob)
@@ -110,24 +110,6 @@ module GitStatistics
         end
       end
       return commit_data[:data]
-    end
-
-    def get_blob(sha, file)
-      # Split up file for Grit navigation
-      file = file[:file].split(File::Separator)
-
-      # Acquire blob of the file for this specific commit
-      blob = Utilities.find_blob_in_tree(@repo.tree(sha), file)
-
-      # If we cannot find blob in current commit (deleted file), check previous commit
-      if blob.nil? || blob.instance_of?(Grit::Tree)
-        prev_commit = @repo.commits(sha).first.parents[0]
-        return nil if prev_commit.nil?
-
-        prev_tree = @repo.tree(prev_commit.id)
-        blob = Utilities.find_blob_in_tree(prev_tree, file)
-      end
-      return blob
     end
 
     def identify_changed_files(buffer)

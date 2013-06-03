@@ -35,6 +35,23 @@ module GitStatistics
               :new_file => new_file.gsub('//', '/')}
     end
 
+    def self.get_blob(commit, file)
+      # Split up file for Grit navigation
+      file = file.split(File::Separator)
+
+      # Acquire blob of the file for this specific commit
+      blob = Utilities.find_blob_in_tree(commit.tree, file)
+
+      # If we cannot find blob in current commit (deleted file), check previous commit
+      if blob.nil? || blob.instance_of?(Grit::Tree)
+        prev_commit = commit.parents.first
+        return nil if prev_commit.nil?
+
+        blob = Utilities.find_blob_in_tree(prev_commit.tree, file)
+      end
+      return blob
+    end
+
     def self.find_blob_in_tree(tree, file)
       # Check If cannot find tree in commit or if we found a submodule as the changed file
       if tree.nil? || file.nil?
