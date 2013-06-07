@@ -78,23 +78,26 @@ module GitStatistics
       time_at("stat #{flags} #{file}")
     end
 
-    def self.os
-      case RbConfig::CONFIG['host_os']
-      when /mswin|msys|mingw|cygwin|bccwin|wince|emc/
-        :windows
-      when /darwin|mac os/
-        :mac
-      when /linux/
-        :linux
-      when /solaris|bsd/
-        :unix
-      else
-        :unknown
+    class OperatingSystem
+      OPERATING_SYSTEMS = {
+        /mswin|msys|mingw|cygwin|bccwin|wince|emc/ => :windows,
+        /darwin|mac os/ => :mac,
+        /linux/ => :linux,
+        /solaris|bsd/ => :unix
+      }
+      OPERATING_SYSTEMS.default = :unknown
+
+      def determine(os_name)
+        OPERATING_SYSTEMS.select { |k,_| k =~ os_name }.first
       end
     end
 
     def self.time_at(cmd)
       Time.at(%x{#{cmd}}.to_i)
+    end
+
+    def self.os
+      OperatingSystem.determine(RbConfig::CONFIG['host_os'])
     end
 
     def self.number_of_matching_files(directory, pattern)
@@ -103,5 +106,6 @@ module GitStatistics
       Log.error "No such directory #{File.expand_path(directory)}"
       0
     end
+
   end
 end
