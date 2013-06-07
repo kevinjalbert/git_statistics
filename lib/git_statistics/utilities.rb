@@ -10,31 +10,6 @@ module GitStatistics
       list_max >= min_length ? list_max : min_length
     end
 
-    def self.split_old_new_file(old, new)
-      # Split the old and new chunks up (separted by the =>)
-      split_old = old.split('{')
-      split_new = new.split('}')
-
-      # Handle recombine the file splits into their whole paths)
-      if split_old.one? && split_new.one?
-        old_file = split_old[0]
-        new_file = split_new[0]
-      elsif split_new.one?
-        old_file = split_old[0] + split_old[1]
-        new_file = split_old[0] + split_new[0]
-      elsif split_old.one?
-        old_file = split_old[0] + split_new[1]
-        new_file = split_old[0] + split_new[0] + split_new[1]
-      else
-        old_file = split_old[0] + split_old[1] + split_new[1]
-        new_file = split_old[0] + split_new[0] + split_new[1]
-      end
-
-      # Return files, yet remove the '//' if present from combining splits
-      return {:old_file => old_file.gsub('//', '/'),
-              :new_file => new_file.gsub('//', '/')}
-    end
-
     def self.find_blob_in_tree(tree, file)
       # Check If cannot find tree in commit or if we found a submodule as the changed file
       if tree.nil? || file.nil?

@@ -16,11 +16,11 @@ module GitStatistics
 
     def changed
       modified_or_renamed = ModifiedOrRenamed.if_matches(line) do |(additions, deletions, old_file, new_file)|
-        split_file = Utilities.split_old_new_file(old_file, new_file)
+        old, new = SplitFile.new(old_file, new_file).split
         {:additions => additions.to_i,
           :deletions => deletions.to_i,
-          :file => split_file[:new_file],
-          :old_file => split_file[:old_file]}
+          :file => new,
+          :old_file => old }
       end
       return modified_or_renamed unless modified_or_renamed.empty?
 
@@ -39,10 +39,10 @@ module GitStatistics
 
     def renamed_or_copied
       RenamedOrCopied.if_matches(line) do |(status, old_file, new_file, similar)|
-        split_file = Utilities.split_old_new_file(old_file, new_file)
+        old, new = SplitFile.new(old_file, new_file).split
         {:status => status,
-          :old_file => split_file[:old_file],
-          :new_file => split_file[:new_file],
+          :old_file => old,
+          :new_file => new,
           :similar => similar.to_i}
       end
     end
