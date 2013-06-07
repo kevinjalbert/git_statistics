@@ -5,7 +5,7 @@ describe CommitLineExtractor do
 
   let(:extractor) { CommitLineExtractor.new(line) }
 
-  describe "#extract_change_file" do
+  describe "#changed" do
     let(:file) { extractor.changed }
 
     context "with a simple changed file" do
@@ -32,7 +32,7 @@ describe CommitLineExtractor do
     end
   end
 
-  describe "#extract_create_delete_file" do
+  describe "#created_or_deleted" do
     let(:file) { extractor.created_or_deleted }
 
     context "with a create changed file" do
@@ -48,7 +48,7 @@ describe CommitLineExtractor do
     end
   end
 
-  describe "#extract_rename_copy_file" do
+  describe "#renamed_or_copied" do
     let(:file) { extractor.renamed_or_copied }
 
     context "with a rename changed file" do
