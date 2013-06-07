@@ -67,11 +67,14 @@ module GitStatistics
       end
     end
 
+    COMMANDS = {
+      :windows => ->{ raise "`stat` is not supported on Windows" },
+      :mac =>     ->{ "-f %m" }
+    }
+    COMMANDS.default = ->{ "-c %Y" }
+
     def self.get_modified_time(file)
-      if os == :windows
-        raise "`stat` is not supported on the Windows operating system"
-      end
-      flags = os == :mac ? "-f %m" : "-c %Y"
+      flags = COMMANDS[os].()
       time_at("stat #{flags} #{file}")
     end
 
