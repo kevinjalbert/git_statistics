@@ -8,21 +8,22 @@
         "name": "README.md",
         "additions": 11,
         "deletions": 0,
-        "status": "create",
+        "filestatus": "create",
         "language": "Markdown"
       },
       {
         "name": "git_statistics.rb",
         "additions": 62,
         "deletions": 0,
-        "status": "create",
+        "filestatus": "create",
         "language": "Ruby"
       }
     ],
     "merge": false,
-    "create": 2,
     "additions": 73,
-    "deletions": 0
+    "deletions": 0,
+    "new_files": 2,
+    "removed_files": 0
   },
   "354e8a3795470d75388549d7326d9c12f6e0bf1a": {
     "author": "Kevin Jalbert",
@@ -33,27 +34,28 @@
         "name": "README.md",
         "additions": 7,
         "deletions": 1,
-        "status": null,
+        "filestatus": "modified",
         "language": "Markdown"
       },
       {
         "name": "commits.rb",
         "additions": 64,
         "deletions": 0,
-        "status": "create",
+        "filestatus": "create",
         "language": "Ruby"
       },
       {
         "name": "git_statistics.rb",
         "additions": 9,
         "deletions": 4,
-        "status": null,
+        "filestatus": "modified",
         "language": "Ruby"
       }
     ],
     "merge": true,
     "additions": 80,
     "deletions": 5,
-    "create": 1
+    "new_files": 1,
+    "removed_files": 0
   }
 }

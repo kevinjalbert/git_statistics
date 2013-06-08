@@ -11,31 +11,6 @@ module GitStatistics
       max
     end
 
-    def self.split_old_new_file(old, new)
-      # Split the old and new chunks up (separted by the =>)
-      split_old = old.split('{')
-      split_new = new.split('}')
-
-      # Handle recombine the file splits into their whole paths)
-      if split_old.one? && split_new.one?
-        old_file = split_old[0]
-        new_file = split_new[0]
-      elsif split_new.one?
-        old_file = split_old[0] + split_old[1]
-        new_file = split_old[0] + split_new[0]
-      elsif split_old.one?
-        old_file = split_old[0] + split_new[1]
-        new_file = split_old[0] + split_new[0] + split_new[1]
-      else
-        old_file = split_old[0] + split_old[1] + split_new[1]
-        new_file = split_old[0] + split_new[0] + split_new[1]
-      end
-
-      # Return files, yet remove the '//' if present from combining splits
-      return {:old_file => old_file.gsub('//', '/'),
-              :new_file => new_file.gsub('//', '/')}
-    end
-
     def self.get_blob(commit, file)
       # Split up file for Grit navigation
       file = file.split(File::Separator)

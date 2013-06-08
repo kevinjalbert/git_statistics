@@ -39,9 +39,9 @@ module GitStatistics
         file_count = Utilities.number_of_matching_files(commits_directory, /\d+\.json/) - 1
 
         if file_count >= 0
-          time = Utilities.get_modified_time(commits_directory + "#{file_count}.json")
+          time_since = Utilities.get_modified_time(commits_directory + "#{file_count}.json")
           # Only use --since if there is data present
-          collector.collect(options.branch, %Q{--since="#{time}"})
+          @collector.collect(options.branch, {:since => time_since})
           @collected = true
         end
       end

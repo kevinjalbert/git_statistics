@@ -77,11 +77,10 @@ module GitStatistics
       def determine_file_summary(stats)
         # Extract file status from commit's diff object
         filestatus = :modified
-        show.select.each do |diff|
+        show.each do |diff|
           if stats.filename == diff.b_path
-            filestatus = :new if diff.new_file
-            filestatus = :deleted if diff.deleted_file
-            filestatus = :renamed if diff.renamed_file
+            filestatus = :create if diff.new_file
+            filestatus = :delete if diff.deleted_file
             break
           end
         end
@@ -92,17 +91,18 @@ module GitStatistics
           blob = Utilities.get_blob(self.parents.first, stats.filename)
           blob = Utilities.get_blob(self.parents.last, stats.filename) if blob.nil?
 
-          # Special handling of blob (could still be nil or a submodule)
-          if blob.nil? || blob.kind_of?(Grit::Submodule)
+          # Special handling of blob (could be nil, submodule, unknown language)
+          if blob.nil? || blob.kind_of?(Grit::Submodule) || blob.language.nil?
             language = "Unknown"
           else
-            language = blob.language.to_s
+            language = blob.language
           end
         else
           language = stats.language
         end
 
-        FileSummary.new(stats.filename, language, stats.additions, stats.deletions, stats.net, filestatus)
+        # TODO Converts file summary into hash to keep json compatibility (for now)
+        Hash[FileSummary.new(stats.filename, language.to_s, stats.additions, stats.deletions, stats.net, filestatus).each_pair.to_a]
       end
 
       def summarize(stats, what)

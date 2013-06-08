@@ -56,43 +56,6 @@ describe Utilities do
     end
   end
 
-  describe "#split_old_new_file" do
-    let(:files) {Utilities.split_old_new_file(old, new)}
-    context "with a change in middle" do
-      let(:old) {"lib/{old_dir"}
-      let(:new) {"new_dir}/file.rb"}
-      it {files[:new_file].should == "lib/new_dir/file.rb"}
-    end
-
-    context "with a change at beginning" do
-      let(:old) {"{src/dir/lib"}
-      let(:new) {"lib/dir}/file.rb"}
-      it {files[:old_file].should == "src/dir/lib/file.rb"}
-      it {files[:new_file].should == "lib/dir/file.rb"}
-    end
-
-    context "with a change at beginning, alternative" do
-      let(:old) {"src/{"}
-      let(:new) {"dir}/file.rb"}
-      it {files[:old_file].should == "src/file.rb"}
-      it {files[:new_file].should == "src/dir/file.rb"}
-    end
-
-    context "with a change at ending" do
-      let(:old) {"lib/dir/{old_file.rb"}
-      let(:new) {"new_file.rb}"}
-      it {files[:old_file].should == "lib/dir/old_file.rb"}
-      it {files[:new_file].should == "lib/dir/new_file.rb"}
-    end
-
-    context "with a simple complete change" do
-      let(:old) {"file.rb"}
-      let(:new) {"lib/dir/file.rb}"}
-      it {files[:old_file].should == "file.rb"}
-      it {files[:new_file].should == "lib/dir/file.rb"}
-    end
-  end
-
   describe "#find_blob_in_tree" do
     let(:sha) {"7d6c29f0ad5860d3238debbaaf696e361bf8c541"}  # Commit within repository
     let(:tree) {GIT_REPO.tree(sha)}
