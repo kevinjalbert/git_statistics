@@ -11,12 +11,12 @@ module GitStatistics
 
     # How many files were removed in this commit
     def removed_files
-      show.select { |diff| diff.deleted_file == true }.count
+      cached_show.select { |diff| diff.deleted_file == true }.count
     end
 
     # How many files were added in this commit
     def new_files
-      show.select { |diff| diff.new_file == true }.count
+      cached_show.select { |diff| diff.new_file == true }.count
     end
 
     # How many total additions in this commit?
@@ -35,7 +35,7 @@ module GitStatistics
     end
 
     def file_stats
-      diffstats.map { |diff| DiffSummary.new(diff, current_tree) }
+      @cached_file_stats ||= diffstats.map { |diff| DiffSummary.new(diff, current_tree) }
     end
 
     LanguageSummary = Struct.new(:name, :additions, :deletions, :net)
@@ -62,6 +62,10 @@ module GitStatistics
       file_stats.collect{ |stats| determine_file_summary(stats) }
     end
 
+    def cached_show
+      @cached_commit_show ||= show
+    end
+
     # Files touched in this commit
     def file_names
       diffstats.map(&:filename)
@@ -75,13 +79,17 @@ module GitStatistics
     private
 
       def determine_file_summary(stats)
-        # Extract file status from commit's diff object
         filestatus = :modified
-        show.each do |diff|
-          if stats.filename == diff.b_path
-            filestatus = :create if diff.new_file
-            filestatus = :delete if diff.deleted_file
-            break
+
+        # Determine if this file could be a new or deleted file
+        if (stats.additions > 0 && stats.deletions == 0) || (stats.additions == 0 && stats.deletions > 0)
+          # Extract file status from commit's diff object
+          cached_show.each do |diff|
+            if stats.filename == diff.b_path
+              filestatus = :create if diff.new_file
+              filestatus = :delete if diff.deleted_file
+              break
+            end
           end
         end
 
@@ -92,11 +100,7 @@ module GitStatistics
           blob = Utilities.get_blob(self.parents.last, stats.filename) if blob.nil?
 
           # Special handling of blob (could be nil, submodule, unknown language)
-          if blob.nil? || blob.kind_of?(Grit::Submodule) || blob.language.nil?
-            language = "Unknown"
-          else
-            language = blob.language
-          end
+          language = (blob.nil? || blob.kind_of?(Grit::Submodule) || blob.language.nil?) ? "Unknown" : blob.language
         else
           language = stats.language
         end
