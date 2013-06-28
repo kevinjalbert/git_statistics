@@ -9,6 +9,14 @@ bundler_args: --without test darwin
 notifications:
   email: false
 
-before_script: git pull -q --depth=1000000
+before_script:
+  # Tests are ran against the repos early history
+  - git pull -q --depth=1000000
+
+  # Grit's Commit.find_all(...) requires the master branch to be present
+  - git remote add master git://github.com/kevinjalbert/git_statistics.git
+  - git fetch master
+  - git checkout master
+  - git checkout -
 
 script: bundle exec rspec spec
