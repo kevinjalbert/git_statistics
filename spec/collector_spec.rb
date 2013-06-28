@@ -89,7 +89,6 @@ describe Collector do
       let(:sha) {"260bc61e2c42930d91f3503c5849b0a2351275cf"}
       it {data[:author].should == "Kevin Jalbert"}
       it {data[:author_email].should == "kevin.j.jalbert@gmail.com"}
-      it {data[:time].should == "2012-04-12 14:13:56 -0400"}
 
       it {data[:merge].should == false}
       it {data[:additions].should == 30}
