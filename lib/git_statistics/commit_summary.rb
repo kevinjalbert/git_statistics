@@ -80,6 +80,7 @@ module GitStatistics
 
       def determine_file_summary(stats)
         filestatus = :modified
+        language = stats.language
 
         # Determine if this file could be a new or deleted file
         if (stats.additions > 0 && stats.deletions == 0) || (stats.additions == 0 && stats.deletions > 0)
@@ -93,20 +94,31 @@ module GitStatistics
           end
         end
 
-        # If blob is nil (i.e., deleted file) grab the previous version of this file for the language
-        if stats.blob.nil?
-          # Try to find a valid blob using the parents of the current commit
+        # Determine language of blob
+        if stats.tree?
+          # Trees have no language (the tree's blobs are still processed via the remainder diffstats)
+          language = "Unknown"
+        elsif stats.submodule?
+          language = "Submodule"
+        elsif stats.blob.nil?
+          # If blob is nil (i.e., deleted file) grab the previous version of this blob using the parents of the current commit
           blob = Utilities.get_blob(self.parents.first, stats.filename)
           blob = Utilities.get_blob(self.parents.last, stats.filename) if blob.nil?
 
-          # Special handling of blob (could be nil, submodule, unknown language)
-          language = (blob.nil? || blob.kind_of?(Grit::Submodule) || blob.language.nil?) ? "Unknown" : blob.language
-        else
-          language = stats.language
+          # Determine language of newly found blob
+          if blob.kind_of? Grit::Tree
+            language = "Unknown"
+          elsif blob.kind_of? Grit::Submodule
+            language = "Submodule"
+          elsif blob.nil? || blob.language.nil?
+            language = "Unknown"
+          else
+            language = blob.language.to_s
+          end
         end
 
         # TODO Converts file summary into hash to keep json compatibility (for now)
-        Hash[FileSummary.new(stats.filename, language.to_s, stats.additions, stats.deletions, stats.net, filestatus).each_pair.to_a]
+        Hash[FileSummary.new(stats.filename, language, stats.additions, stats.deletions, stats.net, filestatus).each_pair.to_a]
       end
 
       def summarize(stats, what)
