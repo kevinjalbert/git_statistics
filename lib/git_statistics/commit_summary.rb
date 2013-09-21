@@ -102,8 +102,8 @@ module GitStatistics
           language = "Submodule"
         elsif stats.blob.nil?
           # If blob is nil (i.e., deleted file) grab the previous version of this blob using the parents of the current commit
-          blob = Utilities.get_blob(self.parents.first, stats.filename)
-          blob = Utilities.get_blob(self.parents.last, stats.filename) if blob.nil?
+          blob = BlobFinder.get_blob(self.parents.first, stats.filename)
+          blob = BlobFinder.get_blob(self.parents.last, stats.filename) if blob.nil?
 
           # Determine language of newly found blob
           if blob.kind_of? Grit::Tree
