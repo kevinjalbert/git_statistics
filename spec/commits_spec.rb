@@ -45,7 +45,7 @@ describe Commits do
 
     def commit_size_changes_from(beginning, opts = {})
       commits.size.should == beginning
-      commits.flush_commits(opts[:force] || false)
+      commits.flush_commits
       commits.size.should == opts[:to]
     end
 
@@ -62,11 +62,6 @@ describe Commits do
     context "with commits less than limit" do
       let(:limit) {5}
       it { commit_size_changes_from(3, to: 3) }
-    end
-
-    context "with commits less than limit but forced" do
-      let(:limit) {5}
-      it { commit_size_changes_from(3, to: 0, force: true) }
     end
   end
 
@@ -207,7 +202,7 @@ describe Commits do
 
     context "with merge" do
       let(:merge) {true}
-      let(:author) { 'Kevin Jalbert' }
+      let(:author) { "Kevin Jalbert" }
 
       it {stats.has_key?(author).should be_true}
       it {subject[:commits].should == 2}
@@ -225,7 +220,6 @@ describe Commits do
   end
 
   describe "#add_language_stats" do
-
     context "with file language" do
       let(:data) {
         data = Hash.new(0)
@@ -276,6 +270,8 @@ describe Commits do
       let(:data) {
         commit = {:additions => 10,
                   :deletions => 5,
+                  :new_files => 0,
+                  :removed_files => 0,
                   :merge => false}
 
         data = Hash.new(0)
@@ -292,6 +288,8 @@ describe Commits do
       let(:data) {
         commit = {:additions => 10,
                   :deletions => 5,
+                  :new_files => 0,
+                  :removed_files => 0,
                   :merge => false}
 
         data = Hash.new(0)
@@ -312,10 +310,8 @@ describe Commits do
       let(:data) {
         commit = {:additions => 10,
                   :deletions => 5,
-                  :create => 1,
-                  :delete => 2,
-                  :rename => 3,
-                  :copy => 4,
+                  :new_files => 1,
+                  :removed_files => 2,
                   :merge => false}
 
         data = Hash.new(0)
@@ -327,13 +323,10 @@ describe Commits do
       it {data[:deletions].should == 5}
       it {data[:create].should == 1}
       it {data[:delete].should == 2}
-      it {data[:rename].should == 3}
-      it {data[:copy].should == 4}
     end
   end
 
   describe "#save and #load" do
-
     let(:fixture_contents) { fixture(fixture_file).io.join("\n") }
     let(:tmpfile_contents) { File.read("tmp.json") }
 

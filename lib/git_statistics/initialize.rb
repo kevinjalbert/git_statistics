@@ -2,6 +2,7 @@ require 'json'
 require 'pathname'
 require 'ostruct'
 require 'optparse'
+require 'delegate'
 
 require 'grit'
 require 'language_sniffer'

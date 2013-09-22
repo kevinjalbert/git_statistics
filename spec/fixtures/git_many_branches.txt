@@ -1,2 +1,0 @@
-* issue_2
-  master

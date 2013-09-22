@@ -33,7 +33,7 @@ module GitStatistics
       Dir.entries(path).reject { |file| %w[. ..].include?(file) }
     end
 
-    def flush_commits(force = false)
+    def flush_commits(force=false)
       if size >= limit || force
         file_count = Utilities.number_of_matching_files(path, /\d+\.json/)
         save(File.join(path, "#{file_count}.json"), @pretty)
@@ -54,13 +54,18 @@ module GitStatistics
       # Identify authors and author type
       type = email ? :author_email : :author
 
-      # For all the commit files created
-      Dir.entries(path).each do |file|
-        # Load commit file and extract the commits
-        if file =~ /\d+\.json/
-          load(File.join(path, file))
+      # Process the commits from file or memory
+      files = Dir.entries(path) - [".", ".."]
+      if files.size == 0
           process_commits(type, merge)
-          clear
+      else
+        #Load commit file and extract the commits
+        files.each do |file|
+          if file =~ /\d+\.json/
+            load(File.join(path, file))
+            process_commits(type, merge)
+            clear
+          end
         end
       end
     end
@@ -112,8 +117,8 @@ module GitStatistics
       data[:languages][file[:language].to_sym][:additions] += file[:additions]
       data[:languages][file[:language].to_sym][:deletions] += file[:deletions]
 
-      if file[:status] != nil
-        data[:languages][file[:language].to_sym][file[:status].to_sym] += 1
+      if file[:filestatus] != nil
+        data[:languages][file[:language].to_sym][file[:filestatus].to_sym] += 1
       end
 
       return data
@@ -125,10 +130,8 @@ module GitStatistics
       data[:commits] += 1
       data[:additions] += commit[:additions]
       data[:deletions] += commit[:deletions]
-      data[:create] += commit[:create] if commit[:create] != nil
-      data[:delete] += commit[:delete] if commit[:delete] != nil
-      data[:rename] += commit[:rename] if commit[:rename] != nil
-      data[:copy] += commit[:copy] if commit[:copy] != nil
+      data[:create] += commit[:new_files] if commit[:new_files] > 0
+      data[:delete] += commit[:removed_files] if commit[:removed_files] > 0
       return data
     end
 
@@ -142,9 +145,9 @@ module GitStatistics
         # Ensure the path to the file exists
         FileUtils.mkdir_p(File.dirname(file))
         # Save file in a simple or pretty format
-        File.open(file, 'w') do |file|
+        File.open(file, 'w') do |f|
           json_content = pretty ? JSON.pretty_generate(self) : self.to_json
-          file.write(json_content)
+          f.write(json_content)
         end
       end
     end
