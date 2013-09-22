@@ -6,14 +6,14 @@ module GitStatistics
       file = file.split(File::Separator)
 
       # Acquire blob of the file for this specific commit
-      blob = Utilities.find_blob_in_tree(commit.tree, file)
+      blob = BlobFinder.find_blob_in_tree(commit.tree, file)
 
       # If we cannot find blob in current commit (deleted file), check previous commit
       if blob.nil? || blob.instance_of?(Grit::Tree)
         prev_commit = commit.parents.first
         return nil if prev_commit.nil?
 
-        blob = Utilities.find_blob_in_tree(prev_commit.tree, file)
+        blob = BlobFinder.find_blob_in_tree(prev_commit.tree, file)
       end
       return blob
     end
