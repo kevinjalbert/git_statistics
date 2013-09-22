@@ -33,8 +33,8 @@ module GitStatistics
       Dir.entries(path).reject { |file| %w[. ..].include?(file) }
     end
 
-    def flush_commits
-      if size >= limit
+    def flush_commits(force=false)
+      if size >= limit || force
         file_count = Utilities.number_of_matching_files(path, /\d+\.json/)
         save(File.join(path, "#{file_count}.json"), @pretty)
         clear
@@ -145,9 +145,9 @@ module GitStatistics
         # Ensure the path to the file exists
         FileUtils.mkdir_p(File.dirname(file))
         # Save file in a simple or pretty format
-        File.open(file, 'w') do |file|
+        File.open(file, 'w') do |f|
           json_content = pretty ? JSON.pretty_generate(self) : self.to_json
-          file.write(json_content)
+          f.write(json_content)
         end
       end
     end

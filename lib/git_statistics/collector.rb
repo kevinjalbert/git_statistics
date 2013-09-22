@@ -19,6 +19,7 @@ module GitStatistics
         extract_commit(commit)
         @commits.flush_commits
       end
+      @commits.flush_commits(true)
     end
 
     def acquire_commit_meta(commit_summary)
