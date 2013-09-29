@@ -64,8 +64,8 @@ module GitStatistics
 
       def print_row(name, commit_info, language = '')
         add_row format_for_row(name, language, commit_info[:commits],
-                        commit_info[:additions], commit_info[:deletions], commit_info[:create],
-                        commit_info[:delete], commit_info[:rename], commit_info[:copy], commit_info[:merges])
+                        commit_info[:additions], commit_info[:deletions], commit_info[:added_files],
+                        commit_info[:deleted_files], commit_info[:renamed_files], commit_info[:copied_files], commit_info[:merges])
       end
 
       def print_header

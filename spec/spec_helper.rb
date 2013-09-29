@@ -13,7 +13,7 @@ Dir.glob(spec_dir + 'support/**/*.rb') {|file| require file}
 
 require 'git_statistics/initialize'
 
-GIT_REPO = GitStatistics::Repo.new(home_dir)
+GIT_REPO = Rugged::Repository.new(Rugged::Repository.discover(home_dir.to_s))
 
 def fixture(file)
   GitStatistics::PipeStub.new(file)

@@ -5,7 +5,8 @@ module GitStatistics
     attr_reader :repository, :options
 
     def initialize(dir)
-      @repository = dir.nil? ? Repo.new(Dir.pwd) : Repo.new(dir)
+      repository_location = dir.nil? ? Rugged::Repository.discover(Dir.pwd) : Rugged::Repository.discover(dir)
+      @repository = Rugged::Repository.new(repository_location)
       @collected = false
       @collector = nil
       @options = OpenStruct.new(
@@ -35,14 +36,13 @@ module GitStatistics
       if options.update
         # Ensure commit directory is present
         @collector = Collector.new(repository, options.limit, false, options.pretty)
-        commits_directory = repository.working_dir + ".git_statistics"
+        commits_directory = repository.workdir + ".git_statistics/"
         FileUtils.mkdir_p(commits_directory)
         file_count = Utilities.number_of_matching_files(commits_directory, /\d+\.json/) - 1
 
         if file_count >= 0
-          time_since = Utilities.get_modified_time(commits_directory + "#{file_count}.json")
-          # Only use --since if there is data present
-          @collector.collect(options.branch, {:since => time_since})
+          time_since = Utilities.get_modified_time(commits_directory + "#{file_count}.json").to_s
+          @collector.collect(options.branch, {:time_since => time_since})
           @collected = true
         end
       end
