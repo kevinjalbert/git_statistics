@@ -16,7 +16,6 @@ end
 
 desc "Run git_statistics on current/specified directory (for debugging)"
 task :run, :dir do |t, args|
-  puts args[:dir]
   Bundler.require(:debug)
   require 'git_statistics'
   GitStatistics::CLI.new(args[:dir]).execute
