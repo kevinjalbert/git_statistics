@@ -14,7 +14,7 @@ Gem::Specification.new do |gem|
   gem.files         = Dir['lib/**/*']
   gem.test_files    = Dir['spec/**/*_spec.rb']
   gem.executables   = %w[ git_statistics git-statistics ]
-  gem.required_ruby_version = '>= 1.9.1'
+  gem.required_ruby_version = '>= 1.9.3'
 
   gem.add_dependency('json')
   gem.add_dependency('rugged')
