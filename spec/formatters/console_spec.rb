@@ -43,14 +43,14 @@ describe Console do
         it {subject[:commits].should == 1}
         it {subject[:additions].should == 73}
         it {subject[:deletions].should == 0}
-        it {subject[:create].should == 2}
+        it {subject[:added_files].should == 2}
 
         it {subject[:languages][:Ruby][:additions].should == 62}
         it {subject[:languages][:Ruby][:deletions].should == 0}
-        it {subject[:languages][:Ruby][:create].should == 1}
+        it {subject[:languages][:Ruby][:added_files].should == 1}
         it {subject[:languages][:Markdown][:additions].should == 11}
         it {subject[:languages][:Markdown][:deletions].should == 0}
-        it {subject[:languages][:Markdown][:create].should == 1}
+        it {subject[:languages][:Markdown][:added_files].should == 1}
       end
 
       context "on second author" do
@@ -87,14 +87,14 @@ describe Console do
         it {subject[:commits].should == 1}
         it {subject[:additions].should == 73}
         it {subject[:deletions].should == 0}
-        it {subject[:create].should == 2}
+        it {subject[:added_files].should == 2}
 
         it {subject[:languages][:Ruby][:additions].should == 62}
         it {subject[:languages][:Ruby][:deletions].should == 0}
-        it {subject[:languages][:Ruby][:create].should == 1}
+        it {subject[:languages][:Ruby][:added_files].should == 1}
         it {subject[:languages][:Markdown][:additions].should == 11}
         it {subject[:languages][:Markdown][:deletions].should == 0}
-        it {subject[:languages][:Markdown][:create].should == 1}
+        it {subject[:languages][:Markdown][:added_files].should == 1}
       end
 
       context "on second author" do
@@ -129,14 +129,14 @@ describe Console do
       it {subject[:commits].should == 1}
       it {subject[:additions].should == 73}
       it {subject[:deletions].should == 0}
-      it {subject[:create].should == 2}
+      it {subject[:added_files].should == 2}
 
       it {subject[:languages][:Ruby][:additions].should == 62}
       it {subject[:languages][:Ruby][:deletions].should == 0}
-      it {subject[:languages][:Ruby][:create].should == 1}
+      it {subject[:languages][:Ruby][:added_files].should == 1}
       it {subject[:languages][:Markdown][:additions].should == 11}
       it {subject[:languages][:Markdown][:deletions].should == 0}
-      it {subject[:languages][:Markdown][:create].should == 1}
+      it {subject[:languages][:Markdown][:added_files].should == 1}
 
       it {config[:sort].should == sort}
       it {config[:email].should == email}
