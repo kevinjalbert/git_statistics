@@ -9,11 +9,13 @@ module GitStatistics
       @commits = Commits.new(@commits_path, fresh, limit, pretty)
     end
 
-    def collect(branch, options = {})
-      walker = Rugged::Walker.new(repo)
-      master_head = Rugged::Branch.lookup(repo, "master").tip
+    def collect(options = {})
+      branch = options[:branch] ? options[:branch] : CLI::DEFAULT_BRANCH
+      branch_head = Rugged::Branch.lookup(repo, branch).tip
 
-      walker.push(master_head)
+      walker = Rugged::Walker.new(repo)
+      walker.push(branch_head)
+
       walker.each_with_index do |commit, count|
         if valid_commit?(commit, options)
           extract_commit(commit, count + 1)

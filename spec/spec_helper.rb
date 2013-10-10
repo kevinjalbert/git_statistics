@@ -11,12 +11,12 @@ FIXTURE_PATH = spec_dir + "fixtures"
 
 Dir.glob(spec_dir + 'support/**/*.rb') {|file| require file}
 
-require 'git_statistics/initialize'
+require 'git_statistics'
 
 GIT_REPO = Rugged::Repository.new(Rugged::Repository.discover(home_dir.to_s))
 
 def fixture(file)
-  GitStatistics::PipeStub.new(file)
+  PipeStub.new(file)
 end
 
 def setup_commits(commits, file_load, file_save, pretty)
@@ -30,7 +30,7 @@ end
 RSpec.configure do |config|
   config.before do
     %w[debug info warn error fatal].each do |level|
-      GitStatistics::Log.stub(level)
+      Log.stub(level)
     end
   end
 end

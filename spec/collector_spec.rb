@@ -9,7 +9,7 @@ describe Collector do
   let(:collector) {Collector.new(repo, limit, fresh, pretty)}
 
   describe "#collect" do
-    let(:branch) {""}
+    let(:branch) {CLI::DEFAULT_BRANCH}
     let(:email) {false}
     let(:merge) {true}
     let(:time_since) {"Tue Sep 24 14:15:44 2012 -0400"}
@@ -17,7 +17,7 @@ describe Collector do
     let(:author) {"Kevin Jalbert"}
 
     let(:setup) {
-      collector.collect(branch, {:time_since => time_since, :time_until => time_until})
+      collector.collect({:branch => branch, :time_since => time_since, :time_until => time_until})
       collector.commits.calculate_statistics(email, merge)
       @subject = collector.commits.stats[author]
     }

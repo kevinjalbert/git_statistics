@@ -4,6 +4,8 @@ module GitStatistics
   class CLI
     attr_reader :repository, :options
 
+    DEFAULT_BRANCH = "master"
+
     def initialize(dir)
       repository_location = dir.nil? ? Rugged::Repository.discover(Dir.pwd) : Rugged::Repository.discover(dir)
       @repository = Rugged::Repository.new(repository_location)
@@ -16,7 +18,7 @@ module GitStatistics
         update: false,
         sort: "commits",
         top: 0,
-        branch: false,
+        branch: DEFAULT_BRANCH,
         verbose: false,
         debug: false,
         limit: 100
@@ -42,7 +44,7 @@ module GitStatistics
 
         if file_count >= 0
           time_since = Utilities.get_modified_time(commits_directory + "#{file_count}.json").to_s
-          @collector.collect(options.branch, {:time_since => time_since})
+          @collector.collect({:branch => options.branch, :time_since => time_since})
           @collected = true
         end
       end
@@ -59,7 +61,7 @@ module GitStatistics
 
     def fresh_collect!
       @collector = Collector.new(repository, options.limit, true, options.pretty)
-      @collector.collect(options.branch)
+      @collector.collect({:branch => options.branch})
     end
 
     def parse_options
@@ -83,8 +85,8 @@ module GitStatistics
         opt.on "-t", "--top N", Float,"Show the top N authors in results" do |value|
           options.top = value
         end
-        opt.on "-b", "--branch", "Use current branch for statistics (otherwise all branches)" do
-          options.branch = true
+        opt.on "-b", "--branch BRANCH", "Use the specified branch for statistics (otherwise the master branch is used)" do |branch|
+          options.branch = branch
         end
         opt.on "-v", "--verbose", "Verbose output (shows INFO level log statements)" do
           options.verbose = true
