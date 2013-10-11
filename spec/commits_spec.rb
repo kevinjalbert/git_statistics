@@ -82,15 +82,15 @@ describe Commits do
         it {subject[:additions].should == 153}
         it {subject[:deletions].should == 5}
         it {subject[:commits].should == 2}
-        it {subject[:create].should == 3}
+        it {subject[:added_files].should == 3}
         it {subject[:merges].should == 1}
 
         it {subject[:languages][:Markdown][:additions].should == 18}
         it {subject[:languages][:Markdown][:deletions].should == 1}
-        it {subject[:languages][:Markdown][:create].should == 1}
+        it {subject[:languages][:Markdown][:added_files].should == 1}
         it {subject[:languages][:Ruby][:additions].should == 135}
         it {subject[:languages][:Ruby][:deletions].should == 4}
-        it {subject[:languages][:Ruby][:create].should == 2}
+        it {subject[:languages][:Ruby][:added_files].should == 2}
       end
 
       context "on second author" do
@@ -101,7 +101,7 @@ describe Commits do
 
         it {subject[:languages][:Ruby][:additions].should == 64}
         it {subject[:languages][:Ruby][:deletions].should == 16}
-        it {subject[:languages][:Ruby][:create].should == 0}
+        it {subject[:languages][:Ruby][:added_files].should == 0}
       end
     end
 
@@ -113,14 +113,14 @@ describe Commits do
         it {subject[:additions].should == 73}
         it {subject[:deletions].should == 0}
         it {subject[:commits].should == 1}
-        it {subject[:create].should == 2}
+        it {subject[:added_files].should == 2}
 
         it {subject[:languages][:Markdown][:additions].should == 11}
         it {subject[:languages][:Markdown][:deletions].should == 0}
-        it {subject[:languages][:Markdown][:create].should == 1}
+        it {subject[:languages][:Markdown][:added_files].should == 1}
         it {subject[:languages][:Ruby][:additions].should == 62}
         it {subject[:languages][:Ruby][:deletions].should == 0}
-        it {subject[:languages][:Ruby][:create].should == 1}
+        it {subject[:languages][:Ruby][:added_files].should == 1}
       end
 
       context "on second author" do
@@ -157,14 +157,14 @@ describe Commits do
         it {subject[:commits].should == 1}
         it {subject[:additions].should == 73}
         it {subject[:deletions].should == 0}
-        it {subject[:create].should == 2}
+        it {subject[:added_files].should == 2}
 
         it {subject[:languages][:Markdown][:additions].should == 11}
         it {subject[:languages][:Markdown][:deletions].should == 0}
-        it {subject[:languages][:Markdown][:create].should== 1}
+        it {subject[:languages][:Markdown][:added_files].should== 1}
         it {subject[:languages][:Ruby][:additions].should == 62}
         it {subject[:languages][:Ruby][:deletions].should == 0}
-        it {subject[:languages][:Ruby][:create].should == 1}
+        it {subject[:languages][:Ruby][:added_files].should == 1}
       end
     end
 
@@ -191,13 +191,13 @@ describe Commits do
       it {subject[:commits].should == 1}
       it {subject[:additions].should == 73}
       it {subject[:deletions].should == 0}
-      it {subject[:create].should == 2}
+      it {subject[:added_files].should == 2}
 
       it {subject[:languages][:Markdown][:additions].should == 11}
       it {subject[:languages][:Markdown][:deletions].should == 0}
       it {subject[:languages][:Ruby][:additions].should == 62}
       it {subject[:languages][:Ruby][:deletions].should == 0}
-      it {subject[:languages][:Ruby][:create].should == 1}
+      it {subject[:languages][:Ruby][:added_files].should == 1}
     end
 
     context "with merge" do
@@ -208,14 +208,14 @@ describe Commits do
       it {subject[:commits].should == 2}
       it {subject[:additions].should == 153}
       it {subject[:deletions].should == 5}
-      it {subject[:create].should == 3}
+      it {subject[:added_files].should == 3}
       it {subject[:merges].should == 1}
 
       it {subject[:languages][:Markdown][:additions].should == 18}
       it {subject[:languages][:Markdown][:deletions].should == 1}
       it {subject[:languages][:Ruby][:additions].should == 135}
       it {subject[:languages][:Ruby][:deletions].should == 4}
-      it {subject[:languages][:Ruby][:create].should == 2}
+      it {subject[:languages][:Ruby][:added_files].should == 2}
     end
   end
 
@@ -310,8 +310,8 @@ describe Commits do
       let(:data) {
         commit = {:additions => 10,
                   :deletions => 5,
-                  :new_files => 1,
-                  :removed_files => 2,
+                  :added_files => 1,
+                  :deleted_files => 2,
                   :merge => false}
 
         data = Hash.new(0)
@@ -321,8 +321,8 @@ describe Commits do
       it {data[:commits].should == 1}
       it {data[:additions].should == 10}
       it {data[:deletions].should == 5}
-      it {data[:create].should == 1}
-      it {data[:delete].should == 2}
+      it {data[:added_files].should == 1}
+      it {data[:deleted_files].should == 2}
     end
   end
 

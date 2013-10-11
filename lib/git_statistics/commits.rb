@@ -117,8 +117,9 @@ module GitStatistics
       data[:languages][file[:language].to_sym][:additions] += file[:additions]
       data[:languages][file[:language].to_sym][:deletions] += file[:deletions]
 
-      if file[:filestatus] != nil
-        data[:languages][file[:language].to_sym][file[:filestatus].to_sym] += 1
+      # Keep count of languages status (i.e., added, deleted) and keep keys consistent (i.e., added_files, deleted_files)
+      if file[:status] != nil
+        data[:languages][file[:language].to_sym][(file[:status]+'_files').to_sym] += 1
       end
 
       return data
@@ -130,8 +131,8 @@ module GitStatistics
       data[:commits] += 1
       data[:additions] += commit[:additions]
       data[:deletions] += commit[:deletions]
-      data[:create] += commit[:new_files] if commit[:new_files] > 0
-      data[:delete] += commit[:removed_files] if commit[:removed_files] > 0
+      data[:added_files] += commit[:added_files] if !commit[:added_files].nil?
+      data[:deleted_files] += commit[:deleted_files] if !commit[:deleted_files].nil?
       return data
     end
 
