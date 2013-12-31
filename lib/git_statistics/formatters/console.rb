@@ -56,7 +56,7 @@ module GitStatistics
 
       def print_language_data(data)
         # Print information of each language for the data
-        data[:languages].each do |language, commit_data|
+        data[:languages].sort.each do |language, commit_data|
           print_row("", commit_data, language)
         end
         output
