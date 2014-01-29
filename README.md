@@ -1,9 +1,8 @@
-[![Gem Version](https://badge.fury.io/rb/git_statistics.png)](http://badge.fury.io/rb/git_statistics)
+[![Gitter Chat](http://img.shields.io/chat/gitter.png?color=brightgreen)](https://gitter.im/kevinjalbert/git_statistics)[![Gem Version](https://badge.fury.io/rb/git_statistics.png)](http://badge.fury.io/rb/git_statistics)
 [![Dependency Status](https://gemnasium.com/kevinjalbert/git_statistics.png)](https://gemnasium.com/kevinjalbert/git_statistics)
 [![Build Status](https://secure.travis-ci.org/kevinjalbert/git_statistics.png?branch=master)](http://travis-ci.org/kevinjalbert/git_statistics)
 [![Coverage Status](https://coveralls.io/repos/kevinjalbert/git_statistics/badge.png)](https://coveralls.io/r/kevinjalbert/git_statistics)
 [![Code Climate](https://codeclimate.com/github/kevinjalbert/git_statistics.png)](https://codeclimate.com/github/kevinjalbert/git_statistics)
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/kevinjalbert/git_statistics/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 # Instructions
 
