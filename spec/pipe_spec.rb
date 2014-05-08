@@ -42,7 +42,7 @@ describe Pipe do
 
   context "#lines" do
     before do
-      line.should_receive(:strip).twice.and_call_original
+      line.should_receive(:strip).twice.and_return("")
       pipe.stub(:io) { [line, line] }
     end
     it { pipe.lines }
