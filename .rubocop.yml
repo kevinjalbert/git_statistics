@@ -1,0 +1,46 @@
+AllCops:
+  Include:
+    - '**/Rakefile'
+    - '**/*.rake'
+
+ClassLength:
+  Enabled: false
+
+CyclomaticComplexity:
+  Enabled: false
+
+Documentation:
+  Enabled: false
+
+EmptyLineBetweenDefs:
+  AllowAdjacentOneLineDefs: true
+
+Encoding:
+  EnforcedStyle: when_needed
+
+LineLength:
+  Max: 120
+
+MethodLength:
+  Enabled: false
+
+NumericLiterals:
+  Enabled: false
+
+ParameterLists:
+  Enabled: false
+
+Semicolon:
+  AllowAsExpressionSeparator: true
+
+SignalException:
+  EnforcedStyle: only_raise
+
+SingleLineBlockParams:
+  Enabled: false
+
+SingleLineMethods:
+  AllowIfMethodIsEmpty: true
+
+UnusedBlockArgument:
+  Enabled: false
