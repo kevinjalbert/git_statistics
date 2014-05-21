@@ -15,11 +15,4 @@ Gem::Specification.new do |gem|
   gem.test_files    = Dir['spec/**/*_spec.rb']
   gem.executables   = %w[ git_statistics git-statistics ]
   gem.required_ruby_version = '>= 1.9.3'
-
-  gem.add_dependency('json')
-  gem.add_dependency('rugged')
-  gem.add_dependency('language_sniffer')
-
-  gem.add_development_dependency "rspec", "~> 2.12.0"
-  gem.add_development_dependency "rake"
 end
