@@ -25,7 +25,7 @@ describe Pipe do
       it { pipe.should be_empty }
     end
     context "with a single line" do
-      let(:lines) { [stub] }
+      let(:lines) { [double] }
       it { pipe.should_not be_empty }
     end
   end

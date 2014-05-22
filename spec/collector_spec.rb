@@ -16,10 +16,10 @@ describe Collector do
     let(:time_until) {"Tue Sep 26 14:45:05 2012 -0400"}
     let(:author) {"Kevin Jalbert"}
 
-    let(:setup) {
+    subject {
       collector.collect({:branch => branch, :time_since => time_since, :time_until => time_until})
       collector.commits.calculate_statistics(email, merge)
-      @subject = collector.commits.stats[author]
+      collector.commits.stats[author]
     }
 
     context "with no merge commits" do
@@ -27,52 +27,47 @@ describe Collector do
       let(:time_since) {"Tue Sep 10 14:15:44 2012 -0400"}
       let(:time_until) {"Tue Sep 11 14:45:05 2012 -0400"}
 
-      before(:all) { setup }
+      it{subject[:additions].should == 276}
+      it{subject[:deletions].should == 99}
+      it{subject[:commits].should == 4}
+      it{subject[:merges].should == 0}
 
-      it{@subject[:additions].should == 276}
-      it{@subject[:deletions].should == 99}
-      it{@subject[:commits].should == 4}
-      it{@subject[:merges].should == 0}
-
-      it{@subject[:languages][:Ruby][:additions].should == 270}
-      it{@subject[:languages][:Ruby][:deletions].should == 99}
-      it{@subject[:languages][:Ruby][:added_files].should == 2}
-      it{@subject[:languages][:Text][:additions].should == 6}
-      it{@subject[:languages][:Text][:deletions].should == 0}
-      it{@subject[:languages][:Text][:added_files].should == 1}
+      it{subject[:languages][:Ruby][:additions].should == 270}
+      it{subject[:languages][:Ruby][:deletions].should == 99}
+      it{subject[:languages][:Ruby][:added_files].should == 2}
+      it{subject[:languages][:Text][:additions].should == 6}
+      it{subject[:languages][:Text][:deletions].should == 0}
+      it{subject[:languages][:Text][:added_files].should == 1}
     end
 
     context "with merge commits and merge option" do
-      before(:all) { setup }
+      it{subject[:additions].should == 1240}
+      it{subject[:deletions].should == 934}
+      it{subject[:commits].should == 9}
+      it{subject[:merges].should == 1}
 
-      it{@subject[:additions].should == 1240}
-      it{@subject[:deletions].should == 934}
-      it{@subject[:commits].should == 9}
-      it{@subject[:merges].should == 1}
-
-      it{@subject[:languages][:Markdown][:additions].should == 1}
-      it{@subject[:languages][:Markdown][:deletions].should == 0}
-      it{@subject[:languages][:Ruby][:additions].should == 1227}
-      it{@subject[:languages][:Ruby][:deletions].should == 934}
-      it{@subject[:languages][:Unknown][:additions].should == 12}
-      it{@subject[:languages][:Unknown][:deletions].should == 0}
+      it{subject[:languages][:Markdown][:additions].should == 1}
+      it{subject[:languages][:Markdown][:deletions].should == 0}
+      it{subject[:languages][:Ruby][:additions].should == 1227}
+      it{subject[:languages][:Ruby][:deletions].should == 934}
+      it{subject[:languages][:Unknown][:additions].should == 12}
+      it{subject[:languages][:Unknown][:deletions].should == 0}
     end
 
     context "with merge commits and no merge option" do
       let(:merge) {false}
-      before(:all) { setup }
 
-      it{@subject[:additions].should == 581}
-      it{@subject[:deletions].should == 452}
-      it{@subject[:commits].should == 8}
-      it{@subject[:merges].should == 0}
+      it{subject[:additions].should == 581}
+      it{subject[:deletions].should == 452}
+      it{subject[:commits].should == 8}
+      it{subject[:merges].should == 0}
 
-      it{@subject[:languages][:Markdown][:additions].should == 1}
-      it{@subject[:languages][:Markdown][:deletions].should == 0}
-      it{@subject[:languages][:Ruby][:additions].should == 574}
-      it{@subject[:languages][:Ruby][:deletions].should == 452}
-      it{@subject[:languages][:Unknown][:additions].should == 6}
-      it{@subject[:languages][:Unknown][:deletions].should == 0}
+      it{subject[:languages][:Markdown][:additions].should == 1}
+      it{subject[:languages][:Markdown][:deletions].should == 0}
+      it{subject[:languages][:Ruby][:additions].should == 574}
+      it{subject[:languages][:Ruby][:deletions].should == 452}
+      it{subject[:languages][:Unknown][:additions].should == 6}
+      it{subject[:languages][:Unknown][:deletions].should == 0}
     end
   end
 
