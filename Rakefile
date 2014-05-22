@@ -9,16 +9,16 @@ CLOBBER.include('coverage')
 
 Rubocop::RakeTask.new
 
-desc "Run all specs"
+desc 'Run all specs'
 RSpec::Core::RakeTask.new do |t|
-  t.pattern = "./spec/**/*spec.rb"
+  t.pattern = './spec/**/*spec.rb'
 end
 
-desc "Run git_statistics on current/specified directory (for debugging)"
+desc 'Run git_statistics on current/specified directory (for debugging)'
 task :run, :dir do |t, args|
   Bundler.require(:debug)
   require 'git_statistics'
   GitStatistics::CLI.new(args[:dir]).execute
 end
 
-task :default => :spec
+task default: :spec

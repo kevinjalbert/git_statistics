@@ -2,7 +2,6 @@ require 'git_statistics/pipe'
 
 module GitStatistics
   class PipeStub < Pipe
-
     def initialize(file)
       @file = file
     end

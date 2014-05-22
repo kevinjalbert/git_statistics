@@ -8,8 +8,9 @@ begin
 
   if ENV['CI'] || ENV['COVERAGE']
     SimpleCov.start do
-      add_filter "/spec/"
+      add_filter '/spec/'
     end
   end
-rescue LoadError
+rescue LoadError => e
+  warn(e)
 end

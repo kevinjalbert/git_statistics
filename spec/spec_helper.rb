@@ -1,15 +1,15 @@
-$:.unshift File.expand_path("../../lib", __FILE__)
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 
 Bundler.require(:debug)
 require 'pathname'
 require 'tmpdir'
 
 home_dir = Pathname.new(Dir.pwd)
-spec_dir = home_dir + "spec"
+spec_dir = home_dir + 'spec'
 
-FIXTURE_PATH = spec_dir + "fixtures"
+FIXTURE_PATH = spec_dir + 'fixtures'
 
-Dir.glob(spec_dir + 'support/**/*.rb') {|file| require file}
+Dir.glob(spec_dir + 'support/**/*.rb') { |file| require file }
 
 require 'git_statistics'
 
@@ -29,7 +29,7 @@ end
 
 RSpec.configure do |config|
   config.before do
-    %w[debug info warn error fatal].each do |level|
+    %w(debug info warn error fatal).each do |level|
       Log.stub(level)
     end
   end
