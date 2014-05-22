@@ -8,7 +8,7 @@ module GitStatistics
     attr_accessor :logger, :base_directory, :debugging
 
     def initialize
-      @base_directory = File.expand_path("../..", __FILE__) + "/"
+      @base_directory = File.expand_path('../..', __FILE__) + '/'
       @debugging = false
       @logger = Logger.new(STDOUT)
       @logger.level = Logger::ERROR
@@ -30,7 +30,7 @@ module GitStatistics
         file = Regexp.last_match[:file]
         line = Regexp.last_match[:line]
         method = Regexp.last_match[:method]
-        "#{file.sub(instance.base_directory, "")}:#{line}"
+        "#{file.sub(instance.base_directory, '')}:#{line}"
       end
     end
 
@@ -43,7 +43,7 @@ module GitStatistics
       end
     end
 
-    def self.respond_to_missing?(method, include_all=false)
+    def self.respond_to_missing?(method, include_all = false)
       if valid_method? method
         true
       else
@@ -54,6 +54,5 @@ module GitStatistics
     def self.valid_method?(method)
       instance.logger.respond_to? method
     end
-
   end
 end

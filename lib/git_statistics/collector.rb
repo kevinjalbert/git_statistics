@@ -1,11 +1,10 @@
 module GitStatistics
   class Collector
-
     attr_accessor :repo, :commits_path, :commits
 
     def initialize(repo, limit, fresh, pretty)
       @repo = repo
-      @commits_path = repo.workdir + ".git_statistics"
+      @commits_path = repo.workdir + '.git_statistics'
       @commits = Commits.new(@commits_path, fresh, limit, pretty)
     end
 
@@ -17,25 +16,25 @@ module GitStatistics
       walker.push(branch_head)
 
       walker.each_with_index do |commit, count|
-        if valid_commit?(commit, options)
-          extract_commit(commit, count + 1)
-          @commits.flush_commits
-        end
+        next unless valid_commit?(commit, options)
+
+        extract_commit(commit, count + 1)
+        @commits.flush_commits
       end
 
       @commits.flush_commits(true)
     end
 
     def valid_commit?(commit, options)
-      if !options[:time_since].nil?
+      unless options[:time_since].nil?
         return false unless commit.author[:time] > DateTime.parse(options[:time_since].to_s).to_time
       end
 
-      if !options[:time_until].nil?
+      unless options[:time_until].nil?
         return false unless commit.author[:time] < DateTime.parse(options[:time_until].to_s).to_time
       end
 
-      return true
+      true
     end
 
     def acquire_commit_meta(commit_summary)
@@ -52,9 +51,9 @@ module GitStatistics
       data[:added_files] = commit_summary.added_files
       data[:deleted_files] = commit_summary.deleted_files
       data[:modified_files] = commit_summary.modified_files
-      data[:files] = commit_summary.file_stats.map{ |file| file.to_json }
+      data[:files] = commit_summary.file_stats.map { |file| file.to_json }
 
-      return data
+      data
     end
 
     def extract_commit(commit, count)
@@ -64,8 +63,7 @@ module GitStatistics
       # Acquire meta information about commit
       commit_data = acquire_commit_meta(commit_summary)
 
-      return commit_data
+      commit_data
     end
-
   end
 end

@@ -35,7 +35,7 @@ module GitStatistics
     end
 
     def filename
-      if (status == :deleted)
+      if status == :deleted
         delta.old_file[:path]
       else
         delta.new_file[:path]
@@ -44,34 +44,30 @@ module GitStatistics
 
     # We flip these around since we are diffing in the opposite direction -- new.diff(old)
     def blob
-      begin
-        if (status == :deleted)
-          blob = @repo.lookup(delta.new_file[:oid])  # Look at new instead of old
-        else
-          blob = @repo.lookup(delta.old_file[:oid])  # Look at old instead of new
-        end
-      rescue Rugged::OdbError
-        Log.warn "Could not find object (most likely a submodule)"
-        blob = nil
+      if status == :deleted
+       @repo.lookup(delta.new_file[:oid])  # Look at new instead of old
+      else
+       @repo.lookup(delta.old_file[:oid])  # Look at old instead of new
       end
+    rescue Rugged::OdbError
+      Log.warn 'Could not find object (most likely a submodule)'
+      nil
     end
 
     def inspect
-      %Q{<GitStatistics::FileStat @filename=#{filename} @status=#{status} @similarity=#{similarity} @language=#{language} @additions=#{additions}, @deletions=#{deletions}, @net=#{net}>}
+      %Q(<GitStatistics::FileStat @filename=#{filename} @status=#{status} @similarity=#{similarity} @language=#{language} @additions=#{additions}, @deletions=#{deletions}, @net=#{net}>)
     end
 
     def to_json
-      { filename: filename, status: status, similarity: similarity, language: language, additions: additions, deletions: deletions, net: net}
+      { filename: filename, status: status, similarity: similarity, language: language, additions: additions, deletions: deletions, net: net }
     end
 
     # Determine the language of the file from the blob
     def language
-      language = "Unknown"
+      language = 'Unknown'
       unless blob.nil?
-        detected_language = LanguageSniffer.detect(filename, :content => blob.content).language
-        unless detected_language.nil?
-          language = detected_language.name
-        end
+        detected_language = LanguageSniffer.detect(filename, content: blob.content).language
+        language = detected_language.name unless detected_language.nil?
       end
       language
     end

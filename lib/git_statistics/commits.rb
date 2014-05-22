@@ -1,6 +1,5 @@
 module GitStatistics
   class Commits < Hash
-
     attr_accessor :stats, :totals, :path, :fresh, :limit, :pretty
 
     def initialize(path, fresh, limit, pretty)
@@ -30,23 +29,23 @@ module GitStatistics
     end
 
     def files_in_path
-      Dir.entries(path).reject { |file| %w[. ..].include?(file) }
+      Dir.entries(path).reject { |file| %w(. ..).include?(file) }
     end
 
-    def flush_commits(force=false)
-      if size >= limit || force
-        file_count = Utilities.number_of_matching_files(path, /\d+\.json/)
-        save(File.join(path, "#{file_count}.json"), @pretty)
-        clear
-      end
+    def flush_commits(force = false)
+      return unless size >= limit || force
+
+      file_count = Utilities.number_of_matching_files(path, /\d+\.json/)
+      save(File.join(path, "#{file_count}.json"), @pretty)
+      clear
     end
 
     def author_top_n_type(type, top_n = 0)
       top_n = 0 if top_n < 0
-      if @stats.empty? || !@stats.first[1].has_key?(type)
+      if @stats.empty? || !@stats.first[1].key?(type)
         nil
       else
-        Hash[*@stats.sorted_hash {|a,b| b[1][type.to_sym] <=> a[1][type]}.to_a[0..top_n-1].flatten]
+        Hash[*@stats.sorted_hash { |a, b| b[1][type.to_sym] <=> a[1][type] }.to_a[0..top_n - 1].flatten]
       end
     end
 
@@ -55,24 +54,24 @@ module GitStatistics
       type = email ? :author_email : :author
 
       # Process the commits from file or memory
-      files = Dir.entries(path) - [".", ".."]
+      files = Dir.entries(path) - ['.', '..']
       if files.size == 0
-          process_commits(type, merge)
+        process_commits(type, merge)
       else
-        #Load commit file and extract the commits
+        # Load commit file and extract the commits
         files.each do |file|
-          if file =~ /\d+\.json/
-            load(File.join(path, file))
-            process_commits(type, merge)
-            clear
-          end
+          next unless file =~ /\d+\.json/
+
+          load(File.join(path, file))
+          process_commits(type, merge)
+          clear
         end
       end
     end
 
     def process_commits(type, merge)
       # Collect the stats from each commit
-      each do |key,value|
+      each do |key, value|
         next if !merge && value[:merge]
         # If there are no changed files move to next commit
         next if value[:files].empty?
@@ -118,11 +117,11 @@ module GitStatistics
       data[:languages][file[:language].to_sym][:deletions] += file[:deletions]
 
       # Keep count of languages status (i.e., added, deleted) and keep keys consistent (i.e., added_files, deleted_files)
-      if file[:status] != nil
-        data[:languages][file[:language].to_sym][(file[:status]+'_files').to_sym] += 1
+      unless file[:status].nil?
+        data[:languages][file[:language].to_sym][(file[:status] + '_files').to_sym] += 1
       end
 
-      return data
+      data
     end
 
     def add_commit_stats(data, commit)
@@ -131,25 +130,25 @@ module GitStatistics
       data[:commits] += 1
       data[:additions] += commit[:additions]
       data[:deletions] += commit[:deletions]
-      data[:added_files] += commit[:added_files] if !commit[:added_files].nil?
-      data[:deleted_files] += commit[:deleted_files] if !commit[:deleted_files].nil?
-      return data
+      data[:added_files] += commit[:added_files] unless commit[:added_files].nil?
+      data[:deleted_files] += commit[:deleted_files] unless commit[:deleted_files].nil?
+      data
     end
 
     def load(file)
-      merge!(JSON.parse(File.read(file), :symbolize_names => true))
+      merge!(JSON.parse(File.read(file), symbolize_names: true))
     end
 
     def save(file, pretty)
-      # Don't save if there is no information (i.e., using updates)
-      unless empty?
-        # Ensure the path to the file exists
-        FileUtils.mkdir_p(File.dirname(file))
-        # Save file in a simple or pretty format
-        File.open(file, 'w') do |f|
-          json_content = pretty ? JSON.pretty_generate(self) : self.to_json
-          f.write(json_content)
-        end
+      return if empty?
+
+      # Ensure the path to the file exists
+      FileUtils.mkdir_p(File.dirname(file))
+
+      # Save file in a simple or pretty format
+      File.open(file, 'w') do |f|
+        json_content = pretty ? JSON.pretty_generate(self) : to_json
+        f.write(json_content)
       end
     end
   end

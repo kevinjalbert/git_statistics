@@ -1,5 +1,7 @@
 module GitStatistics
   class CommitSummary < SimpleDelegator
+    attr_reader :patches
+
     def initialize(repo, commit)
       super(commit)
       @repo = repo
@@ -43,14 +45,14 @@ module GitStatistics
     end
 
     def file_stats
-      @cached_file_stats ||= diffstats.map { |diff| DiffSummary.new(@repo, diff) }
+      @cached_file_stats ||= @patches.map { |diff| DiffSummary.new(@repo, diff) }
     end
 
     LanguageSummary = Struct.new(:name, :additions, :deletions, :net, :added_files, :deleted_files, :modified_files)
 
     # Array of LanguageSummary objects (one for each language) for simple calculations
     def languages
-      grouped_language_files.collect do |language, stats|
+      grouped_language_files.map do |language, stats|
         additions = summarize(stats, :additions)
         deletions = summarize(stats, :deletions)
         net       = summarize(stats, :net)
@@ -70,17 +72,12 @@ module GitStatistics
 
     private
 
-      def summarize(stats, what)
-        stats.map(&what).inject(0, :+)
-      end
+    def summarize(stats, what)
+      stats.map(&what).inject(0, :+)
+    end
 
-      def commit_summary(what)
-        summarize(file_stats, what)
-      end
-
-      def diffstats
-        @patches
-      end
-
+    def commit_summary(what)
+      summarize(file_stats, what)
+    end
   end
 end

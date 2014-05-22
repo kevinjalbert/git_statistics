@@ -19,7 +19,7 @@ module GitStatistics
     end
 
     def lines
-      io.map { |line| line.strip.force_encoding("iso-8859-1").encode("utf-8") }
+      io.map { |line| line.strip.force_encoding('iso-8859-1').encode('utf-8') }
     end
 
     def io
