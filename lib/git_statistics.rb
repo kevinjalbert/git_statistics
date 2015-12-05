@@ -7,8 +7,7 @@ module GitStatistics
     DEFAULT_BRANCH = 'master'
 
     def initialize(dir)
-      repository_location = dir.nil? ? Rugged::Repository.discover(Dir.pwd) : Rugged::Repository.discover(dir)
-      @repository = Rugged::Repository.new(repository_location)
+      @repository = dir.nil? ? Rugged::Repository.discover(Dir.pwd) : Rugged::Repository.discover(dir)
       @collected = false
       @collector = nil
       @options = OpenStruct.new(

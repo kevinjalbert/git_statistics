@@ -13,7 +13,7 @@ Dir.glob(spec_dir + 'support/**/*.rb') { |file| require file }
 
 require 'git_statistics'
 
-GIT_REPO = Rugged::Repository.new(Rugged::Repository.discover(home_dir.to_s))
+GIT_REPO = Rugged::Repository.discover(home_dir.to_s)
 
 def fixture(file)
   PipeStub.new(file)
@@ -30,7 +30,7 @@ end
 RSpec.configure do |config|
   config.before do
     %w(debug info warn error fatal).each do |level|
-      Log.stub(level)
+      allow(Log).to receive(level) {}
     end
   end
 end

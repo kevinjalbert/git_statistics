@@ -16,17 +16,17 @@ module GitStatistics
 
     # How many files were removed in this commit
     def deleted_files
-      file_stats.select { |file| file.status == :deleted }.count
+      file_stats.count { |file| file.status == :deleted }
     end
 
     # How many files were added in this commit
     def added_files
-      file_stats.select { |file| file.status == :added }.count
+      file_stats.count { |file| file.status == :added }
     end
 
     # How many files were modified (not added/deleted) in this commit
     def modified_files
-      file_stats.select { |file| file.status == :modified }.count
+      file_stats.count { |file| file.status == :modified }
     end
 
     # How many total additions in this commit?

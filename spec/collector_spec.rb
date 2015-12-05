@@ -27,47 +27,53 @@ describe Collector do
       let(:time_since) { 'Tue Sep 10 14:15:44 2012 -0400' }
       let(:time_until) { 'Tue Sep 11 14:45:05 2012 -0400' }
 
-      it { subject[:additions].should == 276 }
-      it { subject[:deletions].should == 99 }
-      it { subject[:commits].should == 4 }
-      it { subject[:merges].should == 0 }
+      it do
+        expect(subject[:additions]).to eq(276)
+        expect(subject[:deletions]).to eq(99)
+        expect(subject[:commits]).to eq(4)
+        expect(subject[:merges]).to eq(0)
 
-      it { subject[:languages][:Ruby][:additions].should == 270 }
-      it { subject[:languages][:Ruby][:deletions].should == 99 }
-      it { subject[:languages][:Ruby][:added_files].should == 2 }
-      it { subject[:languages][:Text][:additions].should == 6 }
-      it { subject[:languages][:Text][:deletions].should == 0 }
-      it { subject[:languages][:Text][:added_files].should == 1 }
+        expect(subject[:languages][:Ruby][:additions]).to eq(270)
+        expect(subject[:languages][:Ruby][:deletions]).to eq(99)
+        expect(subject[:languages][:Ruby][:added_files]).to eq(2)
+        expect(subject[:languages][:Text][:additions]).to eq(6)
+        expect(subject[:languages][:Text][:deletions]).to eq(0)
+        expect(subject[:languages][:Text][:added_files]).to eq(1)
+      end
     end
 
     context 'with merge commits and merge option' do
-      it { subject[:additions].should == 1240 }
-      it { subject[:deletions].should == 934 }
-      it { subject[:commits].should == 9 }
-      it { subject[:merges].should == 1 }
+      it do
+        expect(subject[:additions]).to eq(1240)
+        expect(subject[:deletions]).to eq(934)
+        expect(subject[:commits]).to eq(9)
+        expect(subject[:merges]).to eq(1)
 
-      it { subject[:languages][:Markdown][:additions].should == 1 }
-      it { subject[:languages][:Markdown][:deletions].should == 0 }
-      it { subject[:languages][:Ruby][:additions].should == 1227 }
-      it { subject[:languages][:Ruby][:deletions].should == 934 }
-      it { subject[:languages][:Unknown][:additions].should == 12 }
-      it { subject[:languages][:Unknown][:deletions].should == 0 }
+        expect(subject[:languages][:Markdown][:additions]).to eq(1)
+        expect(subject[:languages][:Markdown][:deletions]).to eq(0)
+        expect(subject[:languages][:Ruby][:additions]).to eq(1227)
+        expect(subject[:languages][:Ruby][:deletions]).to eq(934)
+        expect(subject[:languages][:Unknown][:additions]).to eq(12)
+        expect(subject[:languages][:Unknown][:deletions]).to eq(0)
+      end
     end
 
     context 'with merge commits and no merge option' do
       let(:merge) { false }
 
-      it { subject[:additions].should == 581 }
-      it { subject[:deletions].should == 452 }
-      it { subject[:commits].should == 8 }
-      it { subject[:merges].should == 0 }
+      it do
+        expect(subject[:additions]).to eq(581)
+        expect(subject[:deletions]).to eq(452)
+        expect(subject[:commits]).to eq(8)
+        expect(subject[:merges]).to eq(0)
 
-      it { subject[:languages][:Markdown][:additions].should == 1 }
-      it { subject[:languages][:Markdown][:deletions].should == 0 }
-      it { subject[:languages][:Ruby][:additions].should == 574 }
-      it { subject[:languages][:Ruby][:deletions].should == 452 }
-      it { subject[:languages][:Unknown][:additions].should == 6 }
-      it { subject[:languages][:Unknown][:deletions].should == 0 }
+        expect(subject[:languages][:Markdown][:additions]).to eq(1)
+        expect(subject[:languages][:Markdown][:deletions]).to eq(0)
+        expect(subject[:languages][:Ruby][:additions]).to eq(574)
+        expect(subject[:languages][:Ruby][:deletions]).to eq(452)
+        expect(subject[:languages][:Unknown][:additions]).to eq(6)
+        expect(subject[:languages][:Unknown][:deletions]).to eq(0)
+      end
     end
   end
 
@@ -77,33 +83,36 @@ describe Collector do
 
     context 'with valid commit' do
       let(:sha) { '260bc61e2c42930d91f3503c5849b0a2351275cf' }
-      it { data[:author].should == 'Kevin Jalbert' }
-      it { data[:author_email].should == 'kevin.j.jalbert@gmail.com' }
-      it { data[:time].should match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [-|+]\d{4}/) }
 
-      it { data[:merge].should == false }
-      it { data[:additions].should == 30 }
-      it { data[:deletions].should == 2 }
-      it { data[:added_files].should == 1 }
-      it { data[:deleted_files].should == 0 }
+      it do
+        expect(data[:author]).to eq('Kevin Jalbert')
+        expect(data[:author_email]).to eq('kevin.j.jalbert@gmail.com')
+        expect(data[:time]).to match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [-|+]\d{4}/)
 
-      it { data[:files][0][:filename].should == 'Gemfile' }
-      it { data[:files][0][:additions].should == 0 }
-      it { data[:files][0][:deletions].should == 1 }
-      it { data[:files][0][:status].should.nil? }
-      it { data[:files][0][:language].should == 'Ruby' }
+        expect(data[:merge]).to eq(false)
+        expect(data[:additions]).to eq(30)
+        expect(data[:deletions]).to eq(2)
+        expect(data[:added_files]).to eq(1)
+        expect(data[:deleted_files]).to eq(0)
 
-      it { data[:files][1][:filename].should == 'Gemfile.lock' }
-      it { data[:files][1][:additions].should == 30 }
-      it { data[:files][1][:deletions].should == 0 }
-      it { data[:files][1][:status].should eq(:added) }
-      it { data[:files][1][:language].should == 'Unknown' }
+        expect(data[:files][0][:filename]).to eq('Gemfile')
+        expect(data[:files][0][:additions]).to eq(0)
+        expect(data[:files][0][:deletions]).to eq(1)
+        expect(data[:files][0][:status]).to eq(:modified)
+        expect(data[:files][0][:language]).to eq('Ruby')
 
-      it { data[:files][2][:filename].should == 'lib/git_statistics/initialize.rb' }
-      it { data[:files][2][:additions].should == 0 }
-      it { data[:files][2][:deletions].should == 1 }
-      it { data[:files][2][:status].should.nil? }
-      it { data[:files][2][:language].should == 'Ruby' }
+        expect(data[:files][1][:filename]).to eq('Gemfile.lock')
+        expect(data[:files][1][:additions]).to eq(30)
+        expect(data[:files][1][:deletions]).to eq(0)
+        expect(data[:files][1][:status]).to eq(:added)
+        expect(data[:files][1][:language]).to eq('Unknown')
+
+        expect(data[:files][2][:filename]).to eq('lib/git_statistics/initialize.rb')
+        expect(data[:files][2][:additions]).to eq(0)
+        expect(data[:files][2][:deletions]).to eq(1)
+        expect(data[:files][2][:status]).to eq(:modified)
+        expect(data[:files][2][:language]).to eq('Ruby')
+      end
     end
 
     context 'with invalid commit' do
@@ -116,5 +125,4 @@ describe Collector do
       it { expect { data }.to raise_error(Rugged::InvalidError) }
     end
   end
-
 end

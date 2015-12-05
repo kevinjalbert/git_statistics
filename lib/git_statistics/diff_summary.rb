@@ -45,9 +45,9 @@ module GitStatistics
     # We flip these around since we are diffing in the opposite direction -- new.diff(old)
     def blob
       if status == :deleted
-       @repo.lookup(delta.new_file[:oid])  # Look at new instead of old
+        @repo.lookup(delta.new_file[:oid])  # Look at new instead of old
       else
-       @repo.lookup(delta.old_file[:oid])  # Look at old instead of new
+        @repo.lookup(delta.old_file[:oid])  # Look at old instead of new
       end
     rescue Rugged::OdbError
       Log.warn 'Could not find object (most likely a submodule)'
@@ -55,7 +55,7 @@ module GitStatistics
     end
 
     def inspect
-      %Q(<GitStatistics::FileStat @filename=#{filename} @status=#{status} @similarity=#{similarity} @language=#{language} @additions=#{additions}, @deletions=#{deletions}, @net=#{net}>)
+      "<GitStatistics::FileStat @filename=#{filename} @status=#{status} @similarity=#{similarity} @language=#{language} @additions=#{additions}, @deletions=#{deletions}, @net=#{net}>"
     end
 
     def to_json

@@ -29,7 +29,6 @@ module GitStatistics
       if /^(?<file>.+?):(?<line>\d+)(?::in `(?<method>.*)')?/ =~ message
         file = Regexp.last_match[:file]
         line = Regexp.last_match[:line]
-        method = Regexp.last_match[:method]
         "#{file.sub(instance.base_directory, '')}:#{line}"
       end
     end

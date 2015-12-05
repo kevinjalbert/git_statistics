@@ -38,19 +38,21 @@ describe Console do
         author = 'Kevin Jalbert'
         subject { data[author] }
 
-        it { data.should have_key author }
+        it do
+          expect(data.key?(author)).to be true
 
-        it { subject[:commits].should == 1 }
-        it { subject[:additions].should == 73 }
-        it { subject[:deletions].should == 0 }
-        it { subject[:added_files].should == 2 }
+          expect(subject[:commits]).to eq(1)
+          expect(subject[:additions]).to eq(73)
+          expect(subject[:deletions]).to eq(0)
+          expect(subject[:added_files]).to eq(2)
 
-        it { subject[:languages][:Ruby][:additions].should == 62 }
-        it { subject[:languages][:Ruby][:deletions].should == 0 }
-        it { subject[:languages][:Ruby][:added_files].should == 1 }
-        it { subject[:languages][:Markdown][:additions].should == 11 }
-        it { subject[:languages][:Markdown][:deletions].should == 0 }
-        it { subject[:languages][:Markdown][:added_files].should == 1 }
+          expect(subject[:languages][:Ruby][:additions]).to eq(62)
+          expect(subject[:languages][:Ruby][:deletions]).to eq(0)
+          expect(subject[:languages][:Ruby][:added_files]).to eq(1)
+          expect(subject[:languages][:Markdown][:additions]).to eq(11)
+          expect(subject[:languages][:Markdown][:deletions]).to eq(0)
+          expect(subject[:languages][:Markdown][:added_files]).to eq(1)
+        end
       end
 
       context 'on second author' do
@@ -58,20 +60,24 @@ describe Console do
         author = 'John Smith'
         subject { data[author] }
 
-        it { data.key?(author).should be_true }
-        it { subject[:commits].should == 1 }
-        it { subject[:additions].should == 64 }
-        it { subject[:deletions].should == 16 }
+        it do
+          expect(data.key?(author)).to be true
+          expect(subject[:commits]).to eq(1)
+          expect(subject[:additions]).to eq(64)
+          expect(subject[:deletions]).to eq(16)
 
-        it { subject[:languages][:Ruby][:additions].should == 64 }
-        it { subject[:languages][:Ruby][:deletions].should == 16 }
+          expect(subject[:languages][:Ruby][:additions]).to eq(64)
+          expect(subject[:languages][:Ruby][:deletions]).to eq(16)
+        end
       end
 
-      it { config[:sort].should == sort }
-      it { config[:email].should == email }
-      it { config[:top_n].should == top_n }
-      it { config[:author_length].should == 17 }
-      it { config[:language_length].should == 8 }
+      it do
+        expect(config[:sort]).to eq(sort)
+        expect(config[:email]).to eq(email)
+        expect(config[:top_n]).to eq(top_n)
+        expect(config[:author_length]).to eq(17)
+        expect(config[:language_length]).to eq(8)
+      end
     end
 
     context 'with negative top_n' do
@@ -82,19 +88,21 @@ describe Console do
         author = 'Kevin Jalbert'
         subject { data[author] }
 
-        it { data.key?(author).should be_true }
+        it do
+          expect(data.key?(author)).to be true
 
-        it { subject[:commits].should == 1 }
-        it { subject[:additions].should == 73 }
-        it { subject[:deletions].should == 0 }
-        it { subject[:added_files].should == 2 }
+          expect(subject[:commits]).to eq(1)
+          expect(subject[:additions]).to eq(73)
+          expect(subject[:deletions]).to eq(0)
+          expect(subject[:added_files]).to eq(2)
 
-        it { subject[:languages][:Ruby][:additions].should == 62 }
-        it { subject[:languages][:Ruby][:deletions].should == 0 }
-        it { subject[:languages][:Ruby][:added_files].should == 1 }
-        it { subject[:languages][:Markdown][:additions].should == 11 }
-        it { subject[:languages][:Markdown][:deletions].should == 0 }
-        it { subject[:languages][:Markdown][:added_files].should == 1 }
+          expect(subject[:languages][:Ruby][:additions]).to eq(62)
+          expect(subject[:languages][:Ruby][:deletions]).to eq(0)
+          expect(subject[:languages][:Ruby][:added_files]).to eq(1)
+          expect(subject[:languages][:Markdown][:additions]).to eq(11)
+          expect(subject[:languages][:Markdown][:deletions]).to eq(0)
+          expect(subject[:languages][:Markdown][:added_files]).to eq(1)
+        end
       end
 
       context 'on second author' do
@@ -102,20 +110,25 @@ describe Console do
         author = 'John Smith'
         subject { data[author] }
 
-        it { data.key?(author).should be_true }
-        it { subject[:commits].should == 1 }
-        it { subject[:additions].should == 64 }
-        it { subject[:deletions].should == 16 }
+        it do
+          expect(data.key?(author)).to be true
 
-        it { subject[:languages][:Ruby][:additions].should == 64 }
-        it { subject[:languages][:Ruby][:deletions].should == 16 }
+          expect(subject[:commits]).to eq(1)
+          expect(subject[:additions]).to eq(64)
+          expect(subject[:deletions]).to eq(16)
+
+          expect(subject[:languages][:Ruby][:additions]).to eq(64)
+          expect(subject[:languages][:Ruby][:deletions]).to eq(16)
+        end
       end
 
-      it { config[:sort].should == sort }
-      it { config[:email].should == email }
-      it { config[:top_n].should == 0 }
-      it { config[:author_length].should == 17 }
-      it { config[:language_length].should == 8 }
+      it do
+        expect(config[:sort]).to eq(sort)
+        expect(config[:email]).to eq(email)
+        expect(config[:top_n]).to eq(0)
+        expect(config[:author_length]).to eq(17)
+        expect(config[:language_length]).to eq(8)
+      end
     end
 
     context 'with top_n that filters to one author' do
@@ -124,25 +137,27 @@ describe Console do
       author = 'Kevin Jalbert'
       subject { data[author] }
 
-      it { data.key?(author).should be_true }
+      it do
+        expect(data.key?(author)).to be true
 
-      it { subject[:commits].should == 1 }
-      it { subject[:additions].should == 73 }
-      it { subject[:deletions].should == 0 }
-      it { subject[:added_files].should == 2 }
+        expect(subject[:commits]).to eq(1)
+        expect(subject[:additions]).to eq(73)
+        expect(subject[:deletions]).to eq(0)
+        expect(subject[:added_files]).to eq(2)
 
-      it { subject[:languages][:Ruby][:additions].should == 62 }
-      it { subject[:languages][:Ruby][:deletions].should == 0 }
-      it { subject[:languages][:Ruby][:added_files].should == 1 }
-      it { subject[:languages][:Markdown][:additions].should == 11 }
-      it { subject[:languages][:Markdown][:deletions].should == 0 }
-      it { subject[:languages][:Markdown][:added_files].should == 1 }
+        expect(subject[:languages][:Ruby][:additions]).to eq(62)
+        expect(subject[:languages][:Ruby][:deletions]).to eq(0)
+        expect(subject[:languages][:Ruby][:added_files]).to eq(1)
+        expect(subject[:languages][:Markdown][:additions]).to eq(11)
+        expect(subject[:languages][:Markdown][:deletions]).to eq(0)
+        expect(subject[:languages][:Markdown][:added_files]).to eq(1)
 
-      it { config[:sort].should == sort }
-      it { config[:email].should == email }
-      it { config[:top_n].should == top_n }
-      it { config[:author_length].should == 17 }
-      it { config[:language_length].should == 8 }
+        expect(config[:sort]).to eq(sort)
+        expect(config[:email]).to eq(email)
+        expect(config[:top_n]).to eq(top_n)
+        expect(config[:author_length]).to eq(17)
+        expect(config[:language_length]).to eq(8)
+      end
     end
   end
 
@@ -152,7 +167,7 @@ describe Console do
       context 'with valid data' do
         let(:file) { 'summary_output.txt' }
         subject { results.print_summary(sort, email) }
-        it { should == output.chomp }
+        it { expect(subject).to eq(output.chomp) }
       end
     end
 
@@ -160,7 +175,7 @@ describe Console do
       context 'with valid data' do
         let(:file) { 'language_data_output.txt' }
         subject { results.print_language_data(config[:data]['Kevin Jalbert']) }
-        it { should == output.split("\n") }
+        it { expect(subject).to eq(output.split("\n")) }
       end
     end
 
@@ -168,9 +183,8 @@ describe Console do
       context 'with valid data' do
         let(:file) { 'header_output.txt' }
         subject { results.print_header.join("\n") }
-        it { should == output.chomp }
+        it { expect(subject).to eq(output.chomp) }
       end
     end
   end
-
 end

@@ -30,7 +30,7 @@ module GitStatistics
       OPERATING_SYSTEMS.default = :unknown
 
       def self.determine(os_name)
-        OPERATING_SYSTEMS.select { |k, _| k =~ os_name }.first
+        OPERATING_SYSTEMS.find { |k, _| k =~ os_name }
       end
     end
 
