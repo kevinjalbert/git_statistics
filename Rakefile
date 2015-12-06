@@ -7,7 +7,7 @@ require 'rubocop/rake_task'
 
 CLOBBER.include('coverage')
 
-Rubocop::RakeTask.new
+RuboCop::RakeTask.new
 
 desc 'Run all specs'
 RSpec::Core::RakeTask.new do |t|

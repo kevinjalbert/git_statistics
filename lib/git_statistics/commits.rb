@@ -87,7 +87,6 @@ module GitStatistics
 
         # Collect language stats
         value[:files].each do |file|
-
           # Add to author's languages
           add_language_stats(author, file)
 

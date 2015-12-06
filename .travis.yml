@@ -4,6 +4,11 @@ rvm:
   - 1.9.3
   - 2.0.0
   - 2.1.0
+  - 2.2.0
+
+# Tests are ran against the repos early history
+git:
+  depth: 10000
 
 bundler_args: --without darwin debug
 
@@ -11,13 +16,13 @@ notifications:
   email: false
 
 before_script:
-  # Grit's Commit.find_all(...) requires the master branch to be present
-  - git remote add master git://github.com/kevinjalbert/git_statistics.git
-  - git fetch master
+  # Tests requires the master branch to be present
+  - git fetch origin
   - git checkout master
   - git checkout -
 
-  # Tests are ran against the repos early history
-  - git pull origin -q --depth=1000000
+script: bundle exec rspec
 
-script: bundle exec rspec spec
+before_install:
+   - gem update --system
+   - gem install bundler

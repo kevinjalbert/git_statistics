@@ -1,6 +1,5 @@
 # Git Statistics
 
-[![Gitter Chat](http://img.shields.io/badge/chat-gitter-brightgreen.svg)](https://gitter.im/kevinjalbert/git_statistics)
 [![Gem Version](https://badge.fury.io/rb/git_statistics.svg)](http://badge.fury.io/rb/git_statistics)
 [![Build Status](https://travis-ci.org/kevinjalbert/git_statistics.svg?branch=master)](http://travis-ci.org/kevinjalbert/git_statistics)
 [![Coverage Status](https://img.shields.io/coveralls/kevinjalbert/git_statistics.svg)](https://coveralls.io/r/kevinjalbert/git_statistics)

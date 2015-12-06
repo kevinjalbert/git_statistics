@@ -25,19 +25,20 @@ describe Commits do
   describe '#files_in_path' do
     let(:path) { '/tmp/example' }
     subject { commits.files_in_path }
-    around do |example|
+
+    it do
       Dir.mktmpdir do |dir|
         Dir.chdir(dir) do
           FileUtils.touch '0.json'
           FileUtils.touch '1.json'
-          commits.stub(:path) { dir }
-          example.run
+          allow(commits).to receive(:path) { dir }
+
+          expect(subject.count).to eq(2)
+          expect(subject).to_not include('.')
+          expect(subject).to_not include('..')
         end
       end
     end
-    its(:count) { should == 2 }
-    it { should_not include '.' }
-    it { should_not include '..' }
   end
 
   describe '#flush_commits' do
@@ -79,29 +80,35 @@ describe Commits do
 
       context 'on first author' do
         let(:author_name) { 'Kevin Jalbert' }
-        it { subject[:additions].should == 153 }
-        it { subject[:deletions].should == 5 }
-        it { subject[:commits].should == 2 }
-        it { subject[:added_files].should == 3 }
-        it { subject[:merges].should == 1 }
 
-        it { subject[:languages][:Markdown][:additions].should == 18 }
-        it { subject[:languages][:Markdown][:deletions].should == 1 }
-        it { subject[:languages][:Markdown][:added_files].should == 1 }
-        it { subject[:languages][:Ruby][:additions].should == 135 }
-        it { subject[:languages][:Ruby][:deletions].should == 4 }
-        it { subject[:languages][:Ruby][:added_files].should == 2 }
+        it do
+          expect(subject[:additions]).to eq(153)
+          expect(subject[:deletions]).to eq(5)
+          expect(subject[:commits]).to eq(2)
+          expect(subject[:added_files]).to eq(3)
+          expect(subject[:merges]).to eq(1)
+
+          expect(subject[:languages][:Markdown][:additions]).to eq(18)
+          expect(subject[:languages][:Markdown][:deletions]).to eq(1)
+          expect(subject[:languages][:Markdown][:added_files]).to eq(1)
+          expect(subject[:languages][:Ruby][:additions]).to eq(135)
+          expect(subject[:languages][:Ruby][:deletions]).to eq(4)
+          expect(subject[:languages][:Ruby][:added_files]).to eq(2)
+        end
       end
 
       context 'on second author' do
         let(:author_name) { 'John Smith' }
-        it { subject[:additions].should == 64 }
-        it { subject[:deletions].should == 16 }
-        it { subject[:commits].should == 1 }
 
-        it { subject[:languages][:Ruby][:additions].should == 64 }
-        it { subject[:languages][:Ruby][:deletions].should == 16 }
-        it { subject[:languages][:Ruby][:added_files].should == 0 }
+        it do
+          expect(subject[:additions]).to eq(64)
+          expect(subject[:deletions]).to eq(16)
+          expect(subject[:commits]).to eq(1)
+
+          expect(subject[:languages][:Ruby][:additions]).to eq(64)
+          expect(subject[:languages][:Ruby][:deletions]).to eq(16)
+          expect(subject[:languages][:Ruby][:added_files]).to eq(0)
+        end
       end
     end
 
@@ -110,27 +117,33 @@ describe Commits do
 
       context 'on first author' do
         let(:author_name) { 'Kevin Jalbert' }
-        it { subject[:additions].should == 73 }
-        it { subject[:deletions].should == 0 }
-        it { subject[:commits].should == 1 }
-        it { subject[:added_files].should == 2 }
 
-        it { subject[:languages][:Markdown][:additions].should == 11 }
-        it { subject[:languages][:Markdown][:deletions].should == 0 }
-        it { subject[:languages][:Markdown][:added_files].should == 1 }
-        it { subject[:languages][:Ruby][:additions].should == 62 }
-        it { subject[:languages][:Ruby][:deletions].should == 0 }
-        it { subject[:languages][:Ruby][:added_files].should == 1 }
+        it do
+          expect(subject[:additions]).to eq(73)
+          expect(subject[:deletions]).to eq(0)
+          expect(subject[:commits]).to eq(1)
+          expect(subject[:added_files]).to eq(2)
+
+          expect(subject[:languages][:Markdown][:additions]).to eq(11)
+          expect(subject[:languages][:Markdown][:deletions]).to eq(0)
+          expect(subject[:languages][:Markdown][:added_files]).to eq(1)
+          expect(subject[:languages][:Ruby][:additions]).to eq(62)
+          expect(subject[:languages][:Ruby][:deletions]).to eq(0)
+          expect(subject[:languages][:Ruby][:added_files]).to eq(1)
+        end
       end
 
       context 'on second author' do
         let(:author_name) { 'John Smith' }
-        it { subject[:additions].should == 64 }
-        it { subject[:deletions].should == 16 }
-        it { subject[:commits].should == 1 }
 
-        it { subject[:languages][:Ruby][:additions].should == 64 }
-        it { subject[:languages][:Ruby][:deletions].should == 16 }
+        it do
+          expect(subject[:additions]).to eq(64)
+          expect(subject[:deletions]).to eq(16)
+          expect(subject[:commits]).to eq(1)
+
+          expect(subject[:languages][:Ruby][:additions]).to eq(64)
+          expect(subject[:languages][:Ruby][:deletions]).to eq(16)
+        end
       end
     end
   end
@@ -142,40 +155,46 @@ describe Commits do
     context 'with valid data' do
       context 'on first author' do
         let(:author) { 'John Smith' }
-        it { stats.key?(author).should be_true }
-        it { subject[:commits].should == 1 }
-        it { subject[:deletions].should == 16 }
-        it { subject[:additions].should == 64 }
 
-        it { subject[:languages][:Ruby][:additions].should == 64 }
-        it { subject[:languages][:Ruby][:deletions].should == 16 }
+        it do
+          expect(stats.key?(author)).to be true
+          expect(subject[:commits]).to eq(1)
+          expect(subject[:deletions]).to eq(16)
+          expect(subject[:additions]).to eq(64)
+
+          expect(subject[:languages][:Ruby][:additions]).to eq(64)
+          expect(subject[:languages][:Ruby][:deletions]).to eq(16)
+        end
       end
 
       context 'on second author' do
         let(:author) { 'Kevin Jalbert' }
-        it { stats.key?(author).should be_true }
-        it { subject[:commits].should == 1 }
-        it { subject[:additions].should == 73 }
-        it { subject[:deletions].should == 0 }
-        it { subject[:added_files].should == 2 }
 
-        it { subject[:languages][:Markdown][:additions].should == 11 }
-        it { subject[:languages][:Markdown][:deletions].should == 0 }
-        it { subject[:languages][:Markdown][:added_files].should == 1 }
-        it { subject[:languages][:Ruby][:additions].should == 62 }
-        it { subject[:languages][:Ruby][:deletions].should == 0 }
-        it { subject[:languages][:Ruby][:added_files].should == 1 }
+        it do
+          expect(stats.key?(author)).to be true
+          expect(subject[:commits]).to eq(1)
+          expect(subject[:additions]).to eq(73)
+          expect(subject[:deletions]).to eq(0)
+          expect(subject[:added_files]).to eq(2)
+
+          expect(subject[:languages][:Markdown][:additions]).to eq(11)
+          expect(subject[:languages][:Markdown][:deletions]).to eq(0)
+          expect(subject[:languages][:Markdown][:added_files]).to eq(1)
+          expect(subject[:languages][:Ruby][:additions]).to eq(62)
+          expect(subject[:languages][:Ruby][:deletions]).to eq(0)
+          expect(subject[:languages][:Ruby][:added_files]).to eq(1)
+        end
       end
     end
 
     context 'with invalid type' do
       let(:sort) { :wrong }
-      it { stats.should be_nil }
+      it { expect(stats).to be nil }
     end
 
     context 'with invalid data' do
       let(:fixture_file) { nil }
-      it { stats.should be_nil }
+      it { expect(stats).to be nil }
     end
   end
 
@@ -187,35 +206,39 @@ describe Commits do
       let(:email) { true }
       let(:author) { 'kevin.j.jalbert@gmail.com' }
 
-      it { stats.key?(author).should be_true }
-      it { subject[:commits].should == 1 }
-      it { subject[:additions].should == 73 }
-      it { subject[:deletions].should == 0 }
-      it { subject[:added_files].should == 2 }
+      it do
+        expect(stats.key?(author)).to be true
+        expect(subject[:commits]).to eq(1)
+        expect(subject[:additions]).to eq(73)
+        expect(subject[:deletions]).to eq(0)
+        expect(subject[:added_files]).to eq(2)
 
-      it { subject[:languages][:Markdown][:additions].should == 11 }
-      it { subject[:languages][:Markdown][:deletions].should == 0 }
-      it { subject[:languages][:Ruby][:additions].should == 62 }
-      it { subject[:languages][:Ruby][:deletions].should == 0 }
-      it { subject[:languages][:Ruby][:added_files].should == 1 }
+        expect(subject[:languages][:Markdown][:additions]).to eq(11)
+        expect(subject[:languages][:Markdown][:deletions]).to eq(0)
+        expect(subject[:languages][:Ruby][:additions]).to eq(62)
+        expect(subject[:languages][:Ruby][:deletions]).to eq(0)
+        expect(subject[:languages][:Ruby][:added_files]).to eq(1)
+      end
     end
 
     context 'with merge' do
       let(:merge) { true }
       let(:author) { 'Kevin Jalbert' }
 
-      it { stats.key?(author).should be_true }
-      it { subject[:commits].should == 2 }
-      it { subject[:additions].should == 153 }
-      it { subject[:deletions].should == 5 }
-      it { subject[:added_files].should == 3 }
-      it { subject[:merges].should == 1 }
+      it do
+        expect(stats.key?(author)).to be true
+        expect(subject[:commits]).to eq(2)
+        expect(subject[:additions]).to eq(153)
+        expect(subject[:deletions]).to eq(5)
+        expect(subject[:added_files]).to eq(3)
+        expect(subject[:merges]).to eq(1)
 
-      it { subject[:languages][:Markdown][:additions].should == 18 }
-      it { subject[:languages][:Markdown][:deletions].should == 1 }
-      it { subject[:languages][:Ruby][:additions].should == 135 }
-      it { subject[:languages][:Ruby][:deletions].should == 4 }
-      it { subject[:languages][:Ruby][:added_files].should == 2 }
+        expect(subject[:languages][:Markdown][:additions]).to eq(18)
+        expect(subject[:languages][:Markdown][:deletions]).to eq(1)
+        expect(subject[:languages][:Ruby][:additions]).to eq(135)
+        expect(subject[:languages][:Ruby][:deletions]).to eq(4)
+        expect(subject[:languages][:Ruby][:added_files]).to eq(2)
+      end
     end
   end
 
@@ -233,8 +256,10 @@ describe Commits do
         commits.add_language_stats(data, file)
       end
 
-      it { data[:languages][:Ruby][:additions].should == 10 }
-      it { data[:languages][:Ruby][:deletions].should == 5 }
+      it do
+        expect(data[:languages][:Ruby][:additions]).to eq(10)
+        expect(data[:languages][:Ruby][:deletions]).to eq(5)
+      end
     end
 
     context 'with multiple files' do
@@ -258,10 +283,12 @@ describe Commits do
         commits.add_language_stats(data, file)
       end
 
-      it { data[:languages][:Ruby][:additions].should == 20 }
-      it { data[:languages][:Ruby][:deletions].should == 10 }
-      it { data[:languages][:Java][:additions].should == 10 }
-      it { data[:languages][:Java][:deletions].should == 5 }
+      it do
+        expect(data[:languages][:Ruby][:additions]).to eq(20)
+        expect(data[:languages][:Ruby][:deletions]).to eq(10)
+        expect(data[:languages][:Java][:additions]).to eq(10)
+        expect(data[:languages][:Java][:deletions]).to eq(5)
+      end
     end
   end
 
@@ -278,10 +305,12 @@ describe Commits do
         commits.add_commit_stats(data, commit)
       end
 
-      it { data[:commits].should == 1 }
-      it { data[:additions].should == 10 }
-      it { data[:deletions].should == 5 }
-      it { data[:merges].should == 0 }
+      it do
+        expect(data[:commits]).to eq(1)
+        expect(data[:additions]).to eq(10)
+        expect(data[:deletions]).to eq(5)
+        expect(data[:merges]).to eq(0)
+      end
     end
 
     context 'with multiple commits (one merge commit)' do
@@ -300,10 +329,12 @@ describe Commits do
         commits.add_commit_stats(data, commit)
       end
 
-      it { data[:commits].should == 2 }
-      it { data[:additions].should == 20 }
-      it { data[:deletions].should == 10 }
-      it { data[:merges].should == 1 }
+      it do
+        expect(data[:commits]).to eq(2)
+        expect(data[:additions]).to eq(20)
+        expect(data[:deletions]).to eq(10)
+        expect(data[:merges]).to eq(1)
+      end
     end
 
     context 'with commit that has file status changes' do
@@ -318,11 +349,13 @@ describe Commits do
         commits.add_commit_stats(data, commit)
       end
 
-      it { data[:commits].should == 1 }
-      it { data[:additions].should == 10 }
-      it { data[:deletions].should == 5 }
-      it { data[:added_files].should == 1 }
-      it { data[:deleted_files].should == 2 }
+      it do
+        expect(data[:commits]).to eq(1)
+        expect(data[:additions]).to eq(10)
+        expect(data[:deletions]).to eq(5)
+        expect(data[:added_files]).to eq(1)
+        expect(data[:deleted_files]).to eq(2)
+      end
     end
   end
 
@@ -344,7 +377,7 @@ describe Commits do
       let(:pretty) { true }
 
       it do
-        JSON.parse(fixture_contents).should == JSON.parse(tmpfile_contents)
+        expect(JSON.parse(fixture_contents)).to eq(JSON.parse(tmpfile_contents))
       end
     end
 
@@ -353,7 +386,7 @@ describe Commits do
       let(:pretty) { false }
 
       it do
-        JSON.parse(fixture_contents).should == JSON.parse(tmpfile_contents)
+        expect(JSON.parse(fixture_contents)).to eq(JSON.parse(tmpfile_contents))
       end
     end
   end

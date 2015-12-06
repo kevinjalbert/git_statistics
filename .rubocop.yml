@@ -3,6 +3,9 @@ AllCops:
     - '**/Rakefile'
     - '**/*.rake'
 
+AbcSize:
+  Enabled: false
+
 ClassLength:
   Enabled: false
 
@@ -17,6 +20,9 @@ EmptyLineBetweenDefs:
 
 Encoding:
   EnforcedStyle: when_needed
+
+FileName:
+  Enabled: false
 
 LineLength:
   Enabled: false

@@ -9,11 +9,10 @@ module GitStatistics
     end
 
     def collect(options = {})
-      branch = options[:branch] ? options[:branch] : CLI::DEFAULT_BRANCH
-      branch_head = Rugged::Branch.lookup(repo, branch).tip
+      branch_name = options[:branch] ? options[:branch] : CLI::DEFAULT_BRANCH
 
       walker = Rugged::Walker.new(repo)
-      walker.push(branch_head)
+      walker.push(repo.branches[branch_name].target)
 
       walker.each_with_index do |commit, count|
         next unless valid_commit?(commit, options)
@@ -51,7 +50,7 @@ module GitStatistics
       data[:added_files] = commit_summary.added_files
       data[:deleted_files] = commit_summary.deleted_files
       data[:modified_files] = commit_summary.modified_files
-      data[:files] = commit_summary.file_stats.map { |file| file.to_json }
+      data[:files] = commit_summary.file_stats.map(&:to_json)
 
       data
     end
