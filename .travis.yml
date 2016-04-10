@@ -17,7 +17,8 @@ notifications:
 
 before_script:
   # Tests requires the master branch to be present
-  - git fetch origin
+  - git remote add origin-for-master https://github.com/kevinjalbert/git_statistics
+  - git fetch origin-for-master
   - git checkout master
   - git checkout -
 
