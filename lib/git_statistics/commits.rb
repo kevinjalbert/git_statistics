@@ -23,8 +23,8 @@ module GitStatistics
       end
 
       # Initilize/resets stats and totals
-      @stats = Hash.new
-      @totals = Hash.new(0)
+      @stats = Stats.new
+      @totals = Hash.new { |h,k| h[k] = 0 }
       @totals[:languages] = {}
     end
 
@@ -41,11 +41,10 @@ module GitStatistics
     end
 
     def author_top_n_type(type, top_n = 0)
-      top_n = 0 if top_n < 0
-      if @stats.empty? || !@stats.first[1].key?(type)
+      if @stats.empty? || !@stats.first[1].has_key?(type)
         nil
       else
-        Hash[*@stats.sorted_hash { |a, b| b[1][type.to_sym] <=> a[1][type] }.to_a[0..top_n - 1].flatten]
+        @stats.sort_by(type).take_top(top_n)
       end
     end
 
@@ -149,12 +148,6 @@ module GitStatistics
         json_content = pretty ? JSON.pretty_generate(self) : to_json
         f.write(json_content)
       end
-    end
-  end
-
-  class Hash < Hash
-    def sorted_hash(&block)
-      self.class[sort(&block)]
     end
   end
 end
