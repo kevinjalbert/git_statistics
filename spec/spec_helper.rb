@@ -34,3 +34,10 @@ RSpec.configure do |config|
     end
   end
 end
+
+RSpec.configure do |config|
+  # Stub puts calls. Don't like them in the spec output
+  config.before(:each) do
+    Object.any_instance.stub(:puts)
+  end
+end
